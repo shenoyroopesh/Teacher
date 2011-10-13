@@ -1,0 +1,87 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+.homePageSetupButton
+{
+	icon: Embed("../Icons/Setting-icon.png");
+	color: 000000;
+}
+
+.homePageClassMonitoring
+{
+	icon: Embed("../Icons/Class-monitoring-icon.png");
+	color: 000000;
+}
+
+.homePageSchoolAdmin
+{
+	icon: Embed("../Icons/Admin-icon.png");
+	color: 000000;
+}
+
+.homePagePerformance
+{
+	icon: Embed("../Icons/Performance-icon.png");
+	color: 000000;
+}
+
+.performanceClass
+{
+	icon: Embed("../Icons/Class-icon.gif");
+	color: 000000;
+}
+
+.performanceStudent
+{
+	icon: Embed("../Icons/student_icon.png");
+	color: 000000;
+}
+
+.btnTimeSpent
+{
+	icon: Embed("../Icons/TimeSpent_icon.png");
+	color: 000000;
+}
+
+.btnAccuracy
+{
+	icon: Embed("../Icons/Accuracy_icon.png");
+	color: 000000;
+}
+
+.btnPerformance
+{
+	icon: Embed("../Icons/performance_icon.png");
+	color: 000000;
+}
+
+.btnStats
+{
+	icon: Embed("../Icons/stats_icon.png");
+	color: 000000;
+}
+
+.btnLO
+{
+	icon: Embed("../Icons/Setting-icon.png");
+	color: 000000;
+}
+
+.btnChat
+{
+	icon: Embed("../Icons/chat_icon.png");
+	color: 000000;
+}
+
+.btnQuestionsAnswers
+{
+	icon: Embed("../Icons/questions_answers_icon.png");
+	color: 000000;
+}
+
+.btnSpecialAssignment
+{
+	icon: Embed("../Icons/assignment-icon.png");
+	color: 000000;
+}

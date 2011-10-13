@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+		 xmlns:UI="com.Teacher.UI.*"
+		 initialize="HomePage_initializeHandler(event)">
+	<fx:Style source="Styles.css"/>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;		
+			
+			/**
+			 * Saves state of what is clicked on the home page so that the parent can take appropriate action when click
+			 * event from this component is handled 
+			 * */
+			public var state:String = "Not Selected";
+			
+			/**
+			 * This handles any button clicks on the home page
+			 * */
+			protected function homepagebutton_clickHandler(label:String):void
+			{			
+				this.state = label;
+				dispatchEvent(new MouseEvent("click"));
+			}
+			
+			/**
+			 * This initializes the home page current state depending on what button is selected - used in the parent
+			 * container to act on clicks on this component
+			 * */
+			protected function HomePage_initializeHandler(event:FlexEvent):void
+			{
+				state = "Not Selected";
+			}			
+		]]>
+	</fx:Script>
+	<fx:Declarations>		
+	</fx:Declarations>	
+	<UI:CustomButton x="{this.width*0.2}" y="{this.height*0.2}" 
+					   label="Setup" click="homepagebutton_clickHandler('Setup')" 
+					   style="homePageSetupButton"/>
+	<UI:CustomButton x="{this.width*0.6}"  y="{this.height*0.2}" 
+					   label="Class Monitoring" click="homepagebutton_clickHandler('Class Monitoring')"
+					   style="homePageClassMonitoring"/>
+	<UI:CustomButton x="{this.width*0.2}" y="{this.height*0.5}" 
+					   style="homePageSchoolAdmin" label="School Admin" click="homepagebutton_clickHandler('School Admin')"/>
+	<UI:CustomButton x="{this.width*0.6}" y="{this.height*0.5}" 
+					   style="homePagePerformance" label="Performance" click="homepagebutton_clickHandler('Performance')"/>
+	<s:Label id="lblMessages" text="3 New Messages" y="{this.height*0.85}" 
+			 height="{0.05*this.height}" click="homepagebutton_clickHandler('Messages')"
+			 horizontalCenter="0" fontSize="{this.height*0.03}"/> 
+</s:Group>

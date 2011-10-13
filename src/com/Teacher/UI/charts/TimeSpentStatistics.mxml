@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:defaultstatistics="services.defaultstatistics.*"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"	 
+		 xmlns:Examples="Examples.*"
+		 creationComplete="start();" xmlns:collections="com.degrafa.core.collections.*"  >
+	<!--<fx:Style source="styles/Golibaje.css"/>-->
+	<fx:Script>
+		<![CDATA[
+			import com.Teacher.UI.Utilities;
+			import CustomEvents.ChartLoadedEvent;			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.object_proxy;			
+			import org.axiis.core.AxiisSprite;
+			import org.axiis.data.DataSet;			
+			private var ds:DataSet = new DataSet();			
+			public var loaded:Boolean = false;			
+			
+			/** 
+			 * Set this variable to the appropriate time gap used by the data. month, week, day
+			 * */ 
+			[Bindable]
+			public var timeIncrement:String = "month";
+			
+			
+			[Bindable]
+			public var timeSpentData:ArrayCollection = new ArrayCollection([
+				{month:"January", time:100},
+				{month:"February", time:120},
+				{month:"March", time:140},
+				{month:"April",time:150},
+				{month:"May", time:160},
+				{month:"June", time:165},
+				{month:"July", time: 180},
+				{month:"August", time: 200},
+				{month:"September", time: 250}
+			]);
+			
+			public function start():void
+			{
+				var t:Timer = new Timer(2000, 1);				
+				t.addEventListener(TimerEvent.TIMER_COMPLETE, fireChartLoaded);
+				t.start();
+			}
+			
+			private function fireChartLoaded(event){				
+				loaded = true;
+				dispatchEvent(new Event("chartLoaded"));
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>	
+		<s:Stroke color="0x660066" weight="5" id="timeSpentStroke" />
+	</fx:Declarations>
+	<mx:CartesianChart id="TimeSpentChart" dataProvider="{timeSpentData}"
+					showDataTips="true" width="100%" height="100%" 
+					verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial">
+		<mx:verticalAxisRenderers>
+			<mx:AxisRenderer placement="left" axis="{timeSpentAxis}"/>
+		</mx:verticalAxisRenderers>
+		<mx:horizontalAxis>
+			<mx:CategoryAxis categoryField="{timeIncrement}"/>
+		</mx:horizontalAxis>
+		<mx:series>			
+			<mx:LineSeries
+				dataProvider="{timeSpentData}"
+				yField="time"
+				lineStroke="{timeSpentStroke}"
+				displayName="Time Spent">
+				<mx:verticalAxis>
+					<mx:LinearAxis id="timeSpentAxis" title="Time Spent (in hours)"
+								   maximum="{Utilities.getMax(timeSpentData, 'time')}"/>
+				</mx:verticalAxis>
+			</mx:LineSeries>
+		</mx:series>
+	</mx:CartesianChart>
+</s:Group>

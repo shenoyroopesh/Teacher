@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:String id="schoolPoints"></fx:String>
+		<fx:String id="schoolMinutes"></fx:String>
+		<fx:String id="classPoints"></fx:String>
+		<fx:String id="classMinutes"></fx:String>
+	</fx:Declarations>	
+	<mx:Grid horizontalCenter="0" verticalCenter="0" horizontalGap="12" verticalGap="12">
+		<mx:GridRow>
+			<mx:GridItem/>
+			<mx:GridItem>
+				<s:Label text="School" />
+			</mx:GridItem>
+			<mx:GridItem>
+				<s:Label text="Class" />
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow>
+			<mx:GridItem>
+				<s:Label text="Total Points (average)" />
+			</mx:GridItem>
+			<mx:GridItem>
+				<s:Label text="13889 (98)" />
+			</mx:GridItem>
+			<mx:GridItem>
+				<s:Label text="890 (88)" />
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow>
+			<mx:GridItem>
+				<s:Label text="Total Minutes (average)" />
+			</mx:GridItem>
+			<mx:GridItem>
+				<s:Label text="99988 (108)" />
+			</mx:GridItem>
+			<mx:GridItem>
+				<s:Label text="7688 (101)" />
+			</mx:GridItem>
+		</mx:GridRow>
+	</mx:Grid>
+</s:Group>

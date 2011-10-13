@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>		
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			public function get selectedFromDate():Date {
+				return selectFromDate.selectedDate;
+			}
+			
+			public function get selectedToDate():Date {
+				return selectFromDate.selectedDate;
+			}
+		]]>
+	</fx:Script>
+	<s:VGroup>
+		<s:RadioButton id="yearToDate" label="Year To Date" groupName="dateRange"/>
+		<s:RadioButton id="lastWeek" label="Last Week" groupName="dateRange"/>
+		<s:RadioButton id="lastMonth" label="Last Month" groupName="dateRange"/>
+		<s:RadioButton id="select" label="Select Dates" groupName="dateRange"/>
+		<s:HGroup enabled="{select.selected}">
+			<mx:DateField id="selectFromDate" color="0x000000" />
+			<mx:DateField id="selectToDate" color="0x000000" />
+		</s:HGroup>
+		<mx:DateField visible="false" id="todaysDate" />
+	</s:VGroup>
+</s:Group>

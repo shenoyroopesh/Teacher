@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*"
+					   width="800" height="600">	
+	<fx:Script>
+		<![CDATA[			
+			/**
+			 * Handles the click sent from the home page - as long as the selected state is valid, 
+			 * the state of the application is modified to that state
+			 * */
+			protected function homepage_clickHandler(event:MouseEvent):void
+			{
+				switch(homepage.state)
+				{
+					case "Setup":
+					case "ClassMonitoring":
+					case "SchoolAdmin":
+					case "Performance":
+					case "Messages":
+						this.currentState = homepage.state.replace(" ",""); //strip spaces		
+						break;
+				}	
+			}
+		]]>
+	</fx:Script>	
+	<s:states>
+		<s:State name="HomePage" />
+		<s:State name="Setup"/>
+		<s:State name="ClassMonitoring"/>
+		<s:State name="SchoolAdmin"/>
+		<s:State name="Performance"/>
+		<s:State name="Messages"/>
+	</s:states>	
+	<fx:Declarations>		
+	</fx:Declarations>
+	<UI:HomePage id="homepage" click="homepage_clickHandler(event)" includeIn="HomePage"/>
+	<UI:Performance id="performance" includeIn="Performance"/>
+</s:WindowedApplication>

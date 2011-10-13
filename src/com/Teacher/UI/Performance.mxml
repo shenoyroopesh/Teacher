@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="100%" height="100%" xmlns:UI="com.Teacher.UI.*"
+		 currentState="Class" xmlns:charts="com.Teacher.UI.charts.*"
+		 color="0xFFFFFF">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:states>
+		<s:State name="Student" />
+		<s:State name="Class" />
+		<s:State name="StudentAccuracy" />
+		<s:State name="StudentLO" />
+		<s:State name="StudentPerformance" />
+		<s:State name="StudentStats" />
+		<s:State name="StudentTimeSpent" />
+		<s:State name="ClassAccuracy" />
+		<s:State name="ClassLO" />
+		<s:State name="ClassPerformance" />
+		<s:State name="ClassStats" />
+		<s:State name="ClassTimeSpent" />
+	</s:states>
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="0x000000"/>
+		</s:fill>
+	</s:Rect>
+	<s:VGroup id="mainContainer" width="100%" height="100%">
+		<s:HGroup width="100%" height="18%" id="topContainer">
+			<UI:CustomButton id="classButton"  
+							 click="{this.currentState = 'Class'}" 
+							 label="Class" height="100%" width="12%"
+							 style="performanceClass">
+				<UI:filters>
+					<s:BevelFilter angle="0" />
+				</UI:filters>
+			</UI:CustomButton>
+			<UI:CustomButton id="studentButton" 
+							 click="{this.currentState = 'Student'}" 
+							 label="Student" height="100%" width="12%"
+							 style="performanceStudent">
+			</UI:CustomButton>
+			<UI:DateRangePick width="25%"/>	
+			<UI:statsSummary id="statsSummary" height="100%" width="48%" />
+		</s:HGroup>
+		<s:BorderContainer  height="75%" width="100%">
+			<s:Rect  width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="0xFFFFFF"/>
+				</s:fill>
+			</s:Rect>		
+			<s:HGroup id="middleContainer" height="100%" width="100%">
+				<s:DataGrid id="classGrid" includeIn="Class" height="100%" width="100%" >
+				</s:DataGrid>
+				<s:DataGrid id="studentGrid" excludeFrom="Class" width="25%" height="100%">
+				</s:DataGrid>
+				<charts:accuracyBubblesChart includeIn="StudentAccuracy" width="75%" height="100%"/>
+				<charts:LOChart includeIn="StudentLO" width="75%" height="100%"/>
+				<charts:PerformanceTimeColumn includeIn="StudentPerformance" width="75%" height="100%"/>
+				<charts:StatsWedgeChart includeIn="StudentStats" width="75%" height="100%"/>
+				<charts:TimeSpentStatistics includeIn="StudentTimeSpent" width="75%" height="100%"/>
+			</s:HGroup>
+		</s:BorderContainer>
+		<s:HGroup width="100%" height="15%">
+			<s:HGroup width="40%" height="100%" visible="{this.currentState.search('Student') > -1}"
+					  horizontalAlign="right">
+				<UI:CustomButton id="btnQuestionsAnswers" 
+								 style="btnQuestionsAnswers" height="100%" width="15%"/>
+				<UI:CustomButton id="btnChat" 
+								 style="btnChat" height="100%" width="15%"/>
+				<UI:CustomButton id="btnSpecialAssignment" 
+								 style="btnSpecialAssignment" height="100%" width="15%"/>
+			</s:HGroup>
+			<s:HGroup width="60%" height="100%" horizontalAlign="right">
+				<UI:CustomButton id="btnAccuracy" 
+								 click="{this.currentState = this.currentState.search('Class') > -1? 
+								 							'ClassAccuracy':'StudentAccuracy'}"
+								 style="btnAccuracy" height="100%" width="15%"/>
+				<UI:CustomButton id="btnLO"
+								 click="{this.currentState = this.currentState.search('Class') > -1? 
+								 							'ClassLO':'StudentLO'}"
+								 style="btnLO" height="100%" width="15%"/>
+				<UI:CustomButton id="btnPerformance"
+								 click="{this.currentState = this.currentState.search('Class') > -1? 
+								 							'ClassPerformance':'StudentPerformance'}"
+								 style="btnPerformance" height="100%" width="15%"/>
+				<UI:CustomButton id="btnStats"
+								 click="{this.currentState = this.currentState.search('Class') > -1? 
+								 							'ClassStats':'StudentStats'}"
+								 style="btnStats" height="100%" width="15%"/>
+				<UI:CustomButton id="btnTimeSpent"
+								 click="{this.currentState = this.currentState.search('Class') > -1? 
+								 							'ClassTimeSpent':'StudentTimeSpent'}"
+								 style="btnTimeSpent" height="100%" width="15%"/>
+			</s:HGroup>
+		</s:HGroup>
+	</s:VGroup>
+</s:Group>
