@@ -8,6 +8,26 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+			[bindable]
+			private function getChartsScale(chart:Group):Number
+			{
+				var scaleX:Number = chartContainer.width / chart.width;
+				var scaleY:Number = chartContainer.height / chart.height;
+				return Math.min(scaleX, scaleY);
+			}
+			
+			
+			protected function openProblemSetWindow(event):void
+			{
+				var problemSetWindow:CreateProblemSet = new CreateProblemSet();
+				problemSetWindow.open(true);
+			}				
+			
+		]]>
+	</fx:Script>
 	<s:states>
 		<s:State name="Student" />
 		<s:State name="Class" />
@@ -28,7 +48,7 @@
 		</s:fill>
 	</s:Rect>
 	<s:VGroup id="mainContainer" width="100%" height="100%">
-		<s:HGroup width="100%" height="18%" id="topContainer">
+		<s:HGroup width="100%" height="15%" id="topContainer">
 			<UI:CustomButton id="classButton"  
 							 click="{this.currentState = 'Class'}" 
 							 label="Class" height="100%" width="12%"
@@ -45,7 +65,7 @@
 			<UI:DateRangePick width="25%"/>	
 			<UI:statsSummary id="statsSummary" height="100%" width="48%" />
 		</s:HGroup>
-		<s:BorderContainer  height="75%" width="100%">
+		<s:BorderContainer  height="75%" width="100%" color="0x000000">
 			<s:Rect  width="100%" height="100%">
 				<s:fill>
 					<s:SolidColor color="0xFFFFFF"/>
@@ -56,11 +76,33 @@
 				</s:DataGrid>
 				<s:DataGrid id="studentGrid" excludeFrom="Class" width="25%" height="100%">
 				</s:DataGrid>
-				<charts:accuracyBubblesChart includeIn="StudentAccuracy" width="75%" height="100%"/>
-				<charts:LOChart includeIn="StudentLO" width="75%" height="100%"/>
-				<charts:PerformanceTimeColumn includeIn="StudentPerformance" width="75%" height="100%"/>
-				<charts:StatsWedgeChart includeIn="StudentStats" width="75%" height="100%"/>
-				<charts:TimeSpentStatistics includeIn="StudentTimeSpent" width="75%" height="100%"/>
+				<s:Group id="chartContainer" height="95%" width="75%" verticalCenter="0" excludeFrom="Class">
+					<charts:accuracyBubblesChart id="accuracyChart"
+												 includeIn="StudentAccuracy" 
+												 scaleX="{getChartsScale(accuracyChart)}"
+												 scaleY="{getChartsScale(accuracyChart)}"
+												 verticalCenter="0" horizontalCenter="0"/>
+					<charts:LOChart id="loChart" 
+									includeIn="StudentLO" 
+									scaleX="{getChartsScale(loChart)}"
+									scaleY="{getChartsScale(loChart)}"
+									verticalCenter="0" horizontalCenter="0"/>
+					<charts:PerformanceTimeColumn id="performanceChart" 
+												  includeIn="StudentPerformance" 
+												  scaleX="{getChartsScale(performanceChart)}"
+												  scaleY="{getChartsScale(performanceChart)}"
+												  verticalCenter="0" horizontalCenter="0"/>
+					<charts:StatsWedgeChart id="statsChart"
+											includeIn="StudentStats" 
+											scaleX="{getChartsScale(performanceChart)}"
+											scaleY="{getChartsScale(performanceChart)}"
+											verticalCenter="0" horizontalCenter="0"/>
+					<charts:TimeSpentStatistics id="timeSpentChart"
+												includeIn="StudentTimeSpent" 
+												scaleX="{getChartsScale(timeSpentChart)}"
+												scaleY="{getChartsScale(timeSpentChart)}"
+												verticalCenter="0" horizontalCenter="0"/>
+				</s:Group>
 			</s:HGroup>
 		</s:BorderContainer>
 		<s:HGroup width="100%" height="15%">
@@ -71,29 +113,35 @@
 				<UI:CustomButton id="btnChat" 
 								 style="btnChat" height="100%" width="15%"/>
 				<UI:CustomButton id="btnSpecialAssignment" 
-								 style="btnSpecialAssignment" height="100%" width="15%"/>
+								 style="btnSpecialAssignment" height="100%" width="15%"
+								 click="openProblemSetWindow"/>
 			</s:HGroup>
 			<s:HGroup width="60%" height="100%" horizontalAlign="right">
 				<UI:CustomButton id="btnAccuracy" 
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassAccuracy':'StudentAccuracy'}"
-								 style="btnAccuracy" height="100%" width="15%"/>
+								 style="btnAccuracy" height="100%" width="15%"
+								 toolTip="Accuracy Stats"/>
 				<UI:CustomButton id="btnLO"
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassLO':'StudentLO'}"
-								 style="btnLO" height="100%" width="15%"/>
+								 style="btnLO" height="100%" width="15%"
+								 toolTip="LO Progress"/>
 				<UI:CustomButton id="btnPerformance"
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassPerformance':'StudentPerformance'}"
-								 style="btnPerformance" height="100%" width="15%"/>
+								 style="btnPerformance" height="100%" width="15%"
+								 toolTip="Performance Stats"/>
 				<UI:CustomButton id="btnStats"
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassStats':'StudentStats'}"
-								 style="btnStats" height="100%" width="15%"/>
+								 style="btnStats" height="100%" width="15%"
+								 toolTip="Level-Wise Starts"/>
 				<UI:CustomButton id="btnTimeSpent"
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassTimeSpent':'StudentTimeSpent'}"
-								 style="btnTimeSpent" height="100%" width="15%"/>
+								 style="btnTimeSpent" height="100%" width="15%"
+								 toolTip="Time-Spent Stats"/>
 			</s:HGroup>
 		</s:HGroup>
 	</s:VGroup>

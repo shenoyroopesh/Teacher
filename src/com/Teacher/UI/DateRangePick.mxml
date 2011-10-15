@@ -23,7 +23,7 @@
 		<s:HGroup enabled="{select.selected}">
 			<mx:DateField id="selectFromDate" color="0x000000" />
 			<mx:DateField id="selectToDate" color="0x000000" />
-		</s:HGroup>
-		<mx:DateField visible="false" id="todaysDate" />
+			<s:Button id="btnGet" label="Get" color="0x000000" />			
+		</s:HGroup>		
 	</s:VGroup>
 </s:Group>

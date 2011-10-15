@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600"
 		 xmlns:charts="org.axiis.charts.*"
 		 creationComplete="start();"
 		 xmlns:axiis="org.axiis.*"
@@ -22,14 +22,11 @@
 	<fx:Script>
 		<![CDATA[
 			import com.Teacher.UI.Utilities;
-			import CustomEvents.ChartLoadedEvent;
-			
-			import com.degrafa.paint.SolidFill;
-			
+			import CustomEvents.ChartLoadedEvent;			
+			import com.degrafa.paint.SolidFill;	
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.rpc.events.ResultEvent;
-			
 			import org.axiis.data.DataSet;
 			
 			[Bindable]
@@ -74,6 +71,7 @@
 			/**
 			 * Set this to weekNum or dayNum depending on data - default:monthNum
 			 * */
+			[Bindable]
 			public var timeField:String = "monthNum";
 			
 			/**
@@ -153,13 +151,13 @@
 			<s:GradientEntry color="yellow"/>
 		</s:RadialGradient>
 		<!--mx:SolidColor id="scConcept" color="blue" alpha=".3"/-->
-		<mx:Stroke id="strokeConcept" color="blue" weight="2"/>
+		<s:SolidColorStroke id="strokeConcept" color="blue" weight="2"/>
 		<!--<mx:SolidColor id="scConfidence" color="green" alpha=".3"/>-->
-		<mx:Stroke id="strokeConfidence" color="green" weight="2"/>
+		<s:SolidColorStroke id="strokeConfidence" color="green" weight="2"/>
 		<!--<mx:SolidColor id="scMastery" color="maroon" alpha=".3"/>-->
-		<mx:Stroke id="strokeMastery" color="maroon" weight="2"/>
+		<s:SolidColorStroke id="strokeMastery" color="maroon" weight="2"/>
 		<!--<mx:SolidColor id="scEinstein" color="yellow" alpha=".3"/>-->
-		<mx:Stroke id="strokeEinstein" color="yellow" weight="2"/>
+		<s:SolidColorStroke id="strokeEinstein" color="yellow" weight="2"/>
 	</fx:Declarations>
 	<mx:BubbleChart id="bubbleChart" fontFamily="Arial" fontSize="20"
 					dataProvider="{conceptData}" width="100%" height="100%"

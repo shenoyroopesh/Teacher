@@ -2,7 +2,7 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:defaultstatistics="services.defaultstatistics.*"
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"	 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600"	 
 		 xmlns:Examples="Examples.*"
 		 creationComplete="start();" xmlns:collections="com.degrafa.core.collections.*"  >
 	<!--<fx:Style source="styles/Golibaje.css"/>-->

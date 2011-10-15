@@ -13,9 +13,11 @@
 	<fx:Declarations>
 		<fx:String id="label" />
 		<fx:String id="style" />
+		<fx:String id="toolTip" />
 	</fx:Declarations>
 	<s:Button chromeColor="#FEFDFD" fontSize="{this.height*0.12}" 
 					   label="{this.label}"
 					   width="{this.width}" height="{this.height}" 
-					   styleName="{this.style}" skinClass="com.Teacher.UI.CustomButtonSkin"/>
+					   styleName="{this.style}" skinClass="com.Teacher.UI.CustomButtonSkin"
+					   toolTip="{this.toolTip}"/>
 </s:Group>
