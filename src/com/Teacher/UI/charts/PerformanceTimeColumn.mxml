@@ -20,9 +20,23 @@
 			public var loaded:Boolean = false;			
 			
 			/**
+			 * Make this false, if you don't need student details
+			 * */
+			[Bindable]
+			public var studentStats:Boolean = true;
+			
+			/**
 			 * Make this false, if you don't need class average
 			 * */
-			public var classAverage = true;
+			[Bindable]
+			public var classAverage:Boolean = true;
+			
+			/**
+			 * Make this false, if you don't need school average, true if you need it
+			 * */
+			[Bindable]
+			public var schoolAverage:Boolean = true;
+			
 			
 			/** 
 			 * Set this variable to the appropriate time gap used by the data. month, week, day
@@ -74,6 +88,28 @@
 					incorrect:10, skipped:5, total:190}
 			]);
 			
+			[Bindable]
+			public var schoolAvgPerformanceData:ArrayCollection = new ArrayCollection([
+				{month:"January", correct:100, correctOutsideBase:60,
+					incorrect:50, skipped:22, total:245},
+				{month:"February", correct:90, correctOutsideBase:50,
+					incorrect:50, skipped:30, total:250},
+				{month:"March", correct:120, correctOutsideBase:45,
+					incorrect:25, skipped:30, total:225},
+				{month:"April",correct:115, correctOutsideBase:55,
+					incorrect:20, skipped:20, total:215},
+				{month:"May", correct:150, correctOutsideBase:50,
+					incorrect:20, skipped:17, total:207},
+				{month:"June", correct:120, correctOutsideBase:40,
+					incorrect:15, skipped:5, total:190},
+				{month:"July", correct:130, correctOutsideBase:15,
+					incorrect:5, skipped:10, total:170},
+				{month:"August", correct:115, correctOutsideBase:15,
+					incorrect:15, skipped:5, total:190},
+				{month:"September",correct:126, correctOutsideBase:5,
+					incorrect:10, skipped:5, total:190}
+			]);
+			
 			
 			[Bindable]
 			public var pointsData:ArrayCollection = new ArrayCollection([
@@ -110,18 +146,21 @@
 					verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial">
 		<mx:verticalAxisRenderers>
 			<mx:AxisRenderer placement="left" axis="{columnAxis}"/>
-			<mx:AxisRenderer placement="right" axis="{pointsAxis}"/>
+			<mx:AxisRenderer placement="right" axis="{pointsAxis}" visible="{studentStats}"/>
 		</mx:verticalAxisRenderers>
 		<mx:horizontalAxis>
 			<mx:CategoryAxis categoryField="{timeIncrement}"/>
 		</mx:horizontalAxis>
 		<mx:verticalAxis>
-			<mx:LinearAxis id="columnAxis" title="Answers" maximum="{Math.max(Utilities.getMax(performanceData, 'total'), 
-						   													  Utilities.getMax(classAvgPerformanceData, 'total'))+50}"/>
+			<mx:LinearAxis id="columnAxis" title="Answers" 
+						   maximum="{Math.max(studentStats?Utilities.getMax(performanceData, 'total'):0, 
+						   					  classAverage?Utilities.getMax(classAvgPerformanceData, 'total'):0,
+						   					  schoolAverage?Utilities.getMax(schoolAvgPerformanceData, 'total'):0)
+						   			+50}"/>
 		</mx:verticalAxis>
 		<mx:series>
 			<mx:ColumnSet type="clustered">
-				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}">
+				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{studentStats}">
 					<mx:ColumnSeries
 						yField="correct"
 						displayName="Correct"
@@ -286,12 +325,96 @@
 						</mx:fill>
 					</mx:ColumnSeries>
 				</mx:ColumnSet>
+				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{schoolAverage}" 
+							  dataProvider="{schoolAvgPerformanceData}">
+					<mx:ColumnSeries
+						yField="correct"
+						displayName="School Average: Correct"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient9">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="0xFFFFCC"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="correctOutsideBase"
+						displayName="School Average: Correct Outside Base"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient10">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="red"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="incorrect"
+						displayName="School Average: Wrong Answers"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient11">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="0xCCCCFF"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="skipped"
+						displayName="School Average: Skipped Questions"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient12">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="green"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+				</mx:ColumnSet>
 			</mx:ColumnSet>
 			<mx:LineSeries
 				dataProvider="{pointsData}"
 				yField="points"
 				lineStroke="{pointsStroke}"
-				displayName="My Points">
+				displayName="My Points"
+				visible="{studentStats}">
 				<mx:verticalAxis>
 					<mx:LinearAxis id="pointsAxis" title="Points"
 								   maximum="{Utilities.getMax(pointsData, 'points')}"/>

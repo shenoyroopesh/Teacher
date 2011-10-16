@@ -9,14 +9,22 @@
 		<s:VGroup id="leftContainer" width="50%" height="100%">
 			<s:DataGrid id="topics" height="20%" width="100%" />
 			<s:DataGrid id="subTopics" height="40%" width="100%"/>
-			<s:DataGrid id="questions" height="40%" width="100%"/>
+			<mx:DataGrid id="questions" height="40%" width="100%"
+						 dragEnabled="true" dragMoveEnabled="true"/>
 		</s:VGroup>
 		<s:VGroup id="rightContainer" width="50%" height="100%">
-			<s:Label id="lblStudentName" text="John Lenon" />
-			<s:HGroup id="radioButtonContainer">
-				<s:RadioButton id="rbNewProblemSet" groupName="mode"/>
-				<s:RadioButton id="rbAddToCurrentProblemSet" groupName="mode" />
+			<s:Label id="lblStudentName" text="John Lenon" height="10%" 
+					 fontSize="{rightContainer.height*0.05}" verticalAlign="middle" textAlign="center"/>
+			<s:HGroup id="radioButtonContainer" height="7%">
+				<s:RadioButton id="rbNewProblemSet" groupName="mode" label="Create New ProblemSet"/>
+				<s:RadioButton id="rbAddToCurrentProblemSet" groupName="mode" label="Add To Current ProblemSet" />
 			</s:HGroup>
+			<mx:DataGrid id="selectedQuestions" height="75%" width="100%" 
+						 dragEnabled="true" dragMoveEnabled="true"/>
+			<s:Group id="btnGroup" height="8%" width="100%">
+				<s:Button id="btnDone" label="Done" horizontalCenter="0" verticalCenter="0"
+						  click="{this.close()}"/>	
+			</s:Group>			
 		</s:VGroup>			
 	</s:HGroup>
 </s:Window>

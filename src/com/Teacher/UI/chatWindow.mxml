@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="300" height="400"
+		 creationComplete="titlewindow1_creationCompleteHandler(event)"
+		 title = "Chat with {_otherUser.name}"
+		 close="titlewindow1_closeHandler(event)"
+		  backgroundColor="0x00000">
+	<fx:Style source="Plastic.css"/>
+	<fx:Script>
+		<![CDATA[	
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var watermark:String = "Write your comment here.";
+			
+			[Bindable]
+			private var _user:User;
+			
+			[Bindable]
+			public var _otherUser:User;
+			
+			public function get user():User
+			{
+				return _user;
+			}
+			
+			public function set user(newUser:User):void
+			{
+				_user=newUser;
+			}
+			
+			public function get otherUser():User
+			{
+				return _otherUser;
+			}
+			
+			public function set otherUser(newUser:User):void
+			{
+				_otherUser=newUser;
+			}
+			
+			[Bindable]
+			private var tweets:ArrayCollection = new ArrayCollection;
+			
+			private function tweet():void
+			{
+				if(input.text!=""||StringUtil.trim(input.text)!=""||input.text!=watermark)
+				{
+					var obj:Object = new Object;
+					obj.name = _user.name;
+					obj.tweet = input.text;
+					tweets.addItem(obj);
+					input.text="";	
+				}
+			}
+			
+			protected function titlewindow1_closeHandler(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				input.text=watermark;
+			}
+			
+			protected function inputFocusIn(event:FocusEvent):void
+			{
+				input.text='';
+				input.setStyle("textAlpha", 1);
+			}
+			
+		]]>
+	</fx:Script>
+	<s:List id="chat" left="10" right="10" top="10" bottom="60" dataProvider="{tweets}" itemRenderer="com.Teacher.UI.Tweet" />
+	<s:TextInput id="input" left="10" right="88" bottom="10" height="42" enter="tweet()" textAlpha="0.5" focusIn="inputFocusIn(event)" />
+	<s:Button right="10" bottom="10" width="70" height="43" label="Submit" click="tweet()"/>	
+</s:TitleWindow>

@@ -8,12 +8,16 @@
 	<!--<fx:Style source="styles/Golibaje.css"/>-->
 	<fx:Script>
 		<![CDATA[
+			import CustomEvents.ChartLoadedEvent;
+			
 			import com.Teacher.UI.Utilities;
-			import CustomEvents.ChartLoadedEvent;			
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.FlexEvent;
 			import mx.rpc.events.ResultEvent;
-			import mx.utils.object_proxy;			
+			import mx.utils.object_proxy;
+			
 			import org.axiis.core.AxiisSprite;
 			import org.axiis.data.DataSet;			
 			private var ds:DataSet = new DataSet();			
@@ -39,6 +43,99 @@
 				{month:"September", time: 250}
 			]);
 			
+			
+			[Bindable]
+			public var showClass:Boolean = false;
+			
+			
+			[Bindable]
+			public var classTimeSpentData:ArrayCollection = new ArrayCollection([
+				{
+					name:'John', 
+					 data:[
+						{month:"January", time:100},
+						{month:"February", time:120},
+						{month:"March", time:140},
+						{month:"April",time:150},
+						{month:"May", time:160},
+						{month:"June", time:165},
+						{month:"July", time: 180},
+						{month:"August", time: 200},
+						{month:"September", time: 250}
+					 ]
+				},
+				{
+					name:'Jack', 
+					data:[
+						{month:"January", time:120},
+						{month:"February", time:130},
+						{month:"March", time:110},
+						{month:"April",time:155},
+						{month:"May", time:130},
+						{month:"June", time:140},
+						{month:"July", time: 200},
+						{month:"August", time: 120},
+						{month:"September", time: 200}
+					]
+				},
+				{
+					name:'Rita', 
+					data:[
+						{month:"January", time:140},
+						{month:"February", time:200},
+						{month:"March", time:150},
+						{month:"April",time:140},
+						{month:"May", time:160},
+						{month:"June", time:200},
+						{month:"July", time: 200},
+						{month:"August", time: 220},
+						{month:"September", time: 260}
+					]
+				},
+				{
+					name:'Demi', 
+					data:[
+						{month:"January", time:150},
+						{month:"February", time:160},
+						{month:"March", time:200},
+						{month:"April",time:160},
+						{month:"May", time:160},
+						{month:"June", time:175},
+						{month:"July", time: 160},
+						{month:"August", time: 210},
+						{month:"September", time: 150}
+					]
+				},
+				{
+					name:'Riley', 
+					data:[
+						{month:"January", time:140},
+						{month:"February", time:120},
+						{month:"March", time:120},
+						{month:"April",time:150},
+						{month:"May", time:180},
+						{month:"June", time:150},
+						{month:"July", time: 200},
+						{month:"August", time: 250},
+						{month:"September", time: 230}
+					]
+				},
+				{
+					name:'Chris', 
+					data:[
+						{month:"January", time:150},
+						{month:"February", time:250},
+						{month:"March", time:220},
+						{month:"April",time:160},
+						{month:"May", time:100},
+						{month:"June", time:50},
+						{month:"July", time: 160},
+						{month:"August", time: 170},
+						{month:"September", time: 200}
+					]
+				}
+			]);
+			
 			public function start():void
 			{
 				var t:Timer = new Timer(2000, 1);				
@@ -50,6 +147,28 @@
 				loaded = true;
 				dispatchEvent(new Event("chartLoaded"));
 			}
+			
+			protected function TimeSpentChart_initializeHandler(event:FlexEvent):void
+			{
+				if(showClass)
+				{
+					studentSeries.visible = false;
+					
+					for each ( var student in classTimeSpentData)
+					{
+						var ls:LineSeries  = new LineSeries();
+						ls.dataProvider = student['data'];
+						ls.yField = 'time';
+						ls.xField = 'month';
+						ls.displayName = student['name'];
+						var tmp:Array = TimeSpentChart.series; 
+						tmp.push(ls) 
+						TimeSpentChart.series = tmp; 
+						TimeSpentChart.invalidateSeriesStyles(); 
+					}
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -58,7 +177,8 @@
 	</fx:Declarations>
 	<mx:CartesianChart id="TimeSpentChart" dataProvider="{timeSpentData}"
 					showDataTips="true" width="100%" height="100%" 
-					verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial">
+					verticalCenter="0" horizontalCenter="0" fontSize="20" 
+					fontFamily="Arial" initialize="TimeSpentChart_initializeHandler(event)">
 		<mx:verticalAxisRenderers>
 			<mx:AxisRenderer placement="left" axis="{timeSpentAxis}"/>
 		</mx:verticalAxisRenderers>
@@ -67,6 +187,7 @@
 		</mx:horizontalAxis>
 		<mx:series>			
 			<mx:LineSeries
+				id="studentSeries"
 				dataProvider="{timeSpentData}"
 				yField="time"
 				lineStroke="{timeSpentStroke}"

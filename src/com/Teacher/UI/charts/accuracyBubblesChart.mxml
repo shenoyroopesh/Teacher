@@ -16,7 +16,8 @@
 		 xmlns:geom="flash.geom.*"
 		 xmlns:geometry="com.degrafa.geometry.*" 
 		 xmlns:scale="org.axiis.layouts.scale.*" 
-		 xmlns:layouts="org.axiis.charts.layouts.*" xmlns:accuracystatistics="services.accuracystatistics.*">
+		 xmlns:layouts="org.axiis.charts.layouts.*" 
+		 xmlns:accuracystatistics="services.accuracystatistics.*">
 	
 	<!--<mx:Style source="styles/Axiis_Examples.css"/>-->
 	<fx:Script>
