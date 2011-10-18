@@ -17,9 +17,14 @@
 		 xmlns:geometry="com.degrafa.geometry.*" 
 		 xmlns:scale="org.axiis.layouts.scale.*" 
 		 xmlns:layouts="org.axiis.charts.layouts.*" 
-		 xmlns:accuracystatistics="services.accuracystatistics.*">
+		 xmlns:accuracystatistics="services.accuracystatistics.*"
+		 fontSize="18">
 	
 	<!--<mx:Style source="styles/Axiis_Examples.css"/>-->
+	<s:states>
+		<s:State name="bubblesChart" />
+		<s:State name="dataGrid" />
+	</s:states>
 	<fx:Script>
 		<![CDATA[
 			import com.Teacher.UI.Utilities;
@@ -32,39 +37,39 @@
 			
 			[Bindable]
 			public var conceptData:ArrayCollection = new ArrayCollection([	
-				{name:"Apr", monthNum:"1", accuracy:"70", count:"500"},
-				{name:"May", monthNum:"2", accuracy:"75", count:"450"},
-				{name:"Jun", monthNum:"3", accuracy:"70", count:"250"},
-				{name:"Jul", monthNum:"4", accuracy:"80", count:"600"},
-				{name:"Aug", monthNum:"5", accuracy:"85", count:"550"},
-				{name:"Sep", monthNum:"6", accuracy:"85", count:"450"}]);			
+				{name:"Apr", monthNum:"1", accuracy:"70", count:"500", classAccuracy:"70", classCount:"500", schoolAccuracy:"65", schoolCount:"550"},
+				{name:"May", monthNum:"2", accuracy:"75", count:"450", classAccuracy:"75", classCount:"600", schoolAccuracy:"85", schoolCount:"450"},
+				{name:"Jun", monthNum:"3", accuracy:"70", count:"250", classAccuracy:"75", classCount:"550", schoolAccuracy:"74", schoolCount:"540"},
+				{name:"Jul", monthNum:"4", accuracy:"80", count:"600", classAccuracy:"70", classCount:"500", schoolAccuracy:"70", schoolCount:"500"},
+				{name:"Aug", monthNum:"5", accuracy:"85", count:"550", classAccuracy:"75", classCount:"600", schoolAccuracy:"85", schoolCount:"450"},
+				{name:"Sep", monthNum:"6", accuracy:"85", count:"450", classAccuracy:"75", classCount:"550", schoolAccuracy:"74", schoolCount:"540"}]);			
 			
 			[Bindable]
 			public var confidenceData:ArrayCollection = new ArrayCollection([	
-				{name:"Apr", monthNum:"1", accuracy:"50", count:"300"},
-				{name:"May", monthNum:"2", accuracy:"50", count:"350"},
-				{name:"Jun", monthNum:"3", accuracy:"60", count:"200"},
-				{name:"Jul", monthNum:"4", accuracy:"65", count:"400"},
-				{name:"Aug", monthNum:"5", accuracy:"70", count:"500"},
-				{name:"Sep", monthNum:"6", accuracy:"75", count:"250"}]);
+				{name:"Apr", monthNum:"1", accuracy:"50", count:"300", classAccuracy:"50", classCount:"300", schoolAccuracy:"70", schoolCount:"300"},
+				{name:"May", monthNum:"2", accuracy:"50", count:"350", classAccuracy:"55", classCount:"350", schoolAccuracy:"70", schoolCount:"300"},
+				{name:"Jun", monthNum:"3", accuracy:"60", count:"200", classAccuracy:"56", classCount:"300", schoolAccuracy:"70", schoolCount:"300"},
+				{name:"Jul", monthNum:"4", accuracy:"65", count:"400", classAccuracy:"60", classCount:"350", schoolAccuracy:"70", schoolCount:"300"},
+				{name:"Aug", monthNum:"5", accuracy:"70", count:"500", classAccuracy:"66", classCount:"300", schoolAccuracy:"70", schoolCount:"300"},
+				{name:"Sep", monthNum:"6", accuracy:"75", count:"250", classAccuracy:"70", classCount:"350", schoolAccuracy:"70", schoolCount:"300"}]);
 			
 			[Bindable]
 			public var masteryData:ArrayCollection = new ArrayCollection([	
-				{name:"Apr", monthNum:"1", accuracy:"40", count:"150"},
-				{name:"May", monthNum:"2", accuracy:"45", count:"200"},
-				{name:"Jun", monthNum:"3", accuracy:"50", count:"100"},
-				{name:"Jul", monthNum:"4", accuracy:"50", count:"200"},
-				{name:"Aug", monthNum:"5", accuracy:"60", count:"250"},
-				{name:"Sep", monthNum:"6", accuracy:"65", count:"200"}]);
+				{name:"Apr", monthNum:"1", accuracy:"40", count:"150", classAccuracy:"45", classCount:"150", schoolAccuracy:"45", schoolCount:"140"},
+				{name:"May", monthNum:"2", accuracy:"45", count:"200", classAccuracy:"45", classCount:"250", schoolAccuracy:"45", schoolCount:"240"},
+				{name:"Jun", monthNum:"3", accuracy:"50", count:"100", classAccuracy:"45", classCount:"200", schoolAccuracy:"45", schoolCount:"200"},
+				{name:"Jul", monthNum:"4", accuracy:"50", count:"200", classAccuracy:"55", classCount:"200", schoolAccuracy:"55", schoolCount:"200"},
+				{name:"Aug", monthNum:"5", accuracy:"60", count:"250", classAccuracy:"55", classCount:"200", schoolAccuracy:"55", schoolCount:"200"},
+				{name:"Sep", monthNum:"6", accuracy:"65", count:"200", classAccuracy:"55", classCount:"200", schoolAccuracy:"55", schoolCount:"200"}]);
 			
 			[Bindable]
 			public var einsteinData:ArrayCollection = new ArrayCollection([	
-				{name:"Apr", monthNum:"1", accuracy:"30", count:"75"},
-				{name:"May", monthNum:"2", accuracy:"35", count:"100"},
-				{name:"Jun", monthNum:"3", accuracy:"35", count:"50"},
-				{name:"Jul", monthNum:"4", accuracy:"30", count:"100"},
-				{name:"Aug", monthNum:"5", accuracy:"40", count:"100"},
-				{name:"Sep", monthNum:"6", accuracy:"45", count:"100"}]);
+				{name:"Apr", monthNum:"1", accuracy:"30", count:"75", classAccuracy:"30", classCount:"100", schoolAccuracy:"30", schoolCount:"100"},
+				{name:"May", monthNum:"2", accuracy:"35", count:"100", classAccuracy:"30", classCount:"100", schoolAccuracy:"30", schoolCount:"100"},
+				{name:"Jun", monthNum:"3", accuracy:"35", count:"50", classAccuracy:"30", classCount:"100", schoolAccuracy:"30", schoolCount:"100"},
+				{name:"Jul", monthNum:"4", accuracy:"30", count:"100", classAccuracy:"35", classCount:"100", schoolAccuracy:"35", schoolCount:"100"},
+				{name:"Aug", monthNum:"5", accuracy:"40", count:"100", classAccuracy:"35", classCount:"100", schoolAccuracy:"35", schoolCount:"100"},
+				{name:"Sep", monthNum:"6", accuracy:"45", count:"100", classAccuracy:"35", classCount:"100", schoolAccuracy:"35", schoolCount:"100"}]);
 			
 			
 			public var loaded:Boolean = false;
@@ -79,6 +84,16 @@
 			 * Set this to the label field - default:name
 			 * */			
 			public var timePeriodLabelField:String = "name";
+			
+			
+			
+			
+			[Bindable]
+			/**
+			 * Decides whether the graph is working in class mode or individual mode
+			 * */
+			public var classMode = false;
+			
 			
 			public function start():void
 			{
@@ -125,9 +140,13 @@
 				}				
 				
 				return "<b>" + hitData.item[timePeriodLabelField] + "</b><br>" +
-					   "<b>" + displayName + "</b><br>" +
-					   "Answered = " + hitData.item.count +"<br>" +  
-					   "Accuracy = " + hitData.item.accuracy + "%"
+					   "<b>" + displayName + "</b><br/>" +
+					   (classMode?"":("Answered = " + hitData.item.count +"<br/>")) +  
+					   (classMode?"":("Accuracy = " + hitData.item.accuracy + "% <br/><br/>")) +
+					   "Class Average Answered = " + hitData.item.classCount +"<br/>" +  
+					   "Class Average Accuracy = " + hitData.item.classAccuracy +"% <br/><br/>" +  
+					   "School Average Answered = " + hitData.item.schoolCount +"<br/>" +  
+					   "School Average Accuracy = " + hitData.item.schoolAccuracy + "%"
 					   ;
 			}			
 
@@ -160,11 +179,78 @@
 		<!--<mx:SolidColor id="scEinstein" color="yellow" alpha=".3"/>-->
 		<s:SolidColorStroke id="strokeEinstein" color="yellow" weight="2"/>
 	</fx:Declarations>
+	<s:VGroup width="100%">
+		<s:HGroup>
+			<s:Button label="Chart" click="{this.currentState = 'bubblesChart'}" />
+			<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
+		</s:HGroup>
+		<s:Scroller width="100%" height="{0.9*this.height}" includeIn="dataGrid" >
+			<s:VGroup width="100%" height="100%">			
+				<s:Label text="Concept" />
+				<s:DataGrid dataProvider="{conceptData}" width="90%">
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn dataField="name" headerText="Month"/>
+							<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
+							<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
+							<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
+							<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
+							<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
+							<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				<s:Label text="Confidence" />
+				<s:DataGrid dataProvider="{confidenceData}"  width="90%">
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn dataField="name" headerText="Month"/>
+							<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
+							<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
+							<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
+							<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
+							<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
+							<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				<s:Label text="Mastery" />
+				<s:DataGrid dataProvider="{masteryData}"  width="90%">
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn dataField="name" headerText="Month"/>
+							<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
+							<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
+							<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
+							<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
+							<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
+							<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+				<s:Label text="Einstein" />
+				<s:DataGrid dataProvider="{einsteinData}"  width="90%">
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn dataField="name" headerText="Month"/>
+							<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
+							<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
+							<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
+							<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
+							<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
+							<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+			</s:VGroup>
+		</s:Scroller>
+	</s:VGroup>
 	<mx:BubbleChart id="bubbleChart" fontFamily="Arial" fontSize="20"
-					dataProvider="{conceptData}" width="100%" height="100%"
+					dataProvider="{conceptData}" width="100%" height="90%"
 					minRadius="1" maxRadius="50" verticalCenter="0" horizontalCenter="0" 
 					showDataTips="true" gridLinesStyleName="none" 
-					dataTipFunction="{dataTipFunction}">
+					dataTipFunction="{dataTipFunction}"
+					includeIn="bubblesChart">
 		<mx:verticalAxisRenderers>
 			<mx:AxisRenderer id="verticalRender" axis="{accuracyAxis}">			
 			</mx:AxisRenderer>
@@ -196,8 +282,8 @@
 		<mx:series>
 			<mx:BubbleSeries id="conceptSeries"
 						     xField="{timeField}" 
-							 yField="accuracy"
-							 radiusField="count"
+							 yField="{classMode?'classAccuracy':'accuracy'}"
+							 radiusField="{classMode?'classCount':'count'}"
 							 displayName="Concept: Accuracy"
 							 dataProvider="{conceptData}"
 							 fill="{scConcept}"
@@ -207,8 +293,8 @@
 			</mx:BubbleSeries>
 			<mx:BubbleSeries id="confidenceSeries"
 							 xField="{timeField}" 
-							 yField="accuracy"
-							 radiusField="count"
+							 yField="{classMode?'classAccuracy':'accuracy'}"
+							 radiusField="{classMode?'classCount':'count'}"
 							 displayName="Confidence: Accuracy"
 							 dataProvider="{confidenceData}"
 							 fill="{scConfidence}"
@@ -218,8 +304,8 @@
 			</mx:BubbleSeries>
 			<mx:BubbleSeries id="masterySeries"
 							 xField="{timeField}" 
-							 yField="accuracy"
-							 radiusField="count"
+							 yField="{classMode?'classAccuracy':'accuracy'}"
+							 radiusField="{classMode?'classCount':'count'}"
 							 displayName="Mastery: Accuracy"
 							 dataProvider="{masteryData}"
 							 fill="{scMastery}"
@@ -229,8 +315,8 @@
 			</mx:BubbleSeries>
 			<mx:BubbleSeries id="einsteinSeries"
 							 xField="{timeField}" 
-							 yField="accuracy"
-							 radiusField="count"
+							 yField="{classMode?'classAccuracy':'accuracy'}"
+							 radiusField="{classMode?'classCount':'count'}"
 							 displayName="Einstein: Accuracy"
 							 dataProvider="{einsteinData}"
 							 fill="{scEinstein}"

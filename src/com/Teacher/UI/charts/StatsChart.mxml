@@ -6,15 +6,22 @@
 		 xmlns:defaultstatistics="services.defaultstatistics.*"
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600"
 		 creationComplete="start();" xmlns:utils="org.axiis.utils.*" 
-		 xmlns:layouts="org.axiis.charts.layouts.*" xmlns:paint="org.axiis.paint.*" xmlns:transitions="org.axiis.transitions.*" xmlns:states="org.axiis.states.*" >
+		 xmlns:layouts="org.axiis.charts.layouts.*" xmlns:paint="org.axiis.paint.*"
+		 fontSize="20" xmlns:transitions="org.axiis.transitions.*" xmlns:states="org.axiis.states.*" >
 	<!--<fx:Style source="styles/Golibaje.css"/>-->
+	<s:states>
+		<s:State name="wedgeChart" />
+		<s:State name="dataGrid" />
+	</s:states>
 	<fx:Script>
 		<![CDATA[
-			import CustomEvents.ChartLoadedEvent;			
+			import CustomEvents.ChartLoadedEvent;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.rpc.events.ResultEvent;
-			import mx.utils.object_proxy;			
+			import mx.utils.object_proxy;
+			
 			import org.axiis.core.AxiisSprite;
 			import org.axiis.data.DataSet;			
 			private var ds:DataSet = new DataSet();
@@ -26,26 +33,40 @@
 			[Bindable]
 			public var data:ArrayCollection = new ArrayCollection([
 				{result: "Correct", count:100, 
-					Types:[{type:"Einstein", count:10},
+					Types: [{type:"Einstein", count:10},
 							{type:"Mastery", count:20},
 							{type:"Confidence", count:30},
 							{type:"Concept", count:40}
 							]},
 				{result: "Incorrect", count:50, 
-					Types:[{type:"Einstein", count:15},
+					Types: [{type:"Einstein", count:15},
 							{type:"Mastery", count:10},
 							{type:"Confidence", count:5},
 							{type:"Concept", count:10}
 					]},
 				{result: "Skipped", count:20, 
-					Types:[{type:"Einstein", count:10},
+					Types: [{type:"Einstein", count:10},
 							{type:"Mastery", count:5},
 							{type:"Confidence", count:3},
 							{type:"Concept", count:2}
 					]}
 			]
-			);
+			);			
 			
+			public function get DataTabular():ArrayCollection{
+				var dataTable:ArrayCollection = new ArrayCollection();				
+				for each(var result in data)
+				{				
+					var typeRow = {result:result.result, 
+								   Einstein : result.Types[0].count,
+								   Mastery : result.Types[1].count,
+								   Confidence : result.Types[2].count,
+								   Concept : result.Types[3].count
+								   };
+					dataTable.addItem(typeRow);
+				}				
+				return dataTable;
+			}			
 			
 			public function start():void
 			{
@@ -103,37 +124,50 @@
 					animations[i+3].play();
 					index+=4;
 					setTimeout(playNext,50);
-				}
-				
+				}				
 			}
 			
 			[Bindable]
 			public var sprite:AxiisSprite;
 			
 		]]>
-	</fx:Script>
-	
+	</fx:Script>	
 	<fx:Declarations>
 		<!-- Preference Settings -->
 		<fx:Number id="angleGap">.5</fx:Number>
 		<fx:Number id="innerRadi1">.4</fx:Number>
 		<fx:Number id="innerRadi2">.78</fx:Number>
 		<fx:Number id="outerRadi1">.78</fx:Number>
-		<fx:Number id="outerRadi2">1</fx:Number>
-		
+		<fx:Number id="outerRadi2">1</fx:Number>		
 		<!-- Common calculations used by geometries -->		
 		<utils:NumericExpression id="outerRadius" value="{(dc.width/2)*outerRadi2}"/>
 		<utils:NumericExpression id="center" value="{boundsRadius.value/2}"/>
 		<utils:NumericExpression id="boundsRadius" value="{Math.min(this.height,this.width)*.7}"/>	
-	</fx:Declarations>
-	
-	<!-- Data Canvas that holds our geometries -->	
+	</fx:Declarations>	
+	<s:VGroup width="100%">
+		<s:HGroup>
+			<s:Button label="Wedge Chart" click="{this.currentState = 'wedgeChart'}" />
+			<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
+		</s:HGroup>		
+		<s:DataGrid dataProvider="{DataTabular}" includeIn="dataGrid" width="90%">
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn dataField="result" headerText="Result"/>
+					<s:GridColumn dataField="Einstein" />
+					<s:GridColumn dataField="Mastery" />
+					<s:GridColumn dataField="Confidence" />
+					<s:GridColumn dataField="Concept" />
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</s:VGroup>
+		<!-- Data Canvas that holds our geometries -->	
 	<axiis:DataCanvas id="dc"
 					  width="{boundsRadius.value}"
 					  height="{boundsRadius.value}"
 					  horizontalCenter="0"
 					  verticalCenter="0"
-					  showDataTips="false">
+					  showDataTips="false" includeIn="wedgeChart">
 		<axiis:layouts>
 			<!-- innerWedgeGroup:  This renders the inner ring of wedges -->
 			<layouts:WedgeStackLayout id="innerWedgeGroup"
@@ -148,7 +182,6 @@
 									fontSize="20"
 									fontWeight="bold"
 									fontColor="0xFFFFFF">
-
 				<layouts:transitions>
 					<transitions:Transition playDelay="50" id="scaleTran">
 						<transitions:animations>
@@ -158,8 +191,7 @@
 							<mx:AnimateProperty toValue="0" fromValue="{boundsRadius.value/2}" property="y" duration="500"/>
 						</transitions:animations>
 					</transitions:Transition>
-				</layouts:transitions>
-				
+				</layouts:transitions>				
 				<layouts:layouts>
 					<layouts:WedgeStackLayout id="outerWedgeGroup"
 											dataProvider="{innerWedgeGroup.currentDatum.Types}"
@@ -179,8 +211,7 @@
 											stroke="{outerWedgeStroke}"
 											fontSize="20"
 											fontWeight="bold"
-											fontColor="0x36454F">
-						
+											fontColor="0x36454F">						
 						<!-- State for outer wedge to change color and make it move out further -->
 						<layouts:axiisStates>							
 							<states:AxiisState enterStateEvent="mouseOver" 
@@ -193,8 +224,7 @@
 											  values="{[colorFunction,outerRadius.value*1.2,0xFFFFFF,'bold']}" />
 						</layouts:axiisStates>
 					</layouts:WedgeStackLayout>					
-				</layouts:layouts>
-				
+				</layouts:layouts>				
 				<layouts:axiisStates>
 					<states:AxiisState enterStateEvent="mouseOver"
 									  exitStateEvent="mouseOut"
@@ -204,11 +234,9 @@
 									  targets="{[innerWedgeFillStop1,outerWedgeFill, outerWedgeGroup ,outerWedgeGroup.label]}"        
 									  properties="{['color','color','outerRadiusRatio','fontWeight']}"
 									  values="{[colorFunction,colorFunction,1.1,'bold']}"/>
-				</layouts:axiisStates>
-				
+				</layouts:axiisStates>				
 			</layouts:WedgeStackLayout>
-		</axiis:layouts>
-		
+		</axiis:layouts>		
 		<!-- Palletes used to generate our colors -->
 		<axiis:palettes>
 			<paint:LayoutAutoPalette id="wedgePalette" colorFrom="0x469F11" colorTo="0x0000BD" layout="{innerWedgeGroup}"/>
@@ -216,8 +244,7 @@
 									 colorFrom="{wedgePalette.currentColor | 0x2B2B11}" 
 									 colorTo="{wedgePalette.currentColor | 0x151511}" 
 									 layout="{outerWedgeGroup}"/>
-		</axiis:palettes>
-		
+		</axiis:palettes>		
 		<!-- Fills that use the colors generated by our palettes -->
 		<axiis:fills>
 			<degrafa:RadialGradientFill id="innerWedgeFill" cx="{innerWedgeGroup.width/2}" cy="{innerWedgeGroup.width/2}" radius="{(innerWedgeGroup.width/2)*innerRadi2}">
@@ -228,17 +255,14 @@
 			<degrafa:SolidFill color="{outerWedgePalette.currentColor}" id="outerWedgeFill"/>
 			<degrafa:SolidFill color="0xFFFF00" id="rollOverFill0" alpha=".9"/>
 			<degrafa:SolidFill color="0xFF00FF" id="rollOverFill1" alpha=".9"/>
-		</axiis:fills>
-		
+		</axiis:fills>		
 		<axiis:strokes>
 			<degrafa:SolidStroke color="0" alpha=".6" pixelHinting="true" id="outerWedgeStroke"/>
-		</axiis:strokes>
-		
-	</axiis:DataCanvas>
-	
+		</axiis:strokes>		
+	</axiis:DataCanvas>	
 	<mx:Label fontSize="20"
 			  fontWeight="bold"
 			  htmlText="Student Performance Stats"
 			  bottom="{height*.025}"
-			  horizontalCenter="-20%"/>
+			  horizontalCenter="-20%" includeIn="wedgeChart"/>
 </s:Group>

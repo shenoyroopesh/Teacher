@@ -6,6 +6,11 @@
 		 xmlns:Examples="Examples.*"
 		 creationComplete="start();" xmlns:collections="com.degrafa.core.collections.*"  >
 	<!--<fx:Style source="styles/Golibaje.css"/>-->
+	<s:states>
+		<s:State name="barChart" />
+		<s:State name="lineChart" />
+		<s:State name="dataGrid" />
+	</s:states>
 	<fx:Script>
 		<![CDATA[
 			import com.Teacher.UI.Utilities;
@@ -141,9 +146,28 @@
 	<fx:Declarations>	
 		<s:Stroke color="0x660066" weight="5" id="pointsStroke" />
 	</fx:Declarations>
+	<s:VGroup width="100%" height="100%">
+		<s:HGroup>
+			<s:Button label="Line Chart" click="{this.currentState = 'lineChart'}" />
+			<s:Button label="Bar Chart" click="{this.currentState = 'barChart'}" />
+			<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
+		</s:HGroup>
+		<s:DataGrid dataProvider="{performanceData}" width="90%" includeIn="dataGrid">
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn dataField="month" headerText="Month"/>
+					<s:GridColumn dataField="correct"  headerText="Correct"/>					
+					<s:GridColumn dataField="correctOutsideBase"  headerText="Correct Outside Base"/>
+					<s:GridColumn dataField="incorrect"  headerText="Incorrect"/>
+					<s:GridColumn dataField="skipped"  headerText="Skipped"/>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</s:VGroup>
 	<mx:CartesianChart id="PerformanceTimeChart" dataProvider="{performanceData}"
-					showDataTips="true" width="100%" height="100%" 
-					verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial">
+					showDataTips="true" width="100%" height="90%" 
+					verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial"
+					includeIn="barChart">
 		<mx:verticalAxisRenderers>
 			<mx:AxisRenderer placement="left" axis="{columnAxis}"/>
 			<mx:AxisRenderer placement="right" axis="{pointsAxis}" visible="{studentStats}"/>

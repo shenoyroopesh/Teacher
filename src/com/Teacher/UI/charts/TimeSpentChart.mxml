@@ -4,8 +4,14 @@
 		 xmlns:defaultstatistics="services.defaultstatistics.*"
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600"	 
 		 xmlns:Examples="Examples.*"
-		 creationComplete="start();" xmlns:collections="com.degrafa.core.collections.*"  >
+		 creationComplete="start();" xmlns:collections="com.degrafa.core.collections.*" 
+		 xmlns:states="org.axiis.states.*"  fontSize="20">
 	<!--<fx:Style source="styles/Golibaje.css"/>-->
+	<s:states>
+		<s:State name="lineChart" />
+		<s:State name="barChart" />
+		<s:State name="dataGrid" />
+	</s:states>
 	<fx:Script>
 		<![CDATA[
 			import CustomEvents.ChartLoadedEvent;
@@ -161,10 +167,10 @@
 						ls.yField = 'time';
 						ls.xField = 'month';
 						ls.displayName = student['name'];
-						var tmp:Array = TimeSpentChart.series; 
+						var tmp:Array = TimeSpentStatistics.series; 
 						tmp.push(ls) 
-						TimeSpentChart.series = tmp; 
-						TimeSpentChart.invalidateSeriesStyles(); 
+						TimeSpentStatistics.series = tmp; 
+						TimeSpentStatistics.invalidateSeriesStyles(); 
 					}
 				}
 			}
@@ -175,10 +181,26 @@
 	<fx:Declarations>	
 		<s:Stroke color="0x660066" weight="5" id="timeSpentStroke" />
 	</fx:Declarations>
-	<mx:CartesianChart id="TimeSpentChart" dataProvider="{timeSpentData}"
-					showDataTips="true" width="100%" height="100%" 
+	<s:VGroup width="100%">
+		<s:HGroup>
+			<s:Button label="Line Chart" click="{this.currentState = 'lineChart'}" />
+			<s:Button label="Bar Chart" click="{this.currentState = 'barChart'}" />
+			<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
+		</s:HGroup>		
+		<s:DataGrid dataProvider="{timeSpentData}" includeIn="dataGrid" width="90%">
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn dataField="month" headerText="Month"/>
+					<s:GridColumn dataField="time"  headerText="Time Spent"/>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</s:VGroup>
+	<mx:CartesianChart id="TimeSpentStatistics" dataProvider="{timeSpentData}"
+					showDataTips="true" width="100%" height="90%" 
 					verticalCenter="0" horizontalCenter="0" fontSize="20" 
-					fontFamily="Arial" initialize="TimeSpentChart_initializeHandler(event)">
+					fontFamily="Arial" initialize="TimeSpentChart_initializeHandler(event)"
+					includeIn="lineChart">
 		<mx:verticalAxisRenderers>
 			<mx:AxisRenderer placement="left" axis="{timeSpentAxis}"/>
 		</mx:verticalAxisRenderers>

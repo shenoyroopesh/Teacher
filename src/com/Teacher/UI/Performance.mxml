@@ -15,7 +15,7 @@
 			/**
 			 * This sets the scale of the chart to fit it into the parent containers' dimensions. This is preferred to
 			 * changing the dimensions of the chart directly, to avoid having to reset font-size automatically. Scaling
-			 * changes the font-size seen on the screen too proportionally and keeps the chart readable.
+			 * changes the font-size as seen on the screen too proportionally and keeps the chart readable.
 			 * */
 			[bindable]
 			private function getChartsScale(chart:Group):Number
@@ -47,7 +47,6 @@
 		]]>
 	</fx:Script>
 	<s:states>
-		<s:State name="Student" />
 		<s:State name="Class" />
 		<s:State name="StudentAccuracy" />
 		<s:State name="StudentLO" />
@@ -56,6 +55,7 @@
 		<s:State name="StudentTimeSpent" />
 		<s:State name="ClassPerformance" />
 		<s:State name="ClassTimeSpent" />
+		<s:State name="ClassAccuracy" />
 	</s:states>
 	<s:Rect width="100%" height="100%">
 		<s:fill>
@@ -102,7 +102,7 @@
 						<s:Label id="skippedPercentage" text="Skipped %: 3" />
 					</s:VGroup>
 					<s:Group width="63%" height="100%" id="statsChartContainer">
-						<charts:StatsWedgeChart id="statsChart"
+						<charts:StatsChart id="statsChart"
 												scaleX="{getChartsScale(statsChart)}"
 												scaleY="{getChartsScale(statsChart)}"
 												verticalCenter="0" horizontalCenter="0"/>
@@ -120,27 +120,33 @@
 										scaleX="{getChartsScale(loChart)}"
 										scaleY="{getChartsScale(loChart)}"
 										verticalCenter="0" horizontalCenter="0"/>
-						<charts:PerformanceTimeColumn id="performanceChart" 
+						<charts:PerformanceChart id="performanceChart" 
 													  includeIn="StudentPerformance" 
 													  scaleX="{getChartsScale(performanceChart)}"
 													  scaleY="{getChartsScale(performanceChart)}"
 													  verticalCenter="0" horizontalCenter="0"/>
-						<charts:PerformanceTimeColumn id="performanceClassAverageChart" 
+						<charts:PerformanceChart id="performanceClassAverageChart" 
 													  includeIn="ClassPerformance" 
 													  scaleX="{getChartsScale(performanceClassAverageChart)}"
 													  scaleY="{getChartsScale(performanceClassAverageChart)}"
 													  verticalCenter="0" horizontalCenter="0"
 													  studentStats="false"/>
-						<charts:TimeSpentStatistics id="timeSpentChart"
+						<charts:TimeSpentChart id="timeSpentChart"
 													includeIn="StudentTimeSpent" 
 													scaleX="{getChartsScale(timeSpentChart)}"
 													scaleY="{getChartsScale(timeSpentChart)}"
 													verticalCenter="0" horizontalCenter="0"/>
-						<charts:TimeSpentStatistics id="classTimeSpentChart"
+						<charts:TimeSpentChart id="classTimeSpentChart"
 													includeIn="ClassTimeSpent" 
 													scaleX="{getChartsScale(classTimeSpentChart)}"
 													scaleY="{getChartsScale(classTimeSpentChart)}"
 													verticalCenter="0" horizontalCenter="0" showClass="true"/>
+						<charts:accuracyBubblesChart id="classAccuracyChart"
+													 includeIn="ClassAccuracy" 
+													 scaleX="{getChartsScale(classAccuracyChart)}"
+													 scaleY="{getChartsScale(classAccuracyChart)}"
+													 verticalCenter="0" horizontalCenter="0"
+													 classMode="true"/>
 					</s:Group>
 				</s:Group>
 			</s:HGroup>
@@ -160,22 +166,20 @@
 			<s:HGroup width="60%" height="100%" horizontalAlign="right">
 				<UI:CustomButton id="btnStats"
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
-								 'ClassStats':'StudentStats'}"
+								 'Class':'StudentStats'}" excludeFrom="Class, ClassAccuracy, ClassPerformance, ClassTimeSpent"
 								 style="btnStats" height="100%" width="15%"
-								 toolTip="Level-Wise Starts"
-								 excludeFrom="Class, ClassPerformance, ClassTimeSpent"/>
+								 toolTip="Level-Wise Starts"/>
 				<UI:CustomButton id="btnAccuracy" 
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassAccuracy':'StudentAccuracy'}"
 								 style="btnAccuracy" height="100%" width="15%"
-								 toolTip="Accuracy Stats"
-								 excludeFrom="Class, ClassPerformance, ClassTimeSpent"/>
+								 toolTip="Accuracy Stats"/>
 				<UI:CustomButton id="btnLO"
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassLO':'StudentLO'}"
 								 style="btnLO" height="100%" width="15%"
 								 toolTip="LO Progress"
-								 excludeFrom="Class, ClassPerformance, ClassTimeSpent"/>
+								 excludeFrom="Class, ClassPerformance, ClassTimeSpent, ClassAccuracy"/>
 				<UI:CustomButton id="btnPerformance"
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassPerformance':'StudentPerformance'}"
