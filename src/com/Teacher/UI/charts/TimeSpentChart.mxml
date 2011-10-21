@@ -9,7 +9,7 @@
 	<!--<fx:Style source="styles/Golibaje.css"/>-->
 	<s:states>
 		<s:State name="lineChart" />
-		<s:State name="barChart" />
+		<s:State name="columnChart" />
 		<s:State name="dataGrid" />
 	</s:states>
 	<fx:Script>
@@ -19,13 +19,17 @@
 			import com.Teacher.UI.Utilities;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
 			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.FlexEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.utils.object_proxy;
 			
 			import org.axiis.core.AxiisSprite;
-			import org.axiis.data.DataSet;			
+			import org.axiis.data.DataSet;
+			
+			import spark.components.gridClasses.GridColumn;			
 			private var ds:DataSet = new DataSet();			
 			public var loaded:Boolean = false;			
 			
@@ -58,7 +62,7 @@
 			public var classTimeSpentData:ArrayCollection = new ArrayCollection([
 				{
 					name:'John', 
-					 data:[
+					data:[
 						{month:"January", time:100},
 						{month:"February", time:120},
 						{month:"March", time:140},
@@ -68,7 +72,7 @@
 						{month:"July", time: 180},
 						{month:"August", time: 200},
 						{month:"September", time: 250}
-					 ]
+					]
 				},
 				{
 					name:'Jack', 
@@ -158,7 +162,7 @@
 			{
 				if(showClass)
 				{
-					studentSeries.visible = false;
+					studentLineSeries.visible = false;				
 					
 					for each ( var student in classTimeSpentData)
 					{
@@ -170,8 +174,50 @@
 						var tmp:Array = TimeSpentStatistics.series; 
 						tmp.push(ls) 
 						TimeSpentStatistics.series = tmp; 
-						TimeSpentStatistics.invalidateSeriesStyles(); 
+						TimeSpentStatistics.invalidateSeriesStyles();
 					}
+				}
+			}
+			
+			protected function get rawData()
+			{
+				if(!showClass)
+					return timeSpentData
+				else 
+				{
+					var data:ArrayCollection = new ArrayCollection();
+					
+					for each (var student in classTimeSpentData)
+					{
+						var row = {name: student.name};
+						
+						for each (var time in student.data)
+						{
+							row[time[timeIncrement]] = time['time'];
+						}
+						
+						data.addItem(row);
+					}
+					return data;
+				}
+			}
+			
+			protected function get dataColumnsList():ArrayList
+			{
+				if(!showClass)
+				{
+					var col1:GridColumn = new GridColumn(timeIncrement);
+					var col2:GridColumn = new GridColumn('time');
+					return new ArrayList([col1, col2]);
+				} else {
+					var columnList:ArrayList = new ArrayList();
+					columnList.addItem(new GridColumn('name'));
+					for each (var column in classTimeSpentData[0].data)
+					{
+						var col:GridColumn = new GridColumn(column[timeIncrement]);
+						columnList.addItem(col);
+					}
+					return columnList;
 				}
 			}
 			
@@ -181,44 +227,54 @@
 	<fx:Declarations>	
 		<s:Stroke color="0x660066" weight="5" id="timeSpentStroke" />
 	</fx:Declarations>
-	<s:VGroup width="100%">
-		<s:HGroup>
-			<s:Button label="Line Chart" click="{this.currentState = 'lineChart'}" />
-			<s:Button label="Bar Chart" click="{this.currentState = 'barChart'}" />
-			<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
-		</s:HGroup>		
-		<s:DataGrid dataProvider="{timeSpentData}" includeIn="dataGrid" width="90%">
-			<s:columns>
-				<s:ArrayList>
-					<s:GridColumn dataField="month" headerText="Month"/>
-					<s:GridColumn dataField="time"  headerText="Time Spent"/>
-				</s:ArrayList>
-			</s:columns>
-		</s:DataGrid>
-	</s:VGroup>
-	<mx:CartesianChart id="TimeSpentStatistics" dataProvider="{timeSpentData}"
-					showDataTips="true" width="100%" height="90%" 
-					verticalCenter="0" horizontalCenter="0" fontSize="20" 
-					fontFamily="Arial" initialize="TimeSpentChart_initializeHandler(event)"
-					includeIn="lineChart">
-		<mx:verticalAxisRenderers>
-			<mx:AxisRenderer placement="left" axis="{timeSpentAxis}"/>
-		</mx:verticalAxisRenderers>
-		<mx:horizontalAxis>
-			<mx:CategoryAxis categoryField="{timeIncrement}"/>
-		</mx:horizontalAxis>
-		<mx:series>			
-			<mx:LineSeries
-				id="studentSeries"
-				dataProvider="{timeSpentData}"
-				yField="time"
-				lineStroke="{timeSpentStroke}"
-				displayName="Time Spent">
-				<mx:verticalAxis>
-					<mx:LinearAxis id="timeSpentAxis" title="Time Spent (in hours)"
-								   maximum="{Utilities.getMax(timeSpentData, 'time')}"/>
-				</mx:verticalAxis>
-			</mx:LineSeries>
-		</mx:series>
-	</mx:CartesianChart>
+		<s:VGroup width="100%">
+			<s:HGroup>
+				<s:Button label="Column Chart" click="{this.currentState = 'columnChart'}" 
+						  visible="{!showClass}"/>
+				<s:Button label="Line Chart" click="{this.currentState = 'lineChart'}" />
+				<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
+			</s:HGroup>		
+			<s:DataGrid dataProvider="{rawData}" includeIn="dataGrid" width="90%" columns="{dataColumnsList}">
+			</s:DataGrid>
+		</s:VGroup>
+		<mx:CartesianChart id="TimeSpentStatistics" dataProvider="{timeSpentData}"
+						   showDataTips="true" width="100%" height="90%" 
+						   verticalCenter="0" horizontalCenter="0" fontSize="20" 
+						   fontFamily="Arial" initialize="TimeSpentChart_initializeHandler(event)"
+						   includeIn="columnChart, lineChart">
+			<mx:verticalAxisRenderers>
+				<mx:AxisRenderer placement="left" axis="{timeSpentLineAxis}" includeIn="lineChart"/>
+				<mx:AxisRenderer placement="left" axis="{timeSpentColumnAxis}" includeIn="columnChart"/>
+			</mx:verticalAxisRenderers>
+			<mx:horizontalAxis>
+				<mx:CategoryAxis categoryField="{timeIncrement}"/>
+			</mx:horizontalAxis>
+			<mx:series>			
+				<mx:LineSeries
+					id="studentLineSeries"
+					dataProvider="{timeSpentData}"
+					yField="time"
+					lineStroke="{timeSpentStroke}"
+					displayName="Time Spent" includeIn="lineChart">
+					<mx:verticalAxis>
+						<mx:LinearAxis id="timeSpentLineAxis" title="Time Spent (in hours)"
+									   maximum="{Utilities.getMax(timeSpentData, 'time')}"/>
+					</mx:verticalAxis>
+				</mx:LineSeries>
+				<mx:ColumnSeries
+					id="studentColumnSeries"
+					dataProvider="{timeSpentData}"
+					yField="time"
+					xField="{timeIncrement}"
+					displayName="Time Spent" includeIn="columnChart">
+					<mx:verticalAxis>
+						<mx:LinearAxis id="timeSpentColumnAxis" title="Time Spent (in hours)"
+									   maximum="{Utilities.getMax(timeSpentData, 'time')}"/>
+					</mx:verticalAxis>
+				</mx:ColumnSeries>
+			</mx:series>
+		</mx:CartesianChart>
+		<s:Label id="lblChart" text="{showClass?'Class Average Time Spent':'Student Time Spent'}" fontSize="20"
+				 fontWeight="bold" bottom="{height*.025}"
+				 horizontalCenter="-20%"/>
 </s:Group>

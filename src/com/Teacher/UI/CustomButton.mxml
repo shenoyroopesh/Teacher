@@ -2,7 +2,7 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*"
-		 width="20%" height="20%" currentState="up">
+		 width="20%" height="20%" currentState="up" xmlns:reflector="com.common.reflector.*">
 	<fx:Style source="Styles.css"/>
 	<s:states>
 		<s:State name="disabled" />
@@ -14,10 +14,18 @@
 		<fx:String id="label" />
 		<fx:String id="style" />
 		<fx:String id="toolTip" />
+		<s:Rotate3D id="rotate3d" 
+					angleYFrom="0" 
+					angleYTo="360" 
+					target="{button}" duration="1000" autoCenterTransform="true"
+					/>
 	</fx:Declarations>
-	<s:Button chromeColor="#FEFDFD" fontSize="{this.height*0.12}" 
+	<s:Button id="button" chromeColor="#FEFDFD" fontSize="{this.height*0.12}" 
 					   label="{this.label}"
 					   width="{this.width}" height="{this.height}" 
-					   styleName="{this.style}" skinClass="com.Teacher.UI.CustomButtonSkin"
-					   toolTip="{this.toolTip}"/>
+					   styleName="{this.style}" skinClass="skins.CustomButtonSkin"
+					   toolTip="{this.toolTip}" mouseOver="{if(!rotate3d.isPlaying) rotate3d.play();}" >
+	</s:Button>	
+	<!--<reflector:Reflector id="whiteReflector"
+						 target="{button}" falloff="0.4"/>-->
 </s:Group>

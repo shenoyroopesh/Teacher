@@ -7,7 +7,9 @@
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600"
 		 creationComplete="start();" xmlns:utils="org.axiis.utils.*" 
 		 xmlns:layouts="org.axiis.charts.layouts.*" xmlns:paint="org.axiis.paint.*"
-		 fontSize="20" xmlns:transitions="org.axiis.transitions.*" xmlns:states="org.axiis.states.*" >
+		 fontSize="20" xmlns:transitions="org.axiis.transitions.*" 
+		 xmlns:states="org.axiis.states.*" 
+		xmlns:reflector="com.common.reflector.*" >
 	<!--<fx:Style source="styles/Golibaje.css"/>-->
 	<s:states>
 		<s:State name="wedgeChart" />
@@ -143,12 +145,13 @@
 		<utils:NumericExpression id="outerRadius" value="{(dc.width/2)*outerRadi2}"/>
 		<utils:NumericExpression id="center" value="{boundsRadius.value/2}"/>
 		<utils:NumericExpression id="boundsRadius" value="{Math.min(this.height,this.width)*.7}"/>	
-	</fx:Declarations>	
-	<s:VGroup width="100%">
-		<s:HGroup>
+	</fx:Declarations>
+
+	<s:VGroup width="100%">		
+		<s:HGroup gap="0">
 			<s:Button label="Wedge Chart" click="{this.currentState = 'wedgeChart'}" />
 			<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
-		</s:HGroup>		
+		</s:HGroup>
 		<s:DataGrid dataProvider="{DataTabular}" includeIn="dataGrid" width="90%">
 			<s:columns>
 				<s:ArrayList>
@@ -161,7 +164,7 @@
 			</s:columns>
 		</s:DataGrid>
 	</s:VGroup>
-		<!-- Data Canvas that holds our geometries -->	
+			<!-- Data Canvas that holds our geometries -->	
 	<axiis:DataCanvas id="dc"
 					  width="{boundsRadius.value}"
 					  height="{boundsRadius.value}"
@@ -259,10 +262,10 @@
 		<axiis:strokes>
 			<degrafa:SolidStroke color="0" alpha=".6" pixelHinting="true" id="outerWedgeStroke"/>
 		</axiis:strokes>		
-	</axiis:DataCanvas>	
-	<mx:Label fontSize="20"
+	</axiis:DataCanvas>
+	<!--<mx:Label fontSize="20"
 			  fontWeight="bold"
 			  htmlText="Student Performance Stats"
 			  bottom="{height*.025}"
-			  horizontalCenter="-20%" includeIn="wedgeChart"/>
+			  horizontalCenter="-20%" includeIn="wedgeChart"/>	-->
 </s:Group>

@@ -35,7 +35,7 @@
 					case "Messages":
 						//this.currentState = homepage.state.replace(" ",""); //strip spaces
 						break;
-				}	
+				}
 			}
 			
 			protected function initializeWindow(window:Window):void

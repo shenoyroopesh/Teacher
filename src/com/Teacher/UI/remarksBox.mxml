@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 width="100%" height="100%" borderVisible="false">
+	<fx:Style source="Plastic.css"/>
+	<fx:Script>
+		<![CDATA[	
+			import mx.collections.ArrayCollection;			
+			
+			[Bindable]
+			private var remarks:ArrayCollection = new ArrayCollection([				
+				{name:"Roopesh", date:"18-Feb-2011", remark:"Excellent responses today in class"},
+				{name:"Sang", date:"20-Jun-2011", remark:"Not keeping well these days, might fall back"},
+				{name:"Roopesh", date:"18-Oct-2011", remark:"Picking up through missed sessions"},
+				{name:"Roopesh", date:"18-Oct-2011", remark:"Need to check why trigonometry is taking so much time"}
+			]);
+			
+		]]>
+	</fx:Script>
+	<s:Scroller width="100%" height="100%" horizontalScrollPolicy="off">
+		<s:VGroup width="100%" height="100%">
+			<s:Label id="lblRemarksHeading" text="Remarks" fontSize="15" fontWeight="bold" />
+			<s:List id="chat" dataProvider="{remarks}" 
+					itemRenderer="com.Teacher.UI.Remark" width="100%" height="100%"/>
+		</s:VGroup>
+	</s:Scroller>
+</s:BorderContainer>

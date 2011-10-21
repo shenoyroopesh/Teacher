@@ -140,34 +140,34 @@
 				}				
 				
 				return "<b>" + hitData.item[timePeriodLabelField] + "</b><br>" +
-					   "<b>" + displayName + "</b><br/>" +
-					   (classMode?"":("Answered = " + hitData.item.count +"<br/>")) +  
-					   (classMode?"":("Accuracy = " + hitData.item.accuracy + "% <br/><br/>")) +
-					   "Class Average Answered = " + hitData.item.classCount +"<br/>" +  
-					   "Class Average Accuracy = " + hitData.item.classAccuracy +"% <br/><br/>" +  
-					   "School Average Answered = " + hitData.item.schoolCount +"<br/>" +  
-					   "School Average Accuracy = " + hitData.item.schoolAccuracy + "%"
-					   ;
+					"<b>" + displayName + "</b><br/>" +
+					(classMode?"":("Answered = " + hitData.item.count +"<br/>")) +  
+					(classMode?"":("Accuracy = " + hitData.item.accuracy + "% <br/><br/>")) +
+					"Class Average Answered = " + hitData.item.classCount +"<br/>" +  
+					"Class Average Accuracy = " + hitData.item.classAccuracy +"% <br/><br/>" +  
+					"School Average Answered = " + hitData.item.schoolCount +"<br/>" +  
+					"School Average Accuracy = " + hitData.item.schoolAccuracy + "%"
+					;
 			}			
-
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Define custom color and line style for the bubbles. -->
-		<s:RadialGradient id="scConcept">
-			<s:GradientEntry color="0xFFFFFF" alpha="0.5"/>
+		<s:RadialGradient id="scConcept" focalPointRatio="-0.25" rotation="45">
+			<s:GradientEntry color="0xBFBFFF" alpha="1" ratio="0.01"/>
 			<s:GradientEntry color="blue"/>
 		</s:RadialGradient>
-		<s:RadialGradient id="scConfidence">
-			<s:GradientEntry color="0xFFFFFF" alpha="0.5"/>
+		<s:RadialGradient id="scConfidence" focalPointRatio="-0.25" rotation="45">
+			<s:GradientEntry color="0xBBDDBB" alpha="0.5"/>
 			<s:GradientEntry color="green"/>
 		</s:RadialGradient>
-		<s:RadialGradient id="scMastery">
-			<s:GradientEntry color="0xFFFFFF" alpha="0.5"/>
+		<s:RadialGradient id="scMastery" focalPointRatio="-0.25" rotation="45">
+			<s:GradientEntry color="0xDCB9B9" alpha="0.5"/>
 			<s:GradientEntry color="maroon"/>
 		</s:RadialGradient>
-		<s:RadialGradient id="scEinstein">
-			<s:GradientEntry color="0xFFFFFF" alpha="0.5"/>
+		<s:RadialGradient id="scEinstein" focalPointRatio="-0.25" rotation="45">
+			<s:GradientEntry color="0xFFFFD4" alpha="0.5"/>
 			<s:GradientEntry color="yellow"/>
 		</s:RadialGradient>
 		<!--mx:SolidColor id="scConcept" color="blue" alpha=".3"/-->
@@ -179,151 +179,154 @@
 		<!--<mx:SolidColor id="scEinstein" color="yellow" alpha=".3"/>-->
 		<s:SolidColorStroke id="strokeEinstein" color="yellow" weight="2"/>
 	</fx:Declarations>
-	<s:VGroup width="100%">
-		<s:HGroup>
-			<s:Button label="Chart" click="{this.currentState = 'bubblesChart'}" />
-			<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
-		</s:HGroup>
-		<s:Scroller width="100%" height="{0.9*this.height}" includeIn="dataGrid" >
-			<s:VGroup width="100%" height="100%">			
-				<s:Label text="Concept" />
-				<s:DataGrid dataProvider="{conceptData}" width="90%">
-					<s:columns>
-						<s:ArrayList>
-							<s:GridColumn dataField="name" headerText="Month"/>
-							<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
-							<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
-							<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
-							<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
-							<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
-							<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
-						</s:ArrayList>
-					</s:columns>
-				</s:DataGrid>
-				<s:Label text="Confidence" />
-				<s:DataGrid dataProvider="{confidenceData}"  width="90%">
-					<s:columns>
-						<s:ArrayList>
-							<s:GridColumn dataField="name" headerText="Month"/>
-							<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
-							<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
-							<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
-							<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
-							<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
-							<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
-						</s:ArrayList>
-					</s:columns>
-				</s:DataGrid>
-				<s:Label text="Mastery" />
-				<s:DataGrid dataProvider="{masteryData}"  width="90%">
-					<s:columns>
-						<s:ArrayList>
-							<s:GridColumn dataField="name" headerText="Month"/>
-							<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
-							<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
-							<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
-							<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
-							<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
-							<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
-						</s:ArrayList>
-					</s:columns>
-				</s:DataGrid>
-				<s:Label text="Einstein" />
-				<s:DataGrid dataProvider="{einsteinData}"  width="90%">
-					<s:columns>
-						<s:ArrayList>
-							<s:GridColumn dataField="name" headerText="Month"/>
-							<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
-							<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
-							<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
-							<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
-							<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
-							<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
-						</s:ArrayList>
-					</s:columns>
-				</s:DataGrid>
-			</s:VGroup>
-		</s:Scroller>
-	</s:VGroup>
-	<mx:BubbleChart id="bubbleChart" fontFamily="Arial" fontSize="20"
-					dataProvider="{conceptData}" width="100%" height="90%"
-					minRadius="1" maxRadius="50" verticalCenter="0" horizontalCenter="0" 
-					showDataTips="true" gridLinesStyleName="none" 
-					dataTipFunction="{dataTipFunction}"
-					includeIn="bubblesChart">
-		<mx:verticalAxisRenderers>
-			<mx:AxisRenderer id="verticalRender" axis="{accuracyAxis}">			
-			</mx:AxisRenderer>
-		</mx:verticalAxisRenderers>
-		<mx:horizontalAxisRenderers>
-			<mx:AxisRenderer id="horizontalRender" axis="{monthAxis}" labelFunction="{monthLabelFunction}">			
-			</mx:AxisRenderer>
-		</mx:horizontalAxisRenderers>
-		<mx:verticalAxis>
-			<mx:LinearAxis title="Accuracy %" id="accuracyAxis" maximum="{Math.max(Utilities.getMax(conceptData, 'accuracy'), 
-						   														   Utilities.getMax(confidenceData, 'accuracy'),
-																				   Utilities.getMax(masteryData, 'accuracy'),
-																				   Utilities.getMax(einsteinData, 'accuracy'))						   
-			   																	+ 10}">						
-			</mx:LinearAxis>
-		</mx:verticalAxis>
-		<mx:horizontalAxis>
-			<!-- assumption made that concept data is always there - else this wont work -->
-			<mx:LinearAxis title="Month" id="monthAxis" maximum="{Math.max(Utilities.getMax(conceptData, 'monthNum'), 
-																		   Utilities.getMax(confidenceData, 'monthNum'),
-																		   Utilities.getMax(masteryData, 'monthNum'),
-																		   Utilities.getMax(einsteinData, 'monthNum')) + 2}" 
-						   minimum="{Math.min(Utilities.getMin(conceptData, 'monthNum'), 
-											   Utilities.getMin(confidenceData, 'monthNum'),
-											   Utilities.getMin(masteryData, 'monthNum'),
-											   Utilities.getMin(einsteinData, 'monthNum')) - 1}">					
-			</mx:LinearAxis>
-		</mx:horizontalAxis>
-		<mx:series>
-			<mx:BubbleSeries id="conceptSeries"
-						     xField="{timeField}" 
-							 yField="{classMode?'classAccuracy':'accuracy'}"
-							 radiusField="{classMode?'classCount':'count'}"
-							 displayName="Concept: Accuracy"
-							 dataProvider="{conceptData}"
-							 fill="{scConcept}"
-							 stroke="{strokeConcept}"
-							 verticalAxis="{accuracyAxis}"
-							 horizontalAxis="{monthAxis}">
-			</mx:BubbleSeries>
-			<mx:BubbleSeries id="confidenceSeries"
-							 xField="{timeField}" 
-							 yField="{classMode?'classAccuracy':'accuracy'}"
-							 radiusField="{classMode?'classCount':'count'}"
-							 displayName="Confidence: Accuracy"
-							 dataProvider="{confidenceData}"
-							 fill="{scConfidence}"
-							 stroke="{strokeConfidence}"
-							 verticalAxis="{accuracyAxis}"
-							 horizontalAxis="{monthAxis}">
-			</mx:BubbleSeries>
-			<mx:BubbleSeries id="masterySeries"
-							 xField="{timeField}" 
-							 yField="{classMode?'classAccuracy':'accuracy'}"
-							 radiusField="{classMode?'classCount':'count'}"
-							 displayName="Mastery: Accuracy"
-							 dataProvider="{masteryData}"
-							 fill="{scMastery}"
-							 stroke="{strokeMastery}"
-							 verticalAxis="{accuracyAxis}"
-							 horizontalAxis="{monthAxis}">
-			</mx:BubbleSeries>
-			<mx:BubbleSeries id="einsteinSeries"
-							 xField="{timeField}" 
-							 yField="{classMode?'classAccuracy':'accuracy'}"
-							 radiusField="{classMode?'classCount':'count'}"
-							 displayName="Einstein: Accuracy"
-							 dataProvider="{einsteinData}"
-							 fill="{scEinstein}"
-							 stroke="{strokeEinstein}"
-							 verticalAxis="{accuracyAxis}"
-							 horizontalAxis="{monthAxis}">
-			</mx:BubbleSeries>
-		</mx:series>		
-	</mx:BubbleChart>
+		<s:VGroup width="100%" height="95%">
+			<s:HGroup>
+				<s:Button label="Chart" click="{this.currentState = 'bubblesChart'}" />
+				<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
+			</s:HGroup>
+			<s:Scroller width="100%" height="{0.9*this.height}" includeIn="dataGrid" >
+				<s:VGroup width="100%" height="100%">			
+					<s:Label text="Concept" />
+					<s:DataGrid dataProvider="{conceptData}" width="90%">
+						<s:columns>
+							<s:ArrayList>
+								<s:GridColumn dataField="name" headerText="Month"/>
+								<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
+								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
+								<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
+								<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
+								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
+								<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+					<s:Label text="Confidence" />
+					<s:DataGrid dataProvider="{confidenceData}"  width="90%">
+						<s:columns>
+							<s:ArrayList>
+								<s:GridColumn dataField="name" headerText="Month"/>
+								<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
+								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
+								<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
+								<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
+								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
+								<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+					<s:Label text="Mastery" />
+					<s:DataGrid dataProvider="{masteryData}"  width="90%">
+						<s:columns>
+							<s:ArrayList>
+								<s:GridColumn dataField="name" headerText="Month"/>
+								<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
+								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
+								<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
+								<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
+								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
+								<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+					<s:Label text="Einstein" />
+					<s:DataGrid dataProvider="{einsteinData}"  width="90%">
+						<s:columns>
+							<s:ArrayList>
+								<s:GridColumn dataField="name" headerText="Month"/>
+								<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
+								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
+								<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
+								<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
+								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
+								<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+							</s:ArrayList>
+						</s:columns>
+					</s:DataGrid>
+				</s:VGroup>
+			</s:Scroller>
+		</s:VGroup>
+		<mx:BubbleChart id="bubbleChart" fontFamily="Arial" fontSize="20"
+						dataProvider="{conceptData}" width="100%" height="90%"
+						minRadius="1" maxRadius="50" verticalCenter="0" horizontalCenter="0" 
+						showDataTips="true" gridLinesStyleName="none" 
+						dataTipFunction="{dataTipFunction}"
+						includeIn="bubblesChart">
+			<mx:verticalAxisRenderers>
+				<mx:AxisRenderer id="verticalRender" axis="{accuracyAxis}">			
+				</mx:AxisRenderer>
+			</mx:verticalAxisRenderers>
+			<mx:horizontalAxisRenderers>
+				<mx:AxisRenderer id="horizontalRender" axis="{monthAxis}" labelFunction="{monthLabelFunction}">			
+				</mx:AxisRenderer>
+			</mx:horizontalAxisRenderers>
+			<mx:verticalAxis>
+				<mx:LinearAxis title="Accuracy %" id="accuracyAxis" maximum="{Math.max(Utilities.getMax(conceptData, 'accuracy'), 
+							   Utilities.getMax(confidenceData, 'accuracy'),
+							   Utilities.getMax(masteryData, 'accuracy'),
+							   Utilities.getMax(einsteinData, 'accuracy'))						   
+							   + 10}">						
+				</mx:LinearAxis>
+			</mx:verticalAxis>
+			<mx:horizontalAxis>
+				<!-- assumption made that concept data is always there - else this wont work -->
+				<mx:LinearAxis title="Month" id="monthAxis" maximum="{Math.max(Utilities.getMax(conceptData, 'monthNum'), 
+							   Utilities.getMax(confidenceData, 'monthNum'),
+							   Utilities.getMax(masteryData, 'monthNum'),
+							   Utilities.getMax(einsteinData, 'monthNum')) + 2}" 
+							   minimum="{Math.min(Utilities.getMin(conceptData, 'monthNum'), 
+							   Utilities.getMin(confidenceData, 'monthNum'),
+							   Utilities.getMin(masteryData, 'monthNum'),
+							   Utilities.getMin(einsteinData, 'monthNum')) - 1}">					
+				</mx:LinearAxis>
+			</mx:horizontalAxis>
+			<mx:series>
+				<mx:BubbleSeries id="conceptSeries"
+								 xField="{timeField}" 
+								 yField="{classMode?'classAccuracy':'accuracy'}"
+								 radiusField="{classMode?'classCount':'count'}"
+								 displayName="Concept: Accuracy"
+								 dataProvider="{conceptData}"
+								 fill="{scConcept}"
+								 stroke="{strokeConcept}"
+								 verticalAxis="{accuracyAxis}"
+								 horizontalAxis="{monthAxis}">
+				</mx:BubbleSeries>
+				<mx:BubbleSeries id="confidenceSeries"
+								 xField="{timeField}" 
+								 yField="{classMode?'classAccuracy':'accuracy'}"
+								 radiusField="{classMode?'classCount':'count'}"
+								 displayName="Confidence: Accuracy"
+								 dataProvider="{confidenceData}"
+								 fill="{scConfidence}"
+								 stroke="{strokeConfidence}"
+								 verticalAxis="{accuracyAxis}"
+								 horizontalAxis="{monthAxis}">
+				</mx:BubbleSeries>
+				<mx:BubbleSeries id="masterySeries"
+								 xField="{timeField}" 
+								 yField="{classMode?'classAccuracy':'accuracy'}"
+								 radiusField="{classMode?'classCount':'count'}"
+								 displayName="Mastery: Accuracy"
+								 dataProvider="{masteryData}"
+								 fill="{scMastery}"
+								 stroke="{strokeMastery}"
+								 verticalAxis="{accuracyAxis}"
+								 horizontalAxis="{monthAxis}">
+				</mx:BubbleSeries>
+				<mx:BubbleSeries id="einsteinSeries"
+								 xField="{timeField}" 
+								 yField="{classMode?'classAccuracy':'accuracy'}"
+								 radiusField="{classMode?'classCount':'count'}"
+								 displayName="Einstein: Accuracy"
+								 dataProvider="{einsteinData}"
+								 fill="{scEinstein}"
+								 stroke="{strokeEinstein}"
+								 verticalAxis="{accuracyAxis}"
+								 horizontalAxis="{monthAxis}">
+				</mx:BubbleSeries>
+			</mx:series>		
+		</mx:BubbleChart>
+		<s:Label id="lblChart" text="{classMode?'Class Accuracy Stats':'Student Accuracy Stats'}" fontSize="20"
+				 fontWeight="bold" bottom="{height*.025}"
+				 horizontalCenter="-20%"/>
 </s:Group>

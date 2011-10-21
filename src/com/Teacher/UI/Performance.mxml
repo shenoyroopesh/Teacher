@@ -4,13 +4,53 @@
 		 xmlns:mx="library://ns.adobe.com/flex/mx" 
 		 width="100%" height="100%" xmlns:UI="com.Teacher.UI.*"
 		 currentState="Class" xmlns:charts="com.Teacher.UI.charts.*"
-		 color="0xFFFFFF">
+		 color="0xFFFFFF" xmlns:controls="com.brightPoint.controls.*" 
+		 xmlns:reflector="com.common.reflector.*">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:NumberFormatter id="formatter" />
 	</fx:Declarations>
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		@namespace UI "com.Teacher.UI.*";
+		@namespace charts "com.Teacher.UI.charts.*";
+		@namespace controls "com.brightPoint.controls.*";
+		@namespace reflector "com.common.reflector.*";
+	
+		.pointsGaugeSkin {
+			faceSkin:		ClassReference("skins.PointsGaugeSkin");
+			indicatorSkin:		ClassReference("skins.PointsGaugeSkin");
+			indicatorCrownSkin:		ClassReference("skins.PointsGaugeSkin");
+			highlightSkin:		ClassReference("skins.PointsGaugeSkin");
+		}
+		
+		.loGaugeSkin {
+			faceSkin:		ClassReference("skins.LOGaugeSkin");
+			indicatorSkin:		ClassReference("skins.LOGaugeSkin");
+			indicatorCrownSkin:		ClassReference("skins.LOGaugeSkin");
+			highlightSkin:		ClassReference("skins.LOGaugeSkin");
+		}
+		
+		.timeGaugeSkin {
+			faceSkin:		ClassReference("skins.TimeGaugeSkin");
+			indicatorSkin:		ClassReference("skins.TimeGaugeSkin");
+			indicatorCrownSkin:		ClassReference("skins.TimeGaugeSkin");
+			highlightSkin:		ClassReference("skins.TimeGaugeSkin");
+		}
+		
+		.gaugeLabel {
+			fontSize:14pt;
+			color:#FFFFFF;	
+		}
+	</fx:Style>
 	<fx:Script>
 		<![CDATA[			
+			import mx.core.IFlexDisplayObject;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
+			
+			import skins.TimeGaugeSkin;
 			
 			/**
 			 * This sets the scale of the chart to fit it into the parent containers' dimensions. This is preferred to
@@ -20,8 +60,8 @@
 			[bindable]
 			private function getChartsScale(chart:Group):Number
 			{
-				var scaleX:Number = (chart == statsChart? 0.48: 0.7) * middleContainer.width / chart.width;;
-				var scaleY:Number = middleContainer.height / chart.height;
+				var scaleX:Number = (chart == statsChart? 0.3: 0.7) * middleContainer.width / chart.width;;
+				var scaleY:Number = (chart == statsChart? 0.6: 1) * middleContainer.height / chart.height;
 				return Math.min(scaleX, scaleY);
 			}
 			
@@ -92,21 +132,87 @@
 				<s:DataGrid id="studentGrid" excludeFrom="Class" width="25%" height="100%">
 				</s:DataGrid>
 				<s:HGroup width="75%" height="100%" id="statsContainer" includeIn="StudentStats" verticalAlign="middle">
-					<s:VGroup gap="15" width="37%" height="75%" verticalCenter="0">
+					<s:VGroup gap="15" width="37%" height="75%" verticalCenter="-20%">
+						<s:Label id="studentName" text="Joshua Lenon" fontSize="18" fontWeight="bold"
+								 paddingBottom="20"/>
 						<s:Label id="timeSpent" text="Time Spent: 67 minutes"/>
 						<s:Label id="pointsEarned" text="Points Earned: 58" />
 						<s:Label id="loCovered" text="Number of Learning Objects covered: 1" />
 						<s:Label id="noOfQuestions" text="Number of Questions: 116" />
-						<s:Label id="correctPercentage" text="Correct Answer %: 75" />
+<!--						<s:Label id="correctPercentage" text="Correct Answer %: 75" />
 						<s:Label id="incorrectPercentage" text="Incorrect Answer %: 22" />
-						<s:Label id="skippedPercentage" text="Skipped %: 3" />
+						<s:Label id="skippedPercentage" text="Skipped %: 3" />-->
+						<s:HGroup>
+							<s:VGroup horizontalAlign="center">
+								<controls:DegrafaGauge 	id="pointsGauge" diameter="{statsContainer.width*0.15}" 
+														liveDragging="false" 
+														horizontalCenter="0" verticalCenter="0" 
+														styleName="pointsGaugeSkin"
+														startAngle="45"  minimum="10" maximum="100"
+														value="60"
+														endAngle="315" 
+														labelStyleName="gaugeLabel" 
+														labelFormatter="{formatter}"/>
+								<s:Label text="Points Per Day" horizontalCenter="0" fontWeight="bold"
+										 textAlign="center"/>
+								<reflector:Reflector
+									id="theReflectionWhite1" 
+									target="{pointsGauge}"
+									alpha=".3"
+									falloff=".3"
+									blurAmount=".1"/>
+							</s:VGroup>
+							<s:VGroup horizontalAlign="center">
+								<controls:DegrafaGauge 	id="TimeGauge" diameter="{statsContainer.width*0.15}" 
+														liveDragging="false" 
+														horizontalCenter="0" verticalCenter="0" 
+														styleName="timeGaugeSkin"
+														startAngle="45"  minimum="100" maximum="500"
+														value="200"
+														endAngle="315"
+														labelStyleName="gaugeLabel" 
+														labelFormatter="{formatter}"/>
+								<s:Label text="Minutes Per Day" horizontalCenter="0" fontWeight="bold"
+										 textAlign="center"/>
+								<reflector:Reflector
+									id="theReflectionWhite2" 
+									target="{TimeGauge}"
+									alpha=".3"
+									falloff=".3"
+									blurAmount=".1"/>
+							</s:VGroup>
+							<s:VGroup horizontalAlign="center">
+								<controls:DegrafaGauge 	id="loGauge" diameter="{statsContainer.width*0.15}" 
+														liveDragging="false" 
+														horizontalCenter="0" verticalCenter="0" 
+														styleName="loGaugeSkin"
+														startAngle="45"  minimum="1" maximum="10"
+														value="5" 
+														endAngle="315" 
+														labelStyleName="gaugeLabel" 
+														labelFormatter="{formatter}"/>
+								<s:Label text="LOs per month" horizontalCenter="0" fontWeight="bold"
+										 textAlign="center"/>
+								<reflector:Reflector
+									id="theReflectionWhite3" 
+									target="{loGauge}"
+									alpha=".3"
+									falloff=".3"
+									blurAmount=".1"/>
+							</s:VGroup>
+						</s:HGroup>
 					</s:VGroup>
-					<s:Group width="63%" height="100%" id="statsChartContainer">
-						<charts:StatsChart id="statsChart"
-												scaleX="{getChartsScale(statsChart)}"
-												scaleY="{getChartsScale(statsChart)}"
-												verticalCenter="0" horizontalCenter="0"/>
-					</s:Group>
+					<s:VGroup width="35%" height="100%" horizontalAlign="right">
+						<s:Group width="100%" height="60%" id="statsChartContainer"
+								 top="0">
+								<charts:StatsChart id="statsChart"
+														scaleX="{getChartsScale(statsChart)}"
+														scaleY="{getChartsScale(statsChart)}"
+														verticalCenter="0" horizontalCenter="0"/>
+							
+						</s:Group>
+						<UI:remarksBox id="remarksBox" height="35%" width="70%"/>
+					</s:VGroup>
 				</s:HGroup>
 				<s:Group width="75%" height="100%" excludeFrom="Class, StudentStats" >
 					<s:Group id="chartContainer" height="95%" width="100%" verticalCenter="0">
@@ -168,7 +274,7 @@
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 'Class':'StudentStats'}" excludeFrom="Class, ClassAccuracy, ClassPerformance, ClassTimeSpent"
 								 style="btnStats" height="100%" width="15%"
-								 toolTip="Level-Wise Starts"/>
+								 toolTip="Overall Stats"/>
 				<UI:CustomButton id="btnAccuracy" 
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 							'ClassAccuracy':'StudentAccuracy'}"

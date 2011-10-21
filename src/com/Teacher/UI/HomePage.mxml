@@ -31,7 +31,7 @@
 			protected function HomePage_initializeHandler(event:FlexEvent):void
 			{
 				state = "Not Selected";
-			}			
+			}		
 		]]>
 	</fx:Script>
 	<fx:Declarations>		
@@ -48,5 +48,7 @@
 					   style="homePagePerformance" label="Performance" click="homepagebutton_clickHandler('Performance')"/>
 	<s:Label id="lblMessages" text="3 New Messages" y="{this.height*0.85}" 
 			 height="{0.05*this.height}" click="homepagebutton_clickHandler('Messages')"
-			 horizontalCenter="0" fontSize="{this.height*0.03}"/> 
+			 horizontalCenter="0" fontSize="{this.height*0.03}"
+			 mouseOver="{lblMessages.scaleX=1.2; lblMessages.scaleY=1.2}"
+			 mouseOut="{lblMessages.scaleX=1.0; lblMessages.scaleY=1.0}"/> 
 </s:Group>
