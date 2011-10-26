@@ -14,18 +14,15 @@
 		<fx:String id="label" />
 		<fx:String id="style" />
 		<fx:String id="toolTip" />
-		<s:Rotate3D id="rotate3d" 
-					angleYFrom="0" 
-					angleYTo="360" 
-					target="{button}" duration="1000" autoCenterTransform="true"
-					/>
+		<fx:Boolean id="selected" />
 	</fx:Declarations>
 	<s:Button id="button" chromeColor="#FEFDFD" fontSize="{this.height*0.12}" 
-					   label="{this.label}"
-					   width="{this.width}" height="{this.height}" 
-					   styleName="{this.style}" skinClass="skins.CustomButtonSkin"
-					   toolTip="{this.toolTip}" mouseOver="{if(!rotate3d.isPlaying) rotate3d.play();}" >
-	</s:Button>	
-	<!--<reflector:Reflector id="whiteReflector"
-						 target="{button}" falloff="0.4"/>-->
+			   label="{this.label}"
+			   width="{this.width}" height="{this.height}" 
+			   styleName="{this.style}" skinClass="skins.CustomButtonSkin"
+			   toolTip="{this.toolTip}">
+		<s:filters>
+			<s:GlowFilter alpha="{selected?1:0}" blurX="128" blurY="128" strength="2" color="0xFFFF00"/>
+		</s:filters>
+	</s:Button>
 </s:Group>

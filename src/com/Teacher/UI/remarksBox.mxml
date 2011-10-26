@@ -22,7 +22,7 @@
 		<s:VGroup width="100%" height="100%">
 			<s:Label id="lblRemarksHeading" text="Remarks" fontSize="15" fontWeight="bold" />
 			<s:List id="chat" dataProvider="{remarks}" 
-					itemRenderer="com.Teacher.UI.Remark" width="100%" height="100%"/>
+					itemRenderer="com.Teacher.Renderers.RemarkRenderer" width="100%" height="100%"/>
 		</s:VGroup>
 	</s:Scroller>
 </s:BorderContainer>
