@@ -3,14 +3,22 @@
 				   backgroundFill="{fill()}" 
 				   xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark"
-				   xmlns:mx="library://ns.adobe.com/flex/mx" initialize="init()">
+				   xmlns:mx="library://ns.adobe.com/flex/mx" initialize="init()"
+				   toolTipCreate="bordercontainer1_toolTipCreateHandler(event)"
+				   toolTipShow="bordercontainer1_toolTipShowHandler(event)"
+				   toolTip=" " xmlns:filters="org.flexunit.runner.manipulation.filters.*"
+				   click="{var window:DifficultQuestionsWindow = new DifficultQuestionsWindow(); 
+				   		window.open(true); window.maximize();}"
+				   buttonMode="{classMode}">
 		
 	<fx:Script>
 		<![CDATA[
+			import com.Teacher.Tooltips.LOTooltip;
 			import com.Teacher.UI.charts.HTMLToolTip;			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Text;
 			import mx.events.FlexEvent;
+			import mx.events.ToolTipEvent;
 			import mx.managers.ToolTipManager;
 			
 			public var config:Array;
@@ -28,24 +36,78 @@
 					+ progress.incomplete;
 			}
 			
+			/**
+			 * @public
+			 * 
+			 * In class mode, the LO block is color coded according to difficulty the 
+			 * student is facing in the subject
+			 * */	
 			[Bindable]
-			public function fill():SolidColor{
+			public var classMode:Boolean = false;
+		
+			
+			[Bindable]
+			public function redAlpha():Number{
+				return (progress.wrong + progress.skipped)/total(); 
+			}
+			
+			
+			[Bindable]
+			public function fill():SolidColor{				
+				
 				if(progress.correct == 0 &&
 					progress.wrong == 0 &&
 					progress.skipped == 0 && 
 					progress.incomplete == 0)
 					return colorSkipped;
-				
-				if(progress.incomplete <= 0) //just to ensure that negative incomplete is also treated as complete
-					return colorCorrect;
-				
-				return colorIncomplete;
+				if(classMode)
+				{	
+					return 	colorCorrect;						
+				} else {
+					if(progress.incomplete <= 0) //just to ensure that negative incomplete is also treated as complete
+						return colorCorrect;
+					
+					return colorIncomplete;
+				}
 			}
 			
 			[bindable]
 			public function dataTipFunction(prefix, count){
 				return "<strong>"+prefix+":</strong> "+ count;
-			}			
+			}	
+			
+
+			
+			protected function bordercontainer1_toolTipCreateHandler(event:ToolTipEvent):void
+			{
+				if(classMode) return;
+				
+				var lott:LOTooltip = new LOTooltip();
+				lott.timeSpentMinutes = progress['timeSpent'];
+				lott.avgTimeSpentMinutes = progress['avgTimeSpent'];
+				lott.correctAnswerPercent = roundDigits(progress['correct'] * 100 / total());
+				lott.wrongAnswerPercent = roundDigits(progress['wrong']* 100 / total());
+				lott.skippedPercent = roundDigits(progress['skipped']* 100 / total());
+				lott.avgCorrectAnswerPercent = roundDigits(progress['avgCorrect'] * 100 / progress['avgTotal']);
+				lott.avgWrongAnswerPercent = roundDigits(progress['avgWrong'] * 100 / progress['avgTotal']);
+				lott.avgSkippedPercent = roundDigits(progress['avgSkipped'] * 100 / progress['avgTotal']);			
+				
+				event.toolTip = lott;
+			}
+			
+			protected function roundDigits(number:Number)
+			{
+				return Math.round(number * 100)/100;
+			}
+			
+			protected function bordercontainer1_toolTipShowHandler(event:ToolTipEvent):void
+			{
+				if(classMode) return;
+				var globalPosn:Point = this.localToGlobal(new Point());				
+				event.toolTip.x= globalPosn.x + this.width + 10;
+				event.toolTip.y=globalPosn.y;	
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>		
@@ -56,34 +118,41 @@
 		<s:SolidColor id="colorSkipped" color="0x858384">			
 		</s:SolidColor>
 		<s:SolidColor id="colorIncomplete" color="0xF6B571">		
-		</s:SolidColor>
+		</s:SolidColor>	
+		<s:SolidColor id="colorFailed" color="0xFF0000">		
+		</s:SolidColor>	
 	</fx:Declarations>
-		<mx:Text  id="loName" text="{progress.name as String}" width="90%" verticalCenter="-5" horizontalCenter="0" 
-				  fontSize="{Math.floor(Math.sqrt(((this.height-10)*this.width)/((progress.name as String).length + 10)))}"/>
-		<mx:HBox horizontalGap="0" bottom="0" fontFamily="Arial" fontSize="20">
-			<s:BorderContainer id="rectCorrect" width="{progress.correct * (this.width - 2)/(total() == 0?1:total())}" 
-							   backgroundFill="{colorCorrect}" height="15" horizontalCenter="0" toolTip="{dataTipFunction('Correct',progress.correct)}">
-				<s:filters>
-					<mx:BevelFilter/>
-				</s:filters>
-			</s:BorderContainer>
-			<s:BorderContainer id="rectWrong" width="{progress.wrong * (this.width - 2)/(total() == 0?1:total())}" 
-							   backgroundFill="{colorWrong}" height="15" horizontalCenter="0" toolTip="{dataTipFunction('Wrong',progress.wrong)}">
-				<s:filters>
-					<mx:BevelFilter/>
-				</s:filters>
-			</s:BorderContainer>
-			<s:BorderContainer id="rectSkipped" width="{progress.skipped * (this.width - 2)/(total() == 0?1:total())}" 
-							   backgroundFill="{colorSkipped}" height="15" horizontalCenter="0" toolTip="{dataTipFunction('Skipped', progress.skipped)}">
-				<s:filters>
-					<mx:BevelFilter/>
-				</s:filters>
-			</s:BorderContainer>
-			<s:BorderContainer id="rectIncomplete" width="{progress.incomplete * (this.width - 2)/(total() == 0?1:total()) }" 
-							   backgroundFill="{colorIncomplete}" height="15" horizontalCenter="0" toolTip="{dataTipFunction('Incomplete', progress.incomplete)}">
-				<s:filters>
-					<mx:BevelFilter/>
-				</s:filters>
-			</s:BorderContainer>
-		</mx:HBox>
+	<mx:Text  id="loName" text="{progress.name as String}" width="90%" verticalCenter="-5" horizontalCenter="0" 
+			  fontSize="{Math.floor(Math.sqrt(((this.height-10)*this.width)/((progress.name as String).length + 10)))}"
+			  depth="10" useHandCursor="true"/>
+	<s:Rect alpha="{redAlpha()}" fill="{colorFailed}" width="{this.width}" 
+			height="{this.height}" visible="{classMode}">
+	</s:Rect>
+	<s:HGroup bottom="0" fontFamily="Arial" fontSize="20"
+			 visible="{!classMode}" gap="0">
+		<s:BorderContainer id="rectCorrect" width="{progress.correct * (this.width - 2)/(total() == 0?1:total())}" 
+						   backgroundFill="{colorCorrect}" height="15" horizontalCenter="0" toolTip="{dataTipFunction('Correct',progress.correct)}">
+			<s:filters>
+				<mx:BevelFilter/>
+			</s:filters>
+		</s:BorderContainer>
+		<s:BorderContainer id="rectWrong" width="{progress.wrong * (this.width - 2)/(total() == 0?1:total())}" 
+						   backgroundFill="{colorWrong}" height="15" horizontalCenter="0" toolTip="{dataTipFunction('Wrong',progress.wrong)}">
+			<s:filters>
+				<mx:BevelFilter/>
+			</s:filters>
+		</s:BorderContainer>
+		<s:BorderContainer id="rectSkipped" width="{progress.skipped * (this.width - 2)/(total() == 0?1:total())}" 
+						   backgroundFill="{colorSkipped}" height="15" horizontalCenter="0" toolTip="{dataTipFunction('Skipped', progress.skipped)}">
+			<s:filters>
+				<mx:BevelFilter/>
+			</s:filters>
+		</s:BorderContainer>
+		<s:BorderContainer id="rectIncomplete" width="{progress.incomplete * (this.width - 2)/(total() == 0?1:total()) }" 
+						   backgroundFill="{colorIncomplete}" height="15" horizontalCenter="0" toolTip="{dataTipFunction('Incomplete', progress.incomplete)}">
+			<s:filters>
+				<mx:BevelFilter/>
+			</s:filters>
+		</s:BorderContainer>
+	</s:HGroup>
 </s:BorderContainer>

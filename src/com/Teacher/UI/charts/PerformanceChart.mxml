@@ -149,7 +149,11 @@
 		<s:VGroup width="100%" height="95%">
 			<s:HGroup>
 				<s:Button label="Chart" click="{this.currentState = 'chart'}" />
-				<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
+				<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />
+				<s:CheckBox id="correct" label="Correct" selected="true"/>
+				<s:CheckBox id="correctOutsideBase" label="Correct Outside Base" selected="true"/>
+				<s:CheckBox id="incorrect" label="Incorrect" selected="true"/>
+				<s:CheckBox id="skipped" label="Skipped" selected="true"/>
 			</s:HGroup>
 			<s:DataGrid dataProvider="{performanceData}" width="90%" includeIn="dataGrid">
 				<s:columns>
@@ -185,10 +189,11 @@
 				<mx:ColumnSet type="clustered">
 					<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{studentStats}">
 						<mx:ColumnSeries
-							yField="correct"
+							yField="{correct.selected?'correct':null}"
 							displayName="Correct"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{correct.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient1">
 									<mx:entries>
@@ -205,10 +210,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="correctOutsideBase"
+							yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
 							displayName="Correct Outside Base"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{correctOutsideBase.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient2">
 									<mx:entries>
@@ -225,10 +231,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="incorrect"
+							yField="{incorrect.selected?'incorrect':null}"
 							displayName="Wrong Answer"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{incorrect.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient3">
 									<mx:entries>
@@ -245,10 +252,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="skipped"
+							yField="{skipped.selected?'skipped':null}"
 							displayName="Skipped Question"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{skipped.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient4">
 									<mx:entries>
@@ -268,10 +276,11 @@
 					<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{classAverage}" 
 								  dataProvider="{classAvgPerformanceData}">
 						<mx:ColumnSeries
-							yField="correct"
+							yField="{correct.selected?'correct':null}"
 							displayName="Class Average: Correct"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{correct.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient5">
 									<mx:entries>
@@ -288,10 +297,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="correctOutsideBase"
+							yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
 							displayName="Class Average: Correct Outside Base"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{correctOutsideBase.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient6">
 									<mx:entries>
@@ -308,10 +318,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="incorrect"
+							yField="{incorrect.selected?'incorrect':null}"
 							displayName="Class Average: Wrong Answers"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{incorrect.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient7">
 									<mx:entries>
@@ -328,10 +339,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="skipped"
+							yField="{skipped.selected?'skipped':null}"
 							displayName="Class Average: Skipped Questions"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{skipped.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient8">
 									<mx:entries>
@@ -348,13 +360,15 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 					</mx:ColumnSet>
-					<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{schoolAverage}" 
+					<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" 
+								  visible="{schoolAverage}" 
 								  dataProvider="{schoolAvgPerformanceData}">
 						<mx:ColumnSeries
-							yField="correct"
+							yField="{correct.selected?'correct':null}"
 							displayName="School Average: Correct"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{correct.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient9">
 									<mx:entries>
@@ -371,10 +385,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="correctOutsideBase"
+							yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
 							displayName="School Average: Correct Outside Base"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{correctOutsideBase.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient10">
 									<mx:entries>
@@ -391,10 +406,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="incorrect"
+							yField="{incorrect.selected?'incorrect':null}"
 							displayName="School Average: Wrong Answers"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{incorrect.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient11">
 									<mx:entries>
@@ -411,10 +427,11 @@
 							</mx:fill>
 						</mx:ColumnSeries>
 						<mx:ColumnSeries
-							yField="skipped"
+							yField="{skipped.selected?'skipped':null}"
 							displayName="School Average: Skipped Questions"
 							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
+							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+							visible="{skipped.selected}">
 							<mx:fill>
 								<mx:LinearGradient id="linearGradient12">
 									<mx:entries>

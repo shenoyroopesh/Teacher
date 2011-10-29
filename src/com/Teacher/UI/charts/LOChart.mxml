@@ -45,7 +45,8 @@
 			private const SUB_TOPIC_WIDTH:int = 160;
 			
 			
-			
+			[Bindable]
+			public var classMode:Boolean = false;
 			
 			//sample data to be fed to this component
 			[Bindable]
@@ -58,7 +59,8 @@
 							subtopicName: "Addition and Substraction",
 							los:
 							[
-								{name:"lo1", correct: 50, wrong:20, skipped:10, incomplete:0},
+								{name:"lo1", correct: 50, wrong:20, skipped:10, incomplete:0, avgCorrect: 60, 
+									avgWrong:15, avgSkipped:10, avgTotal:80, timeSpent: 230, avgTimeSpent: 240},
 								{name:"lo2", correct: 45, wrong:25, skipped:5, incomplete:0},
 								{name:"lo3", correct: 30, wrong:35, skipped:15, incomplete:0},
 								{name:"lo4", correct: 50, wrong:15, skipped:10, incomplete:0}
@@ -265,6 +267,7 @@
 						
 						for each(var lo in subtopic.los){
 							var loblock:LOBlock = new LOBlock();
+							loblock.classMode = this.classMode;
 							loblock.progress = lo;
 							subtopicBox.addChild(loblock);
 						}

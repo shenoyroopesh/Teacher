@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testrun name="" >
+<testsuite  name="Default Test Suite" project="Teacher">
+<testsuite name="flexUnitTests:StatsChartTests" type="testcaseclass">
+<testcase name="testStatsChartGridPercentage" classname="flexUnitTests:StatsChartTests"/>
+</testsuite>
+</testsuite>
+</testrun>

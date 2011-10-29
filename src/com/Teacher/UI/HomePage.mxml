@@ -31,7 +31,7 @@
 			protected function HomePage_initializeHandler(event:FlexEvent):void
 			{
 				state = "Not Selected";
-			}		
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>		
@@ -43,9 +43,11 @@
 					   label="Class Monitoring" click="homepagebutton_clickHandler('Class Monitoring')"
 					   style="homePageClassMonitoring"/>
 	<UI:CustomButton x="{this.width*0.2}" y="{this.height*0.5}" 
-					   style="homePageSchoolAdmin" label="School Admin" click="homepagebutton_clickHandler('School Admin')"/>
+					   style="homePageSchoolAdmin" label="School Admin" 
+					   click="homepagebutton_clickHandler('School Admin')"/>
 	<UI:CustomButton x="{this.width*0.6}" y="{this.height*0.5}" 
-					   style="homePagePerformance" label="Performance" click="homepagebutton_clickHandler('Performance')"/>
+					   style="homePagePerformance" label="Performance" 
+					   click="homepagebutton_clickHandler('Performance')"/>
 	<s:Label id="lblMessages" text="3 New Messages" y="{this.height*0.85}" 
 			 height="{0.05*this.height}" click="homepagebutton_clickHandler('Messages')"
 			 horizontalCenter="0" fontSize="{this.height*0.03}"

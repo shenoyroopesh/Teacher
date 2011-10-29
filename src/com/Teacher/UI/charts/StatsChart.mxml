@@ -9,8 +9,7 @@
 		 xmlns:layouts="org.axiis.charts.layouts.*" xmlns:paint="org.axiis.paint.*"
 		 fontSize="20" xmlns:transitions="org.axiis.transitions.*" 
 		 xmlns:states="org.axiis.states.*" 
-		xmlns:reflector="com.common.reflector.*" >
-	<!--<fx:Style source="styles/Golibaje.css"/>-->
+		 xmlns:reflector="com.common.reflector.*" xmlns:UI="com.Teacher.UI.*" >
 	<s:states>
 		<s:State name="wedgeChart" />
 		<s:State name="dataGrid" />
@@ -36,21 +35,21 @@
 			public var data:ArrayCollection = new ArrayCollection([
 				{result: "Correct", count:100, 
 					Types: [{type:"Einstein", count:10},
-							{type:"Mastery", count:20},
-							{type:"Confidence", count:30},
-							{type:"Concept", count:40}
-							]},
+						{type:"Mastery", count:20},
+						{type:"Confidence", count:30},
+						{type:"Concept", count:40}
+					]},
 				{result: "Incorrect", count:50, 
 					Types: [{type:"Einstein", count:15},
-							{type:"Mastery", count:10},
-							{type:"Confidence", count:5},
-							{type:"Concept", count:10}
+						{type:"Mastery", count:10},
+						{type:"Confidence", count:5},
+						{type:"Concept", count:10}
 					]},
 				{result: "Skipped", count:20, 
 					Types: [{type:"Einstein", count:10},
-							{type:"Mastery", count:5},
-							{type:"Confidence", count:3},
-							{type:"Concept", count:2}
+						{type:"Mastery", count:5},
+						{type:"Confidence", count:3},
+						{type:"Concept", count:2}
 					]}
 			]
 			);			
@@ -60,11 +59,11 @@
 				for each(var result in data)
 				{				
 					var typeRow = {result:result.result, 
-								   Einstein : result.Types[0].count,
-								   Mastery : result.Types[1].count,
-								   Confidence : result.Types[2].count,
-								   Concept : result.Types[3].count
-								   };
+						Einstein : result.Types[0].count,
+						Mastery : result.Types[1].count,
+						Confidence : result.Types[2].count,
+						Concept : result.Types[3].count
+					};
 					dataTable.addItem(typeRow);
 				}				
 				return dataTable;
@@ -90,7 +89,7 @@
 				if (axiisSprite.data["type"] != null && axiisSprite.data["count"] != null)
 				{
 					return "<b>" 
-						+ axiisSprite.data["type"] 
+					+ axiisSprite.data["type"] 
 						+ " Total Questions</b><br/>" 
 						+ axiisSprite.data["count"].toString();
 				} 
@@ -101,7 +100,7 @@
 			private function transposeLabel1(wedge:Object):Boolean
 			{
 				return ((wedge.startAngle + wedge.arc / 2) > 90 && 
-						(wedge.startAngle + wedge.arc / 2) < 270);				
+					(wedge.startAngle + wedge.arc / 2) < 270);				
 			}
 			
 			public function colorFunction(val:Object):Number
@@ -132,6 +131,17 @@
 			[Bindable]
 			public var sprite:AxiisSprite;
 			
+			[Bindable]
+			public function statsChartGridPercentage(item:Object, column:GridColumn):String
+			{
+				var total:Number = parseFloat(item.Einstein) + 
+					parseFloat(item.Mastery) + 
+					parseFloat(item.Confidence) + 
+					parseFloat(item.Concept);				
+				return (item[column.headerText].toString() + " (" +
+					item[column.headerText] * 100 / total).toString() + "%)";				
+			}
+			
 		]]>
 	</fx:Script>	
 	<fx:Declarations>
@@ -146,25 +156,28 @@
 		<utils:NumericExpression id="center" value="{boundsRadius.value/2}"/>
 		<utils:NumericExpression id="boundsRadius" value="{Math.min(this.height,this.width)*.7}"/>	
 	</fx:Declarations>
-
-	<s:VGroup width="100%">		
-		<s:HGroup gap="0">
-			<s:Button label="Wedge Chart" click="{this.currentState = 'wedgeChart'}" />
-			<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
-		</s:HGroup>
-		<s:DataGrid dataProvider="{DataTabular}" includeIn="dataGrid" width="90%">
-			<s:columns>
-				<s:ArrayList>
-					<s:GridColumn dataField="result" headerText="Result"/>
-					<s:GridColumn dataField="Einstein" />
-					<s:GridColumn dataField="Mastery" />
-					<s:GridColumn dataField="Confidence" />
-					<s:GridColumn dataField="Concept" />
-				</s:ArrayList>
-			</s:columns>
-		</s:DataGrid>
+	
+	
+	
+	<s:VGroup gap="5" verticalCenter="{this.height/2 - 50}" x="0">
+		<s:Button toolTip="Chart" click="{this.currentState = 'wedgeChart'}" 
+				  styleName="btnChart"/>
+		<s:Button toolTip="Raw Data" click="{this.currentState = 'dataGrid'}" 
+				  styleName="btnRawData"/>	
 	</s:VGroup>
-			<!-- Data Canvas that holds our geometries -->	
+	<s:DataGrid dataProvider="{DataTabular}" includeIn="dataGrid" width="90%"
+				verticalCenter="0" horizontalCenter="0">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="result" headerText="Result"/>
+				<s:GridColumn headerText="Einstein" labelFunction="statsChartGridPercentage"/>
+				<s:GridColumn headerText="Mastery" labelFunction="statsChartGridPercentage"/>
+				<s:GridColumn headerText="Confidence" labelFunction="statsChartGridPercentage"/>
+				<s:GridColumn headerText="Concept" labelFunction="statsChartGridPercentage"/>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>		
+	<!-- Data Canvas that holds our geometries -->	
 	<axiis:DataCanvas id="dc"
 					  width="{boundsRadius.value}"
 					  height="{boundsRadius.value}"
@@ -174,17 +187,17 @@
 		<axiis:layouts>
 			<!-- innerWedgeGroup:  This renders the inner ring of wedges -->
 			<layouts:WedgeStackLayout id="innerWedgeGroup"
-									dataProvider="{data}"
-									startAngle="0"
-									outerRadiusRatio=".78"
-									width="{dc.width}"
-									height="{dc.height}"
-									labelField="result"
-									dataField="count"
-									fill="{innerWedgeFill}"
-									fontSize="20"
-									fontWeight="bold"
-									fontColor="0xFFFFFF">
+									  dataProvider="{data}"
+									  startAngle="0"
+									  outerRadiusRatio=".78"
+									  width="{dc.width}"
+									  height="{dc.height}"
+									  labelField="result"
+									  dataField="count"
+									  fill="{innerWedgeFill}"
+									  fontSize="20"
+									  fontWeight="bold"
+									  fontColor="0xFFFFFF">
 				<layouts:transitions>
 					<transitions:Transition playDelay="50" id="scaleTran">
 						<transitions:animations>
@@ -197,46 +210,46 @@
 				</layouts:transitions>				
 				<layouts:layouts>
 					<layouts:WedgeStackLayout id="outerWedgeGroup"
-											dataProvider="{innerWedgeGroup.currentDatum.Types}"
-											maxArc="{innerWedgeGroup.wedge.arc}"
-											startAngle="{innerWedgeGroup.wedge.startAngle}"
-											alignTextOuter="true"
-											angleGap="0"
-											innerRadiusRatio=".78"
-											outerRadiusRatio="1"
-											labelRadiusRatio="1.035"
-											width="{dc.width}"
-											height="{dc.height}"
-											labelField="type"
-											dataField="count"
-											dataTipLabelFunction="{dataTipFunction}"
-											fill="{outerWedgeFill}"
-											stroke="{outerWedgeStroke}"
-											fontSize="20"
-											fontWeight="bold"
-											fontColor="0x36454F">						
+											  dataProvider="{innerWedgeGroup.currentDatum.Types}"
+											  maxArc="{innerWedgeGroup.wedge.arc}"
+											  startAngle="{innerWedgeGroup.wedge.startAngle}"
+											  alignTextOuter="true"
+											  angleGap="0"
+											  innerRadiusRatio=".78"
+											  outerRadiusRatio="1"
+											  labelRadiusRatio="1.035"
+											  width="{dc.width}"
+											  height="{dc.height}"
+											  labelField="type"
+											  dataField="count"
+											  dataTipLabelFunction="{dataTipFunction}"
+											  fill="{outerWedgeFill}"
+											  stroke="{outerWedgeStroke}"
+											  fontSize="20"
+											  fontWeight="bold"
+											  fontColor="0x36454F">						
 						<!-- State for outer wedge to change color and make it move out further -->
 						<layouts:axiisStates>							
 							<states:AxiisState enterStateEvent="mouseOver" 
-											  exitStateEvent="mouseOut"
-											  propagateToAncestorsSiblings="false"
-											  propagateToAncestors="true"
-											  propagateToDescendents="false"
-											  targets="{[outerWedgeFill,outerWedgeGroup.wedge,outerWedgeGroup.label,innerWedgeGroup.label]}"
-											  properties="{['color','outerRadius','textColor','fontWeight']}"
-											  values="{[colorFunction,outerRadius.value*1.2,0xFFFFFF,'bold']}" />
+											   exitStateEvent="mouseOut"
+											   propagateToAncestorsSiblings="false"
+											   propagateToAncestors="true"
+											   propagateToDescendents="false"
+											   targets="{[outerWedgeFill,outerWedgeGroup.wedge,outerWedgeGroup.label,innerWedgeGroup.label]}"
+											   properties="{['color','outerRadius','textColor','fontWeight']}"
+											   values="{[colorFunction,outerRadius.value*1.2,0xFFFFFF,'bold']}" />
 						</layouts:axiisStates>
 					</layouts:WedgeStackLayout>					
 				</layouts:layouts>				
 				<layouts:axiisStates>
 					<states:AxiisState enterStateEvent="mouseOver"
-									  exitStateEvent="mouseOut"
-									  propagateToAncestorsSiblings="false"
-									  propagateToAncestors="false"
-									  propagateToDescendents="true"
-									  targets="{[innerWedgeFillStop1,outerWedgeFill, outerWedgeGroup ,outerWedgeGroup.label]}"        
-									  properties="{['color','color','outerRadiusRatio','fontWeight']}"
-									  values="{[colorFunction,colorFunction,1.1,'bold']}"/>
+									   exitStateEvent="mouseOut"
+									   propagateToAncestorsSiblings="false"
+									   propagateToAncestors="false"
+									   propagateToDescendents="true"
+									   targets="{[innerWedgeFillStop1,outerWedgeFill, outerWedgeGroup ,outerWedgeGroup.label]}"        
+									   properties="{['color','color','outerRadiusRatio','fontWeight']}"
+									   values="{[colorFunction,colorFunction,1.1,'bold']}"/>
 				</layouts:axiisStates>				
 			</layouts:WedgeStackLayout>
 		</axiis:layouts>		
@@ -263,9 +276,4 @@
 			<degrafa:SolidStroke color="0" alpha=".6" pixelHinting="true" id="outerWedgeStroke"/>
 		</axiis:strokes>		
 	</axiis:DataCanvas>
-	<!--<mx:Label fontSize="20"
-			  fontWeight="bold"
-			  htmlText="Student Performance Stats"
-			  bottom="{height*.025}"
-			  horizontalCenter="-20%" includeIn="wedgeChart"/>	-->
 </s:Group>

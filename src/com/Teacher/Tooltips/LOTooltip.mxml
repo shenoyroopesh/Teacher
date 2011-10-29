@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 implements="mx.core.IToolTip" 
+		 alpha=".9"
+		 backgroundColor="0xFFFFFF"
+		 dropShadowVisible="true"
+		 borderColor="black"
+		 cornerRadius="10" 
+		 xmlns:controls="com.Teacher.controls.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			[Bindable]
+			public var timeSpentMinutes:Number;
+			
+			[Bindable]
+			public var avgTimeSpentMinutes:Number;
+			
+			[Bindable]
+			public var correctAnswerPercent:Number;
+						
+			[Bindable]
+			public var avgCorrectAnswerPercent:Number;
+			
+			[Bindable]
+			public var wrongAnswerPercent:Number;
+			
+			[Bindable]
+			public var avgWrongAnswerPercent:Number;
+			
+			[Bindable]
+			public var skippedPercent:Number;
+			
+			[Bindable]
+			public var avgSkippedPercent:Number;
+			
+			[Bindable]
+			public var goodColor: uint = 0x00CC00;
+			
+			[Bindable]
+			public var badColor: uint = 0xFF0000;
+			
+			
+			//  Implement required methods of the IToolTip interface; these
+			//  methods are not used in this project, though.
+			public var _text:String;
+			
+			[Bindable]
+			public function get text():String {
+				return _text;
+			}
+			public function set text(value:String):void {
+			}
+			
+		]]>
+	</fx:Script>
+	<s:VGroup top="10" bottom="10" left="10" right="10" fontWeight="bold">
+		<s:Label id="lblTimeSpent" text="{'Time Spent (minutes): '+timeSpentMinutes + ' (Avg '+avgTimeSpentMinutes + ')'}" 
+				 color="{(timeSpentMinutes > avgTimeSpentMinutes)? goodColor: badColor}"/>
+		<s:Label id="lblCorrectAnswerPercent" text="{'Correct %: '+correctAnswerPercent + '% (Avg '+avgCorrectAnswerPercent + '%)' }" 
+				 color="{(correctAnswerPercent > avgCorrectAnswerPercent)? goodColor: badColor}"/>
+		<s:Label id="lblWrongAnswerPercent" text="{'Wrong %: '+wrongAnswerPercent + '% (Avg '+avgWrongAnswerPercent + '%)' }" 
+				 color="{(wrongAnswerPercent > avgWrongAnswerPercent)? badColor : goodColor}"/>
+		<s:Label id="lblSkippedPercent" text="{'Skipped %: '+skippedPercent + '% (Avg '+avgSkippedPercent + '%)'}" 
+				 color="{(skippedPercent > avgSkippedPercent)? badColor : goodColor}"/>
+	</s:VGroup>	 
+</s:BorderContainer>

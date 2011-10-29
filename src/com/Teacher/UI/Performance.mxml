@@ -89,6 +89,7 @@
 	<s:states>
 		<s:State name="Class" />
 		<s:State name="ClassStats" />
+		<s:State name="ClassLO" />
 		<s:State name="ClassPerformance" />
 		<s:State name="ClassTimeSpent" />
 		<s:State name="ClassAccuracy" />
@@ -133,15 +134,79 @@
 				</s:DataGrid>
 				<s:VGroup width="75%" height="100%" id="statsContainer" includeIn="StudentStats" verticalAlign="middle"
 						  gap="0">
-					<s:HGroup width="100%" height="60%" gap="0">
-						<s:BorderContainer id="basicStats" width="50%" height="100%">
-							<s:VGroup paddingLeft="10" horizontalCenter="0" verticalCenter="-20">
-								<s:Label id="studentName" text="Joshua Lenon" fontSize="24" fontWeight="bold"
-										 paddingBottom="20"/>
-								<s:Label id="timeSpent" text="Total Time Spent: 670 minutes"/>
-								<s:Label id="pointsEarned" text="Total Points Earned: 580" />
-								<s:Label id="loCovered" text="Number of Learning Objects covered: 10" />
-								<s:Label id="noOfQuestions" text="Number of Questions Answered: 1160" />
+					<s:HGroup width="100%" height="70%" gap="0" horizontalCenter="0">
+						<s:BorderContainer id="basicStats" width="50%" height="100%" backgroundColor="0xACBF88">
+							<s:VGroup gap="20" width="100%">
+								<s:BorderContainer width="100%" backgroundColor="0xC2CFA3" 
+												   height="{studentName.height + 10}">
+									<s:Label id="studentName" text="Joshua Lenon" fontSize="24" fontWeight="bold"
+											 left="10"/>
+								</s:BorderContainer>
+								<s:VGroup paddingLeft="10" horizontalCenter="0">
+									<s:Label id="timeSpent" text="Total Time Spent: 670 minutes"/>
+									<s:Label id="pointsEarned" text="Total Points Earned: 580" />
+									<s:Label id="loCovered" text="Number of Learning Objects covered: 10" />
+									<s:Label id="noOfQuestions" text="Number of Questions Answered: 1160" />
+								</s:VGroup>
+								<s:HGroup horizontalCenter="0" gap="10" paddingLeft="10">
+									<s:VGroup horizontalAlign="center">
+										<controls:DegrafaGauge 	id="pointsGauge" diameter="{statsContainer.width*0.12}" 
+																liveDragging="false" 
+																horizontalCenter="0" verticalCenter="0" 
+																styleName="pointsGaugeSkin"
+																startAngle="45"  minimum="10" maximum="100"
+																value="60"
+																endAngle="315" 
+																labelStyleName="gaugeLabel" 
+																labelFormatter="{formatter}"/>
+										<s:Label text="Points Per Day" horizontalCenter="0" fontWeight="bold"
+												 textAlign="center"/>
+										<reflector:Reflector
+											id="theReflectionWhite1" 
+											target="{pointsGauge}"
+											alpha=".3"
+											falloff=".3"
+											blurAmount=".1"/>
+									</s:VGroup>
+									<s:VGroup horizontalAlign="center">
+										<controls:DegrafaGauge 	id="TimeGauge" diameter="{statsContainer.width*0.12}" 
+																liveDragging="false" 
+																horizontalCenter="0" verticalCenter="0" 
+																styleName="timeGaugeSkin"
+																startAngle="45"  minimum="100" maximum="500"
+																value="200"
+																endAngle="315"
+																labelStyleName="gaugeLabel" 
+																labelFormatter="{formatter}"/>
+										<s:Label text="Minutes Per Day" horizontalCenter="0" fontWeight="bold"
+												 textAlign="center"/>
+										<reflector:Reflector
+											id="theReflectionWhite2" 
+											target="{TimeGauge}"
+											alpha=".3"
+											falloff=".3"
+											blurAmount=".1"/>
+									</s:VGroup>
+									<s:VGroup horizontalAlign="center">
+										<controls:DegrafaGauge 	id="loGauge" diameter="{statsContainer.width*0.12}" 
+																liveDragging="false" 
+																horizontalCenter="0" verticalCenter="0" 
+																styleName="loGaugeSkin"
+																startAngle="45"  minimum="1" maximum="10"
+																value="5" 
+																endAngle="315" 
+																labelStyleName="gaugeLabel" 
+																labelFormatter="{formatter}"/>
+										<s:Label text="LOs per month" horizontalCenter="0" fontWeight="bold"
+												 textAlign="center"/>
+										<reflector:Reflector
+											id="theReflectionWhite3" 
+											target="{loGauge}"
+											alpha=".3"
+											falloff=".3"
+											blurAmount=".1"/>
+									</s:VGroup>
+								</s:HGroup>
 							</s:VGroup>
 						</s:BorderContainer>
 						<s:BorderContainer width="50%" height="100%" id="statsChartContainer" top="0">
@@ -150,72 +215,8 @@
 											   scaleY="{getChartsScale(statsChart)}"
 											   verticalCenter="0" horizontalCenter="0"/>							
 						</s:BorderContainer>
-					</s:HGroup>
-					<s:HGroup width="100%" height="40%" gap="0">
-						<s:BorderContainer id="vitalStats" height="100%" width="65%">
-							<s:Label id="vitalStatsHeader" text="Vital Stats" top="10" fontWeight="bold" horizontalCenter="0"/>
-							<s:HGroup top="25" horizontalCenter="0">
-								<s:VGroup horizontalAlign="center">
-									<controls:DegrafaGauge 	id="pointsGauge" diameter="{statsContainer.width*0.15}" 
-															liveDragging="false" 
-															horizontalCenter="0" verticalCenter="0" 
-															styleName="pointsGaugeSkin"
-															startAngle="45"  minimum="10" maximum="100"
-															value="60"
-															endAngle="315" 
-															labelStyleName="gaugeLabel" 
-															labelFormatter="{formatter}"/>
-									<s:Label text="Points Per Day" horizontalCenter="0" fontWeight="bold"
-											 textAlign="center"/>
-									<reflector:Reflector
-										id="theReflectionWhite1" 
-										target="{pointsGauge}"
-										alpha=".3"
-										falloff=".3"
-										blurAmount=".1"/>
-								</s:VGroup>
-								<s:VGroup horizontalAlign="center">
-									<controls:DegrafaGauge 	id="TimeGauge" diameter="{statsContainer.width*0.15}" 
-															liveDragging="false" 
-															horizontalCenter="0" verticalCenter="0" 
-															styleName="timeGaugeSkin"
-															startAngle="45"  minimum="100" maximum="500"
-															value="200"
-															endAngle="315"
-															labelStyleName="gaugeLabel" 
-															labelFormatter="{formatter}"/>
-									<s:Label text="Minutes Per Day" horizontalCenter="0" fontWeight="bold"
-											 textAlign="center"/>
-									<reflector:Reflector
-										id="theReflectionWhite2" 
-										target="{TimeGauge}"
-										alpha=".3"
-										falloff=".3"
-										blurAmount=".1"/>
-								</s:VGroup>
-								<s:VGroup horizontalAlign="center">
-									<controls:DegrafaGauge 	id="loGauge" diameter="{statsContainer.width*0.15}" 
-															liveDragging="false" 
-															horizontalCenter="0" verticalCenter="0" 
-															styleName="loGaugeSkin"
-															startAngle="45"  minimum="1" maximum="10"
-															value="5" 
-															endAngle="315" 
-															labelStyleName="gaugeLabel" 
-															labelFormatter="{formatter}"/>
-									<s:Label text="LOs per month" horizontalCenter="0" fontWeight="bold"
-											 textAlign="center"/>
-									<reflector:Reflector
-										id="theReflectionWhite3" 
-										target="{loGauge}"
-										alpha=".3"
-										falloff=".3"
-										blurAmount=".1"/>
-								</s:VGroup>
-							</s:HGroup>
-						</s:BorderContainer>
-						<UI:remarksBox id="remarksBox" height="100%" width="35%"/>
-					</s:HGroup>
+					</s:HGroup>	
+					<UI:remarksBox id="remarksBox" width="100%" height="30%"/>
 				</s:VGroup>
 				<s:Group width="75%" height="100%" excludeFrom="Class, StudentStats" >
 					<s:Group id="chartContainer" height="95%" width="100%" verticalCenter="0">
@@ -229,6 +230,12 @@
 										scaleX="{getChartsScale(loChart)}"
 										scaleY="{getChartsScale(loChart)}"
 										verticalCenter="0" horizontalCenter="0"/>
+						<charts:LOChart id="classLoChart" 
+										includeIn="ClassLO" 
+										scaleX="{getChartsScale(classLoChart)}"
+										scaleY="{getChartsScale(classLoChart)}"
+										verticalCenter="0" classMode="true" 
+										horizontalCenter="0"/>
 						<charts:PerformanceChart id="performanceChart" 
 												 includeIn="StudentPerformance" 
 												 scaleX="{getChartsScale(performanceChart)}"
@@ -293,9 +300,7 @@
 								 'ClassLO':'StudentLO'}"
 								 style="btnLO" height="100%" width="15%"
 								 toolTip="LO Progress"
-								 selected="{this.currentState.search('LO')>-1}"
-								 excludeFrom="Class, ClassPerformance, 
-								 ClassTimeSpent, ClassAccuracy, ClassStats"/>
+								 selected="{this.currentState.search('LO')>-1}"/>
 				<UI:CustomButton id="btnPerformance"
 								 click="{this.currentState = this.currentState.search('Class') > -1? 
 								 'ClassPerformance':'StudentPerformance'}"

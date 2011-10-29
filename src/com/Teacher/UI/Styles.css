@@ -71,3 +71,13 @@
 {
 	icon: Embed("../Icons/assignment-icon.png");
 }
+
+.btnChart
+{
+	icon: Embed("../Icons/chartIcon.png");
+}
+
+.btnRawData
+{
+	icon: Embed("../Icons/rawDataIcon.png");
+}

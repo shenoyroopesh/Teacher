@@ -9,7 +9,7 @@
 			import mx.collections.ArrayCollection;			
 			
 			[Bindable]
-			private var remarks:ArrayCollection = new ArrayCollection([				
+			public var remarks:ArrayCollection = new ArrayCollection([				
 				{name:"Roopesh", date:"18-Feb-2011", remark:"Excellent responses today in class"},
 				{name:"Sang", date:"20-Jun-2011", remark:"Not keeping well these days, might fall back"},
 				{name:"Roopesh", date:"18-Oct-2011", remark:"Picking up through missed sessions"},
@@ -19,10 +19,14 @@
 		]]>
 	</fx:Script>
 	<s:Scroller width="100%" height="100%" horizontalScrollPolicy="off">
-		<s:VGroup width="100%" height="100%">
-			<s:Label id="lblRemarksHeading" text="Remarks" fontSize="15" fontWeight="bold" />
+		<s:VGroup width="100%" height="100%" gap="0">
+			<s:BorderContainer backgroundColor="0x576C7F" width="100%" height="{lblRemarksHeading.height+5}">
+				<s:Label id="lblRemarksHeading" text="Communication Log" 
+						 fontSize="15" fontWeight="bold" paddingLeft="10" color="0xFFFFFF"/>	
+			</s:BorderContainer>			
 			<s:List id="chat" dataProvider="{remarks}" 
-					itemRenderer="com.Teacher.Renderers.RemarkRenderer" width="100%" height="100%"/>
+					itemRenderer="com.Teacher.Renderers.RemarkRenderer" 
+					width="100%" height="100%"/>
 		</s:VGroup>
 	</s:Scroller>
 </s:BorderContainer>
