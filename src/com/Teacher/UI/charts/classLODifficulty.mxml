@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600"
+		 top="10" left="10">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var loDifficulty:ArrayCollection = new ArrayCollection([
+				{loName: 'Simple division', failedCount: '20'},
+				{loName: 'Multiplication with two digits', failedCount: '35'},
+				{loName: 'Multiplication with three digits', failedCount: '50'},
+				{loName: 'Complex division', failedCount: '60'},
+				{loName: 'Trigonometry', failedCount: '80'},
+				{loName: 'Statistics', failedCount: '100'}
+			]);
+			
+		]]>
+	</fx:Script>
+	<s:Label text="Most Difficult LOs"  fontSize="25" fontWeight="bold"/>
+	<mx:BarChart  dataProvider="{loDifficulty}" showDataTips="true" fontSize="20"
+				  width="90%" height="90%">
+		<mx:series>
+			<mx:BarSeries xField="failedCount"
+						  yField="loName" />
+		</mx:series>
+		<mx:verticalAxis>
+			<mx:CategoryAxis categoryField="loName" dataProvider="{loDifficulty}"/>
+		</mx:verticalAxis>
+		<mx:horizontalAxis>
+			<mx:LinearAxis title="Number of Failed Questions" />
+		</mx:horizontalAxis>
+	</mx:BarChart>
+</s:VGroup>

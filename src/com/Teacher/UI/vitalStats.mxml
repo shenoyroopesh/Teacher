@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:controls="com.brightPoint.controls.*"
+				   xmlns:reflector="com.common.reflector.*"
+				   width="100%" height="100%" backgroundColor="0xACBF88" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:NumberFormatter id="formatter" />
+		<fx:Boolean id="classMode">false</fx:Boolean>
+	</fx:Declarations>
+	<s:VGroup gap="20" width="100%">
+		<s:BorderContainer width="100%" backgroundColor="0xC2CFA3" 
+						   height="{header.height + 10}">
+			<s:Label id="header" text="{classMode?'3rd Grade Maths':'Joshua Lenon'}" 
+					 fontSize="24" fontWeight="bold"
+					 left="10" top="10"/>
+		</s:BorderContainer>
+		<s:VGroup paddingLeft="10" horizontalCenter="0" visible="{!classMode}"
+				  height="{classMode?0:
+				  				timeSpent.height +
+				  				pointsEarned.height + 
+				  				loCovered.height + 
+				  				noOfQuestions.height + 10}">
+			<s:Label id="timeSpent" text="Total Time Spent: 670 minutes"/>
+			<s:Label id="pointsEarned" text="Total Points Earned: 580" />
+			<s:Label id="loCovered" text="Number of Learning Objects covered: 10" />
+			<s:Label id="noOfQuestions" text="Number of Questions Answered: 1160" />
+		</s:VGroup>
+		<s:HGroup horizontalCenter="0" gap="10" paddingLeft="10" horizontalAlign="center">
+			<s:VGroup horizontalAlign="center">
+				<controls:DegrafaGauge 	id="pointsGauge" diameter="{this.width*0.20}" 
+										liveDragging="false" 
+										horizontalCenter="0" verticalCenter="0" 
+										styleName="pointsGaugeSkin"
+										startAngle="45"  minimum="10" maximum="100"
+										value="60"
+										endAngle="315" 
+										labelStyleName="gaugeLabel" 
+										labelFormatter="{formatter}"/>
+				<s:Label text="Points Per Day" horizontalCenter="0" fontWeight="bold"
+						 textAlign="center"/>
+				<reflector:Reflector
+					id="theReflectionWhite1" 
+					target="{pointsGauge}"
+					alpha=".3"
+					falloff=".3"
+					blurAmount=".1"/>
+			</s:VGroup>
+			<s:VGroup horizontalAlign="center">
+				<controls:DegrafaGauge 	id="TimeGauge" diameter="{this.width*0.20}" 
+										liveDragging="false" 
+										horizontalCenter="0" verticalCenter="0" 
+										styleName="timeGaugeSkin"
+										startAngle="45"  minimum="100" maximum="500"
+										value="200"
+										endAngle="315"
+										labelStyleName="gaugeLabel" 
+										labelFormatter="{formatter}"/>
+				<s:Label text="Minutes Per Day" horizontalCenter="0" fontWeight="bold"
+						 textAlign="center"/>
+				<reflector:Reflector
+					id="theReflectionWhite2" 
+					target="{TimeGauge}"
+					alpha=".3"
+					falloff=".3"
+					blurAmount=".1"/>
+			</s:VGroup>
+			<s:VGroup horizontalAlign="center">
+				<controls:DegrafaGauge 	id="loGauge" diameter="{this.width*0.20}" 
+										liveDragging="false" 
+										horizontalCenter="0" verticalCenter="0" 
+										styleName="loGaugeSkin"
+										startAngle="45"  minimum="1" maximum="10"
+										value="5" 
+										endAngle="315" 
+										labelStyleName="gaugeLabel" 
+										labelFormatter="{formatter}"/>
+				<s:Label text="LOs per month" horizontalCenter="0" fontWeight="bold"
+						 textAlign="center"/>
+				<reflector:Reflector
+					id="theReflectionWhite3" 
+					target="{loGauge}"
+					alpha=".3"
+					falloff=".3"
+					blurAmount=".1"/>
+			</s:VGroup>
+		</s:HGroup>
+		<UI:performersAndLaggards visible="{classMode}" height="{classMode?this.height*0.5:0}" 
+								  horizontalCenter="0"/>
+	</s:VGroup>
+</s:BorderContainer>

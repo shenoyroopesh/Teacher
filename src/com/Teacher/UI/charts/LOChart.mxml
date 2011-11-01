@@ -212,16 +212,15 @@
 				trace(this._config);
 				mainBox.removeAllElements();
 				for each(var topic in ProgressData){
-					var topicBox:HBox = new HBox();					
-					mainBox.addChild(topicBox);
+					var topicBox:HBox = new HBox();	
 					topicBox.setStyle("horizontalGap", "0");
-					topicBox.height = BLOCK_HEIGHT * topic.subtopics.length;
-					
+					mainBox.addChild(topicBox);
+					topicBox.height = BLOCK_HEIGHT * topic.subtopics.length;					
 					
 					var topicName:Label = new Label();
-					topicName.text = topic.topicName;
+					topicName.setStyle("color", this._config.LO_CHART_TOPICNAME_TXTCOLOR);
 					topicName.styleName = "mystyle1";
-					
+					topicName.text = topic.topicName;				
 					
 					var topicNameContainer:BorderContainer = new BorderContainer();
 					topicNameContainer.height = BLOCK_HEIGHT * topic.subtopics.length;
@@ -232,7 +231,7 @@
 					
 					topicNameContainer.backgroundFill = topicFill;
 					
-					topicName.setStyle("color", this._config.LO_CHART_TOPICNAME_TXTCOLOR);
+
 					topicName.rotation = -90;
 					topicNameContainer.addElement(topicName);					
 					
@@ -250,11 +249,12 @@
 						
 						topicRightBox.addChild(subtopicBox);						
 						var subtopicName:Text = new Text();
+						subtopicName.setStyle("color", this._config.LO_CHART_SUBTOPIC_TXTCOLOR);
 						subtopicName.text = subtopic.subtopicName;												
 						subtopicName.width = SUB_TOPIC_WIDTH - 10;
 						subtopicName.horizontalCenter = 0;
 						subtopicName.verticalCenter = 0;			
-						subtopicName.setStyle("color", this._config.LO_CHART_SUBTOPIC_TXTCOLOR);
+						
 						
 						var subtopicNameContainer:BorderContainer = new BorderContainer();
 						subtopicNameContainer.height = BLOCK_HEIGHT;
@@ -287,15 +287,10 @@
 			}			
 		]]>
 	</fx:Script>		
-	<fx:Declarations>
-
-			
+	<fx:Declarations>			
 		<s:SolidColor id="subtopicFill" color="{this._config.LO_CHART_SUPTOPIC_FILLCOLOR}">
 		</s:SolidColor>
 		<s:Stroke color="0xFFFFFF" id="whiteStroke" />
-		<!-- Remember to add a gradient here -->
-<!--		<s:SolidColor id="topicFill" color="0x434343">
-		</s:SolidColor>-->		
 		<s:LinearGradient id="topicFill">
 			<s:GradientEntry color="0x000000"/>
 			<s:GradientEntry color="0x9D9D9D"/>

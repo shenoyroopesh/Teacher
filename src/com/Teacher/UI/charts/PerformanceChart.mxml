@@ -13,12 +13,15 @@
 	</s:states>
 	<fx:Script>
 		<![CDATA[
+			import CustomEvents.ChartLoadedEvent;
+			
 			import com.Teacher.UI.Utilities;
-			import CustomEvents.ChartLoadedEvent;			
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.rpc.events.ResultEvent;
-			import mx.utils.object_proxy;			
+			import mx.utils.object_proxy;
+			
 			import org.axiis.core.AxiisSprite;
 			import org.axiis.data.DataSet;			
 			private var ds:DataSet = new DataSet();			
@@ -70,7 +73,7 @@
 				{month:"September",correct:170, correctOutsideBase:5,
 					incorrect:10, total:185}
 			]);
-						
+			
 			[Bindable]
 			public var classAvgPerformanceData:ArrayCollection = new ArrayCollection([
 				{month:"January", correct:110, correctOutsideBase:60,
@@ -136,6 +139,21 @@
 				t.start();
 			}
 			
+			[Bindable]
+			public function chartGridPercentage(item:Object, column:GridColumn):String
+			{
+				if(isNaN(item[column.dataField]) || item[column.dataField] == "")
+					return "";
+				
+				var total = (isNaN(parseFloat(item.correct))?0:parseFloat(item.correct)) + 
+					(isNaN(parseFloat(item.correctOutsideBase))?0:parseFloat(item.correctOutsideBase)) + 
+					(isNaN(parseFloat(item.incorrect))?0:parseFloat(item.incorrect))+ 
+					(isNaN(parseFloat(item.skipped))?0:parseFloat(item.skipped));
+				
+				return item[column.dataField].toString() + " (" +
+					(Math.round(item[column.dataField] * 10000 / total) / 100).toString() + "%)";				
+			}
+			
 			private function fireChartLoaded(event){				
 				loaded = true;
 				dispatchEvent(new Event("chartLoaded"));
@@ -146,323 +164,334 @@
 	<fx:Declarations>	
 		<s:Stroke color="0x660066" weight="5" id="pointsStroke" />
 	</fx:Declarations>
-		<s:VGroup width="100%" height="95%">
-			<s:HGroup>
-				<s:Button label="Chart" click="{this.currentState = 'chart'}" />
-				<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />
-				<s:CheckBox id="correct" label="Correct" selected="true"/>
-				<s:CheckBox id="correctOutsideBase" label="Correct Outside Base" selected="true"/>
-				<s:CheckBox id="incorrect" label="Incorrect" selected="true"/>
-				<s:CheckBox id="skipped" label="Skipped" selected="true"/>
-			</s:HGroup>
-			<s:DataGrid dataProvider="{performanceData}" width="90%" includeIn="dataGrid">
-				<s:columns>
-					<s:ArrayList>
-						<s:GridColumn dataField="month" headerText="Month"/>
-						<s:GridColumn dataField="correct"  headerText="Correct"/>					
-						<s:GridColumn dataField="correctOutsideBase"  headerText="Correct Outside Base"/>
-						<s:GridColumn dataField="incorrect"  headerText="Incorrect"/>
-						<s:GridColumn dataField="skipped"  headerText="Skipped"/>
-					</s:ArrayList>
-				</s:columns>
-			</s:DataGrid>
-		</s:VGroup>
-		<mx:CartesianChart id="PerformanceTimeChart" dataProvider="{performanceData}"
-						showDataTips="true" width="100%" height="90%" 
-						verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial"
-						includeIn="chart">
-			<mx:verticalAxisRenderers>
-				<mx:AxisRenderer placement="left" axis="{columnAxis}"/>
-				<mx:AxisRenderer placement="right" axis="{pointsAxis}" visible="{studentStats}"/>
-			</mx:verticalAxisRenderers>
-			<mx:horizontalAxis>
-				<mx:CategoryAxis categoryField="{timeIncrement}"/>
-			</mx:horizontalAxis>
-			<mx:verticalAxis>
-				<mx:LinearAxis id="columnAxis" title="Answers" 
-							   maximum="{Math.max(studentStats?Utilities.getMax(performanceData, 'total'):0, 
-							   					  classAverage?Utilities.getMax(classAvgPerformanceData, 'total'):0,
-							   					  schoolAverage?Utilities.getMax(schoolAvgPerformanceData, 'total'):0)
-							   			+50}"/>
-			</mx:verticalAxis>
-			<mx:series>
-				<mx:ColumnSet type="clustered">
-					<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{studentStats}">
-						<mx:ColumnSeries
-							yField="{correct.selected?'correct':null}"
-							displayName="Correct"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{correct.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient1">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="red"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
-							displayName="Correct Outside Base"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{correctOutsideBase.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient2">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="green"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{incorrect.selected?'incorrect':null}"
-							displayName="Wrong Answer"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{incorrect.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient3">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="blue"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{skipped.selected?'skipped':null}"
-							displayName="Skipped Question"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{skipped.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient4">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="gray"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-					</mx:ColumnSet>
-					<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{classAverage}" 
-								  dataProvider="{classAvgPerformanceData}">
-						<mx:ColumnSeries
-							yField="{correct.selected?'correct':null}"
-							displayName="Class Average: Correct"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{correct.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient5">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="silver"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
-							displayName="Class Average: Correct Outside Base"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{correctOutsideBase.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient6">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="lime"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{incorrect.selected?'incorrect':null}"
-							displayName="Class Average: Wrong Answers"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{incorrect.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient7">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="yellow"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{skipped.selected?'skipped':null}"
-							displayName="Class Average: Skipped Questions"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{skipped.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient8">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="purple"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-					</mx:ColumnSet>
-					<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" 
-								  visible="{schoolAverage}" 
-								  dataProvider="{schoolAvgPerformanceData}">
-						<mx:ColumnSeries
-							yField="{correct.selected?'correct':null}"
-							displayName="School Average: Correct"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{correct.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient9">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="0xFFFFCC"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
-							displayName="School Average: Correct Outside Base"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{correctOutsideBase.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient10">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="red"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{incorrect.selected?'incorrect':null}"
-							displayName="School Average: Wrong Answers"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{incorrect.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient11">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="0xCCCCFF"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-						<mx:ColumnSeries
-							yField="{skipped.selected?'skipped':null}"
-							displayName="School Average: Skipped Questions"
-							verticalAxis="{columnAxis}" 
-							itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-							visible="{skipped.selected}">
-							<mx:fill>
-								<mx:LinearGradient id="linearGradient12">
-									<mx:entries>
-										<fx:Array>
-											<mx:GradientEntry color="green"
-															  ratio="0.0"
-															  alpha="1.0" />
-											<mx:GradientEntry color="black"
-															  ratio="1.0"
-															  alpha="1.0" />
-										</fx:Array>
-									</mx:entries>
-								</mx:LinearGradient>
-							</mx:fill>
-						</mx:ColumnSeries>
-					</mx:ColumnSet>
+	<s:VGroup width="100%" height="95%">
+		<s:HGroup horizontalCenter="0" horizontalAlign="center">
+			<s:Button toolTip="Chart" click="{this.currentState = 'chart'}" 
+					  styleName="btnChart" scaleX="0.75" scaleY="0.75"/>
+			<s:Button toolTip="Raw Data" click="{this.currentState = 'dataGrid'}" 
+					  styleName="btnRawData" scaleX="0.6" scaleY="0.6"/>
+			<s:VGroup>
+				<s:HGroup>
+					<s:CheckBox id="correct" label="Correct" selected="true"/>
+					<s:CheckBox id="correctOutsideBase" label="Correct Outside Base" selected="true"/>
+					<s:CheckBox id="incorrect" label="Incorrect" selected="true"/>
+					<s:CheckBox id="skipped" label="Skipped" selected="true"/>
+				</s:HGroup>
+				<s:HGroup>
+					<s:CheckBox id="student" label="Student" selected="true" visible="{studentStats}"/>
+					<s:CheckBox id="classAvg" label="Class Avg" selected="true"/>
+					<s:CheckBox id="schoolAvg" label="School Avg" selected="true"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:HGroup>
+		<s:DataGrid dataProvider="{performanceData}" width="90%" includeIn="dataGrid">
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn dataField="month" headerText="Month"/>
+					<s:GridColumn dataField="correct" labelFunction="chartGridPercentage"  headerText="Correct"/>					
+					<s:GridColumn dataField="correctOutsideBase" labelFunction="chartGridPercentage"  headerText="Correct Outside Base"/>
+					<s:GridColumn dataField="incorrect" labelFunction="chartGridPercentage"  headerText="Incorrect"/>
+					<s:GridColumn dataField="skipped" labelFunction="chartGridPercentage" headerText="Skipped"/>
+				</s:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</s:VGroup>
+	<mx:CartesianChart id="PerformanceTimeChart" dataProvider="{performanceData}"
+					   showDataTips="true" width="100%" height="85%" 
+					   verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial"
+					   includeIn="chart">
+		<mx:verticalAxisRenderers>
+			<mx:AxisRenderer placement="left" axis="{columnAxis}"/>
+			<mx:AxisRenderer placement="right" axis="{pointsAxis}" visible="{studentStats}"/>
+		</mx:verticalAxisRenderers>
+		<mx:horizontalAxis>
+			<mx:CategoryAxis categoryField="{timeIncrement}"/>
+		</mx:horizontalAxis>
+		<mx:verticalAxis>
+			<mx:LinearAxis id="columnAxis" title="Answers" 
+						   maximum="{Math.max(studentStats?Utilities.getMax(performanceData, 'total'):0, 
+						   classAverage?Utilities.getMax(classAvgPerformanceData, 'total'):0,
+						   schoolAverage?Utilities.getMax(schoolAvgPerformanceData, 'total'):0)
+						   +50}"/>
+		</mx:verticalAxis>
+		<mx:series>
+			<mx:ColumnSet type="clustered">
+				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{studentStats?student.selected:false}">
+					<mx:ColumnSeries
+						yField="{correct.selected?'correct':null}"
+						displayName="Correct"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{correct.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient1">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="red"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
+						displayName="Correct Outside Base"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{correctOutsideBase.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient2">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="green"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{incorrect.selected?'incorrect':null}"
+						displayName="Wrong Answer"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{incorrect.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient3">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="blue"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{skipped.selected?'skipped':null}"
+						displayName="Skipped Question"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{skipped.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient4">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="gray"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
 				</mx:ColumnSet>
-				<mx:LineSeries
-					dataProvider="{pointsData}"
-					yField="points"
-					lineStroke="{pointsStroke}"
-					displayName="My Points"
-					visible="{studentStats}">
-					<mx:verticalAxis>
-						<mx:LinearAxis id="pointsAxis" title="Points"
-									   maximum="{Utilities.getMax(pointsData, 'points')}"/>
-					</mx:verticalAxis>
-				</mx:LineSeries>
-			</mx:series>
-		</mx:CartesianChart>
-		<s:Label id="lblChart" text="{studentStats?'Student Performance Stats':'Class Performance Stats'}" 
-				 fontSize="20" fontWeight="bold" bottom="{height*.025}"
-				 horizontalCenter="-20%"/>
+				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{classAverage?classAvg.selected:false}" 
+							  dataProvider="{classAvgPerformanceData}">
+					<mx:ColumnSeries
+						yField="{correct.selected?'correct':null}"
+						displayName="Class Average: Correct"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{correct.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient5">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="silver"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
+						displayName="Class Average: Correct Outside Base"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{correctOutsideBase.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient6">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="lime"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{incorrect.selected?'incorrect':null}"
+						displayName="Class Average: Wrong Answers"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{incorrect.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient7">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="yellow"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{skipped.selected?'skipped':null}"
+						displayName="Class Average: Skipped Questions"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{skipped.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient8">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="purple"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+				</mx:ColumnSet>
+				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" 
+							  visible="{schoolAverage?schoolAvg.selected:false}" 
+							  dataProvider="{schoolAvgPerformanceData}">
+					<mx:ColumnSeries
+						yField="{correct.selected?'correct':null}"
+						displayName="School Average: Correct"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{correct.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient9">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="0xFFFFCC"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
+						displayName="School Average: Correct Outside Base"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{correctOutsideBase.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient10">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="red"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{incorrect.selected?'incorrect':null}"
+						displayName="School Average: Wrong Answers"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{incorrect.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient11">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="0xCCCCFF"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						yField="{skipped.selected?'skipped':null}"
+						displayName="School Average: Skipped Questions"
+						verticalAxis="{columnAxis}" 
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
+						visible="{skipped.selected}">
+						<mx:fill>
+							<mx:LinearGradient id="linearGradient12">
+								<mx:entries>
+									<fx:Array>
+										<mx:GradientEntry color="green"
+														  ratio="0.0"
+														  alpha="1.0" />
+										<mx:GradientEntry color="black"
+														  ratio="1.0"
+														  alpha="1.0" />
+									</fx:Array>
+								</mx:entries>
+							</mx:LinearGradient>
+						</mx:fill>
+					</mx:ColumnSeries>
+				</mx:ColumnSet>
+			</mx:ColumnSet>
+			<mx:LineSeries
+				dataProvider="{pointsData}"
+				yField="points"
+				lineStroke="{pointsStroke}"
+				displayName="My Points"
+				visible="{studentStats}">
+				<mx:verticalAxis>
+					<mx:LinearAxis id="pointsAxis" title="Points"
+								   maximum="{Utilities.getMax(pointsData, 'points')}"/>
+				</mx:verticalAxis>
+			</mx:LineSeries>
+		</mx:series>
+	</mx:CartesianChart>
+	<s:Label id="lblChart" text="{studentStats?'Student Performance Stats':'Class Performance Stats'}" 
+			 fontSize="20" fontWeight="bold" bottom="{height*.025}"
+			 horizontalCenter="-20%"/>
 </s:Group>

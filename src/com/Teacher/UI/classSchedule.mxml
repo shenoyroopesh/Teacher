@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.DateField;
+			[Bindable]			
+			public var schedule:ArrayCollection = new ArrayCollection([
+				{date: '11-25-2011', from: '8:00 AM', to: '9:00 AM' },
+				{date: '11-26-2011', from: '9:00 AM', to: '10:00 AM' },
+				{date: '11-28-2011', from: '8:00 AM', to: '9:00 AM' },
+				{date: '11-29-2011', from: '8:30 AM', to: '9:30 AM' },
+				{date: '11-30-2011', from: '8:45 AM', to: '9:30 AM' }
+			]);
+			
+			[Bindable]
+			public var dateFormat = "MM-DD-YYYY";
+			
+			public function dateToDay(item:Object, column:GridColumn):String
+			{
+				var date:Date = DateField.stringToDate(item.date, dateFormat);
+				switch(date.day)
+				{
+					case 0: return "Sunday";
+					case 1: return "Monday";
+					case 2: return "Tuesday";
+					case 3: return "Wednesday";
+					case 4: return "Thursday";
+					case 5: return "Friday";
+					case 6: return "Saturday";					
+				}
+				return "";
+			}
+			
+		]]>
+	</fx:Script>
+	<s:VGroup horizontalCenter="0" width="100%">		
+		<s:Label id="heading" text="My Upcoming Schedule" fontWeight="bold"
+				 paddingTop="5" paddingLeft="5"/>
+		<s:Scroller width="100%" height="{this.height - heading.height - 10}">
+			<s:Group>
+				<s:DataGrid width="100%" height="100%" dataProvider="{schedule}">
+					<s:columns>
+						<s:ArrayList>
+							<s:GridColumn dataField="date" />
+							<s:GridColumn dataField="date" labelFunction="dateToDay" />
+							<s:GridColumn dataField="from" />
+							<s:GridColumn dataField="to" />
+						</s:ArrayList>
+					</s:columns>
+				</s:DataGrid>
+			</s:Group>
+		</s:Scroller>
+	</s:VGroup>
+</s:BorderContainer>

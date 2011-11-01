@@ -181,8 +181,10 @@
 	</fx:Declarations>
 		<s:VGroup width="100%" height="95%">
 			<s:HGroup>
-				<s:Button label="Chart" click="{this.currentState = 'bubblesChart'}" />
-				<s:Button label="Raw Data" click="{this.currentState = 'dataGrid'}" />	
+				<s:Button toolTip="Chart" click="{this.currentState = 'bubblesChart'}" 
+						  styleName="btnChart" scaleX="0.75" scaleY="0.75"/>
+				<s:Button toolTip="Raw Data" click="{this.currentState = 'dataGrid'}" 
+						  styleName="btnRawData" scaleX="0.6" scaleY="0.6"/>
 			</s:HGroup>
 			<s:Scroller width="100%" height="{0.9*this.height}" includeIn="dataGrid" >
 				<s:VGroup width="100%" height="100%">			
@@ -246,7 +248,7 @@
 			</s:Scroller>
 		</s:VGroup>
 		<mx:BubbleChart id="bubbleChart" fontFamily="Arial" fontSize="20"
-						dataProvider="{conceptData}" width="100%" height="90%"
+						dataProvider="{conceptData}" width="100%" height="87%"
 						minRadius="1" maxRadius="50" verticalCenter="0" horizontalCenter="0" 
 						showDataTips="true" gridLinesStyleName="none" 
 						dataTipFunction="{dataTipFunction}"
@@ -328,5 +330,5 @@
 		</mx:BubbleChart>
 		<s:Label id="lblChart" text="{classMode?'Class Accuracy Stats':'Student Accuracy Stats'}" fontSize="20"
 				 fontWeight="bold" bottom="{height*.025}"
-				 horizontalCenter="-20%"/>
+				 horizontalCenter="-20%"  includeIn="bubblesChart"/>
 </s:Group>
