@@ -48,9 +48,21 @@
 			[Bindable]
 			public var classMode:Boolean = false;
 			
+			
+			public function set ProgressData(value:ArrayCollection)
+			{
+				this._progressData = value;
+				this.Init();
+			}
+			
+			public function get ProgressData()
+			{
+				return this._progressData;
+			}
+			
 			//sample data to be fed to this component
 			[Bindable]
-			public var ProgressData:ArrayCollection = new ArrayCollection([
+			private var _progressData:ArrayCollection = new ArrayCollection([
 				{	
 					topicName:"Whole Number", 
 					subtopics:

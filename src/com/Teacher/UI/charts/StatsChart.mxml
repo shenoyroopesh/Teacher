@@ -18,6 +18,8 @@
 		<![CDATA[
 			import CustomEvents.ChartLoadedEvent;
 			
+			import flashx.textLayout.formats.Float;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.rpc.events.ResultEvent;
@@ -58,12 +60,11 @@
 				var dataTable:ArrayCollection = new ArrayCollection();				
 				for each(var result in data)
 				{				
-					var typeRow = {result:result.result, 
-						Einstein : result.Types[0].count,
-						Mastery : result.Types[1].count,
-						Confidence : result.Types[2].count,
-						Concept : result.Types[3].count
-					};
+					var typeRow:Object = {result:result.result};					
+					for each (var type in result.Types)
+					{
+						typeRow[type["type"]] = type["count"];
+					}
 					dataTable.addItem(typeRow);
 				}				
 				return dataTable;
@@ -134,12 +135,26 @@
 			[Bindable]
 			public function statsChartGridPercentage(item:Object, column:GridColumn):String
 			{
-				var total:Number = parseFloat(item.Einstein) + 
-					parseFloat(item.Mastery) + 
-					parseFloat(item.Confidence) + 
-					parseFloat(item.Concept);				
-				return (item[column.headerText].toString() + " (" +
-					item[column.headerText] * 100 / total).toString() + "%)";				
+				var total:Number = tryParseFloat(item.Einstein) + 
+					tryParseFloat(item.Mastery) + 
+					tryParseFloat(item.Confidence) + 
+					tryParseFloat(item.Concept);
+			
+				
+				if(isNaN(item[column.headerText]))
+					return "";
+				
+				return item[column.headerText].toString() + " (" +
+					((((item[column.headerText]?item[column.headerText]:0) * 10000/ total) as int)/100).toString() + "%)";
+				
+			}
+			
+			/**
+			 * Returns float value if can be parsed, else returns 0
+			 * */
+			private function tryParseFloat(stringValue:String)
+			{
+				return isNaN(parseFloat(stringValue))? 0: parseFloat(stringValue);				
 			}
 			
 		]]>

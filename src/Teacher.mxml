@@ -2,17 +2,39 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*"
-					   width="800" height="600">	
+					   width="800" height="600" currentState="Login" xmlns:teacherinterface="services.teacherinterface.*"
+					   initialize="windowedapplication1_initializeHandler(event)">
+	<s:states>
+		<s:State name="LoggedIn" />
+		<s:State name="LoginCheck" />
+		<s:State name="Login"/>
+		<s:State name="RetrievePassword" />
+	</s:states>
 	<fx:Script>
 		<![CDATA[			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import services.teacherinterface.TeacherInterface;
+			
 			import spark.components.Window;
+			
+			var currentUserInfo:Array ;
+			var config:Array;
+			
+			public var TeacherId:String;
+			
+			
+			[Embed(source="Icons/hourglass.swf")]
+			private const customLoadingCursor:Class;
+						
+			private var performanceWindow:PerformanceWindow;			
+			
 			/**
 			 * Handles the click sent from the home page - as long as the selected state is valid, 
 			 * the state of the application is modified to that state
 			 * */
-			
-			private var performanceWindow:PerformanceWindow;
-			
 			protected function homepage_clickHandler(event:MouseEvent):void
 			{
 				switch(homepage.state)
@@ -28,6 +50,7 @@
 						{
 							performanceWindow = new PerformanceWindow();
 							initializeWindow(performanceWindow);
+							performanceWindow.TeacherId = this.TeacherId;
 						}
 						openWindow(performanceWindow);
 
@@ -49,9 +72,121 @@
 				window.open(true);
 				window.maximize();
 			}
+			
+			protected function Login_BtnLogin_clickHandler(event:MouseEvent):void
+			{								
+				//TODO: Check how to get this School ID
+				ProcessTeacherLoginResult.token = teacher.ProcessTeacherLogin( Login_Username.text, Login_Password.text, 1);				
+			}
+			
+			protected function ProcessTeacherLoginResult_resultHandler(event:ResultEvent):void
+			{
+				var loginResult:Object = ProcessTeacherLoginResult.lastResult.source;				
+				if( loginResult.result != "Success" ){
+					return traceWithMessage(loginResult, "Login failed.");
+				}				
+				currentUserInfo = loginResult.login_status;				
+				if( loginResult.hasOwnProperty( 'config') ){
+					this.config = ParseConfig( loginResult.config );
+				}
+				TeacherId = loginResult.data.ID;
+				currentState = "LoggedIn";
+			}
+			
+
+			
+			//TODO - move these to a utility functions file
+			
+			/**
+			 * Used for tracing
+			 * */
+			protected function traceWithMessage( result, message:String ):void{
+				trace( result );
+				mx.controls.Alert.show(message + (result.message == null? "" : "Error: "+result.message));
+			}	
+			
+			/**
+			 * This function parses the given array, and replaces color strings (with #... pattern) to uint color representation. 
+			 * */
+			public function ParseConfig( conf:Array ):Array{
+				var colorPattern:RegExp = /^#[0-9A-Fa-f]{6}$/;
+				for( var key:String in conf ){					
+					if( colorPattern.test( conf[ key ] ) ){						
+						conf[ key ] = StringToColor( conf[ key ] );						
+					}else if( !isNaN( Number( conf[ key ] ) ) ){						
+						conf[ key ] = Number( conf[ key ] );						
+					}
+				}				
+				return conf;				
+			}
+			
+			public function StringToColor( str:String ):uint{
+				return uint( str.replace("#",'0x') );
+			}
+			
+			//end to be moved to 
+			
+			protected function RetrievePassword_BtnRetrievePassword_clickHandler(event:MouseEvent):void
+			{	
+				//uncomment and correct code later
+/* 				var type:String ;
+				if( RetrievePassword_Username.text.length > 0  ){
+					type = "username";
+					RecoverStudentPasswordResult.token = student.RecoverStudentPassword(  RetrievePassword_Username.text, type, SchoolId);
+					
+				}else if( RetrievePassword_Email.text.length > 0 ){
+					type = "email";
+					var emailPattern:RegExp = /\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i ;
+					if( emailPattern.test( RetrievePassword_Email.text ) ){
+						RecoverStudentPasswordResult.token = student.RecoverStudentPassword(  RetrievePassword_Email.text, type, SchoolId);						
+					}else{
+						mx.controls.Alert.show( "ERROR: Invalid email address. Please check your email address." );
+					}
+				}else{
+					mx.controls.Alert.show( "ERROR: Your username OR email address is required for retrieving password." );
+				} */				
+			}
+			
+			protected function panel1_elementAddHandler(event:Event):void
+			{
+				
+			}
+			
+			protected function windowedapplication1_initializeHandler(event:FlexEvent):void
+			{
+				styleManager.getStyleDeclaration("mx.managers.CursorManager").setStyle("busyCursor", customLoadingCursor);
+			}
+			
 		]]>
-	</fx:Script>	
-	<fx:Declarations>		
+	</fx:Script>
+	<fx:Declarations>
+		<s:SolidColor id="grayFont" color="0x36454F" alpha="1"/>
+		<teacherinterface:TeacherInterface id="teacher" fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)" showBusyCursor="true"/>
+		<s:CallResponder id="ProcessTeacherLoginResult" result="ProcessTeacherLoginResult_resultHandler(event)"/>		
 	</fx:Declarations>
-	<UI:HomePage id="homepage" click="homepage_clickHandler(event)" />
+	<UI:HomePage id="homepage" click="homepage_clickHandler(event)" includeIn="LoggedIn"/>
+	<s:BorderContainer x="0" y="0" width="100%" height="100%" id="MainContainer" 
+					   backgroundColor="{this.config.APP_BGCOLOR}" includeIn="LoginCheck,Login,RetrievePassword"
+					   color="{grayFont}">
+		<s:Panel includeIn="LoginCheck" verticalCenter="0" horizontalCenter="0" width="420" height="275" title="Loading..." borderVisible="false" cornerRadius="20" borderAlpha="0.21" skinClass="skins.GBPanelSkin" creationComplete="panel1_elementAddHandler(event)">
+			<!-- <mx:Image horizontalCenter="0" verticalCenter="0" source="images/loading.gif"/> -->			
+		</s:Panel>
+		<s:Panel includeIn="Login" verticalCenter="0" horizontalCenter="0" width="420" height="275" title="Student Login" borderVisible="false" cornerRadius="20" borderAlpha="0.21" skinClass="skins.GBPanelSkin">
+			<s:TextInput x="183" y="42" id="Login_Username" text="Sang" skinClass="skins.TextInputSkin" borderColor="#B7B7B7" width="110"/>
+			<s:TextInput x="183" y="83" id="Login_Password" text="automatic" displayAsPassword="true" borderVisible="true" skinClass="skins.TextInputSkin" width="110"/>
+			<s:Button x="184" y="125" label="Login" id="Login_BtnLogin"  click="Login_BtnLogin_clickHandler(event);" skinClass="skins.BlueButton"/>
+			<s:Label x="77" y="50" text="Username" id="Login_LblUsername" fontWeight="bold" fontFamily="Arial" fontSize="14" color="#666666"/>
+			<s:Label x="79" y="89" text="Password" id="Login_LblPassword" fontWeight="bold" fontFamily="Arial" fontSize="14" color="#666666"/>
+			<mx:LinkButton x="175" y="164" label="Retrieve Password" id="Login_LnkRetrievePassword" click="{this.currentState = 'RetrievePassword'}" styleName="GBLink" color="#18A47E" textDecoration="underline" fontWeight="bold"/>
+		</s:Panel>
+		<s:Panel includeIn="RetrievePassword" x="340" y="270" width="420" height="275" title="Student Login" borderVisible="false" cornerRadius="20" borderAlpha="0.21" skinClass="skins.GBPanelSkin">
+			<s:TextInput x="240" y="36" id="RetrievePassword_Username" skinClass="skins.TextInputSkin" width="110"/>
+			<s:TextInput x="240" y="117" id="RetrievePassword_Email" skinClass="skins.TextInputSkin" width="110"/>
+			<s:Label x="48" y="44" text="I know my Username" id="RetrievePassword_LblIKnowUsername" fontFamily="Arial" fontSize="13" color="#666666" fontWeight="bold"/>
+			<s:Label lineBreak="toFit"  x="47" y="113" text="I know my email address&#xd;registered with &lt;golibaje&gt;" id="RetrievePassword_LblIKnowEmail" width="195" fontFamily="Arial" fontSize="13" color="#666666" fontWeight="bold"/>
+			<s:Label text="OR" y="80" fontSize="16" fontWeight="bold" color="#5083BD" x="47"/>
+			<s:Button y="169" label="Retrieve Password" id="RetrievePassword_BtnRetrievePassword" horizontalCenter="0" click="RetrievePassword_BtnRetrievePassword_clickHandler(event)" skinClass="skins.BlueButton"/>
+			<mx:LinkButton x="314" y="190" label="back to Login" id="RetrievePassword_LblBack" click="{this.currentState = 'Login'}" styleName="GBLink" color="#18A47E" fontWeight="bold" textDecoration="underline"/>
+		</s:Panel>
+	</s:BorderContainer>
 </s:WindowedApplication>

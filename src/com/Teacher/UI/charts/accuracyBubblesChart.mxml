@@ -27,7 +27,6 @@
 	</s:states>
 	<fx:Script>
 		<![CDATA[
-			import com.Teacher.UI.Utilities;
 			import CustomEvents.ChartLoadedEvent;			
 			import com.degrafa.paint.SolidFill;	
 			import mx.collections.ArrayCollection;
@@ -86,6 +85,15 @@
 			public var timePeriodLabelField:String = "name";
 			
 			
+			public function get yField()
+			{
+				return classMode?"classAccuracy":"accuracy";
+			}
+			
+			public function get radiusField()
+			{
+				return classMode?"classCount":"count";
+			}
 			
 			
 			[Bindable]
@@ -143,10 +151,10 @@
 					"<b>" + displayName + "</b><br/>" +
 					(classMode?"":("Answered = " + hitData.item.count +"<br/>")) +  
 					(classMode?"":("Accuracy = " + hitData.item.accuracy + "% <br/><br/>")) +
-					"Class Average Answered = " + hitData.item.classCount +"<br/>" +  
-					"Class Average Accuracy = " + hitData.item.classAccuracy +"% <br/><br/>" +  
-					"School Average Answered = " + hitData.item.schoolCount +"<br/>" +  
-					"School Average Accuracy = " + hitData.item.schoolAccuracy + "%"
+					(classMode?"Class Average Answered = " + hitData.item.classCount +"<br/>":"") +  
+					(classMode?"Class Average Accuracy = " + hitData.item.classAccuracy +"% <br/><br/>":"") //+  
+					/*"School Average Answered = " + hitData.item.schoolCount +"<br/>" +  
+					"School Average Accuracy = " + hitData.item.schoolAccuracy + "%"*/
 					;
 			}			
 			
@@ -170,13 +178,9 @@
 			<s:GradientEntry color="0xFFFFD4" alpha="0.5"/>
 			<s:GradientEntry color="yellow"/>
 		</s:RadialGradient>
-		<!--mx:SolidColor id="scConcept" color="blue" alpha=".3"/-->
 		<s:SolidColorStroke id="strokeConcept" color="blue" weight="2"/>
-		<!--<mx:SolidColor id="scConfidence" color="green" alpha=".3"/>-->
 		<s:SolidColorStroke id="strokeConfidence" color="green" weight="2"/>
-		<!--<mx:SolidColor id="scMastery" color="maroon" alpha=".3"/>-->
 		<s:SolidColorStroke id="strokeMastery" color="maroon" weight="2"/>
-		<!--<mx:SolidColor id="scEinstein" color="yellow" alpha=".3"/>-->
 		<s:SolidColorStroke id="strokeEinstein" color="yellow" weight="2"/>
 	</fx:Declarations>
 		<s:VGroup width="100%" height="95%">
@@ -189,58 +193,58 @@
 			<s:Scroller width="100%" height="{0.9*this.height}" includeIn="dataGrid" >
 				<s:VGroup width="100%" height="100%">			
 					<s:Label text="Concept" />
-					<s:DataGrid dataProvider="{conceptData}" width="90%">
+					<s:DataGrid dataProvider="{conceptData}" width="90%" horizontalCenter="0">
 						<s:columns>
 							<s:ArrayList>
 								<s:GridColumn dataField="name" headerText="Month"/>
-								<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
-								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
-								<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
-								<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
-								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
-								<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+								<s:GridColumn dataField="accuracy"  headerText="Accuracy" visible="{!classMode}"/>					
+								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy" visible="{classMode}"/>
+								<!--s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/-->
+								<s:GridColumn dataField="count"  headerText="No of Questions Answered" visible="{!classMode}"/>
+								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered" visible="{classMode}"/>
+								<!--s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/-->
 							</s:ArrayList>
 						</s:columns>
 					</s:DataGrid>
 					<s:Label text="Confidence" />
-					<s:DataGrid dataProvider="{confidenceData}"  width="90%">
+					<s:DataGrid dataProvider="{confidenceData}"  width="90%" horizontalCenter="0">
 						<s:columns>
 							<s:ArrayList>
 								<s:GridColumn dataField="name" headerText="Month"/>
-								<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
-								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
-								<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
-								<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
-								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
-								<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+								<s:GridColumn dataField="accuracy"  headerText="Accuracy" visible="{!classMode}"/>					
+								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy" visible="{classMode}"/>
+								<!--s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/-->
+								<s:GridColumn dataField="count"  headerText="No of Questions Answered" visible="{!classMode}"/>
+								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered" visible="{classMode}"/>
+								<!--s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/-->
 							</s:ArrayList>
 						</s:columns>
 					</s:DataGrid>
 					<s:Label text="Mastery" />
-					<s:DataGrid dataProvider="{masteryData}"  width="90%">
+					<s:DataGrid dataProvider="{masteryData}"  width="90%" horizontalCenter="0">
 						<s:columns>
 							<s:ArrayList>
 								<s:GridColumn dataField="name" headerText="Month"/>
-								<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
-								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
-								<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
-								<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
-								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
-								<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+								<s:GridColumn dataField="accuracy"  headerText="Accuracy" visible="{!classMode}"/>					
+								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy" visible="{classMode}"/>
+								<!--s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/-->
+								<s:GridColumn dataField="count"  headerText="No of Questions Answered" visible="{!classMode}"/>
+								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered" visible="{classMode}"/>
+								<!--s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/-->
 							</s:ArrayList>
 						</s:columns>
 					</s:DataGrid>
 					<s:Label text="Einstein" />
-					<s:DataGrid dataProvider="{einsteinData}"  width="90%">
+					<s:DataGrid dataProvider="{einsteinData}"  width="90%" horizontalCenter="0">
 						<s:columns>
 							<s:ArrayList>
 								<s:GridColumn dataField="name" headerText="Month"/>
-								<s:GridColumn dataField="accuracy"  headerText="Accuracy"/>					
-								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy"/>
-								<s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/>
-								<s:GridColumn dataField="count"  headerText="No of Questions Answered"/>
-								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered"/>
-								<s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/>
+								<s:GridColumn dataField="accuracy"  headerText="Accuracy" visible="{!classMode}"/>					
+								<s:GridColumn dataField="classAccuracy"  headerText="Class Avg Accuracy" visible="{classMode}"/>
+								<!--s:GridColumn dataField="schoolAccuracy"  headerText="School Avg Accuracy"/-->
+								<s:GridColumn dataField="count"  headerText="No of Questions Answered" visible="{!classMode}"/>
+								<s:GridColumn dataField="classCount"  headerText="Class Avg Questions Answered" visible="{classMode}"/>
+								<!--s:GridColumn dataField="schoolCount"  headerText="School Avg Questions Answered"/-->
 							</s:ArrayList>
 						</s:columns>
 					</s:DataGrid>
@@ -262,10 +266,10 @@
 				</mx:AxisRenderer>
 			</mx:horizontalAxisRenderers>
 			<mx:verticalAxis>
-				<mx:LinearAxis title="Accuracy %" id="accuracyAxis" maximum="{Math.max(Utilities.getMax(conceptData, 'accuracy'), 
-							   Utilities.getMax(confidenceData, 'accuracy'),
-							   Utilities.getMax(masteryData, 'accuracy'),
-							   Utilities.getMax(einsteinData, 'accuracy'))						   
+				<mx:LinearAxis title="Accuracy %" id="accuracyAxis" maximum="{Math.max(Utilities.getMax(conceptData, yField), 
+							   Utilities.getMax(confidenceData, yField),
+							   Utilities.getMax(masteryData, yField),
+							   Utilities.getMax(einsteinData, yField))						   
 							   + 10}">						
 				</mx:LinearAxis>
 			</mx:verticalAxis>
@@ -284,8 +288,8 @@
 			<mx:series>
 				<mx:BubbleSeries id="conceptSeries"
 								 xField="{timeField}" 
-								 yField="{classMode?'classAccuracy':'accuracy'}"
-								 radiusField="{classMode?'classCount':'count'}"
+								 yField="{yField}"
+								 radiusField="{radiusField}"
 								 displayName="Concept: Accuracy"
 								 dataProvider="{conceptData}"
 								 fill="{scConcept}"
@@ -295,8 +299,8 @@
 				</mx:BubbleSeries>
 				<mx:BubbleSeries id="confidenceSeries"
 								 xField="{timeField}" 
-								 yField="{classMode?'classAccuracy':'accuracy'}"
-								 radiusField="{classMode?'classCount':'count'}"
+								 yField="{yField}"
+								 radiusField="{radiusField}"
 								 displayName="Confidence: Accuracy"
 								 dataProvider="{confidenceData}"
 								 fill="{scConfidence}"
@@ -306,8 +310,8 @@
 				</mx:BubbleSeries>
 				<mx:BubbleSeries id="masterySeries"
 								 xField="{timeField}" 
-								 yField="{classMode?'classAccuracy':'accuracy'}"
-								 radiusField="{classMode?'classCount':'count'}"
+								 yField="{yField}"
+								 radiusField="{radiusField}"
 								 displayName="Mastery: Accuracy"
 								 dataProvider="{masteryData}"
 								 fill="{scMastery}"
@@ -317,8 +321,8 @@
 				</mx:BubbleSeries>
 				<mx:BubbleSeries id="einsteinSeries"
 								 xField="{timeField}" 
-								 yField="{classMode?'classAccuracy':'accuracy'}"
-								 radiusField="{classMode?'classCount':'count'}"
+								 yField="{yField}"
+								 radiusField="{radiusField}"
 								 displayName="Einstein: Accuracy"
 								 dataProvider="{einsteinData}"
 								 fill="{scEinstein}"

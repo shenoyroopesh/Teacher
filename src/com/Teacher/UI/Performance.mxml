@@ -5,7 +5,7 @@
 		 width="100%" height="100%" xmlns:UI="com.Teacher.UI.*"
 		 currentState="Class" xmlns:charts="com.Teacher.UI.charts.*"
 		 color="0xFFFFFF" xmlns:controls="com.brightPoint.controls.*" 
-		 xmlns:reflector="com.common.reflector.*">
+		 xmlns:reflector="com.common.reflector.*" initialize="performance_initializeHandler(event)" xmlns:teacherinterface="services.teacherinterface.*">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<mx:NumberFormatter id="formatter" />
@@ -46,11 +46,142 @@
 	</fx:Style>
 	<fx:Script>
 		<![CDATA[			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.Application;
 			import mx.core.IFlexDisplayObject;
 			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
 			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			import services.teacherinterface.TeacherInterface;
 			
 			import skins.TimeGaugeSkin;
+			
+			import spark.events.GridEvent;
+			import spark.events.IndexChangeEvent;
+			
+			
+			[Bindable]
+			public var subjectsList = new ArrayCollection([
+				"Maths", "Science", "English"
+			]);
+			
+			[Bindable]
+			public var classes = new ArrayCollection([
+				"3A section 1", "3A section 2", "2A section 1"
+			]);
+			
+			[Bindable]		
+			public var classData:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var classLOProgressData:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var classTimeSpentData:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			public var classLODifficultyData:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			public var classAccuracyConcept:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var classAccuracyConfidence:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var classAccuracyMastery:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var classAccuracyEinstein:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var classPerformanceStats:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var gradePerformanceStats:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var currentStudentId;
+			
+			[Bindable]
+			public var currentStudentName;
+			
+			[Bindable]
+			public var currentClass;
+			
+			[Bindable]
+			public var studentDifficultyStats:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var remarks;
+			
+			[Bindable]
+			public var studentAccuracyConcept:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var studentAccuracyConfidence:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var studentAccuracyMastery:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var studentAccuracyEinstein:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var studentLoStats;
+			
+			[Bindable]
+			public var studentTimeStatistics:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var studentPerformanceStats:ArrayCollection = new ArrayCollection();
+						
+			[Bindable]
+			public var studentPointsStats:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var totalTimeSpent:String = "";
+			
+			[Bindable]
+			public var totalPointsEarned:String = "";
+			
+			[Bindable]
+			public var learningObjectsCovered:String = "";
+			
+			[Bindable]
+			public var noOfQuestionsAnswered:String = "";
+			
+			[Bindable]
+			public var pointsPerDay:String = "";
+			
+			[Bindable]
+			public var maxPointsPerDay:String = "";
+			
+			[Bindable]
+			public var timePerDay:String = "";
+			
+			[Bindable]
+			public var maxTimePerDay:String = "";
+			
+			[Bindable]
+			public var loPerMonth:String = "";
+			
+			[Bindable]
+			public var maxLOPerMonth:String = "";
+			
+			
+			[Bindable]
+			public var classPointsPerDay:String = "";
+			
+			[Bindable]
+			public var classTimePerDay:String = "";
+			
+			[Bindable]
+			public var classLoPerMonth:String = "";			
+			
 			
 			/**
 			 * This sets the scale of the chart to fit it into the parent containers' dimensions. This is preferred to
@@ -84,8 +215,306 @@
 				chat.user = new User("Sang");
 			}
 			
+			protected function performance_initializeHandler(event:FlexEvent):void
+			{
+				var teacherId:String = this.parentApplication.TeacherId;
+				//get the initial details - subjects and classes to be filled into the options
+				GetBasicDetailsResult.token = teacher.getInitialDetails(teacherId);
+			}
+			
+			protected function GetBasicDetailsResult_resultHandler(event:ResultEvent):void
+			{
+				var basicResult:Object = GetBasicDetailsResult.lastResult.source;				
+				subjectsList = new ArrayCollection(basicResult.subjects.data);
+				classes = new ArrayCollection(basicResult.classes.data);
+				classDropdown.selectedIndex = 0; 
+				refreshClassData();
+			}
+			
+			
+			/**
+			 * Used for tracing
+			 * */
+			protected function traceWithMessage( result, message:String ):void{
+				trace( result );
+				mx.controls.Alert.show(message + (result.message == null? "" : "Error: "+result.message));
+			}
+			
+			protected function refreshClassData()
+			{
+				cursorManager.setBusyCursor();
+				//TODO: Remove the hard codings
+				GetClassDetailsResult.token = teacher.getClassDetails(classDropdown.selectedItem['CLASS_ID'],
+					classDropdown.selectedItem['GL_ID'], '01-01-2001', '11-11-2011', 
+					subjectTabBar.selectedItem['SUBJECT_ID']);
+				currentClass = classDropdown.selectedItem['CLASS_NAME'];
+				
+			}
+			
+			protected function GetClassDetailsResult_resultHandler(event:ResultEvent):void
+			{
+				//change to student view if in class view. Otherwise keep in current state
+				if(this.currentState.search('Class') == -1)
+					this.currentState = 'Class';
+				
+				currentlyShowing.text = currentClass;
+				
+				var classDetails:Object = GetClassDetailsResult.lastResult.source;				
+				classData = new ArrayCollection(classDetails.classCompleteStats.data);
+				classData = new ArrayCollection(classDetails.classCompleteStats.data);
+				classLOProgressData = processLOData(new ArrayCollection(classDetails.classLODifficultyStats.data));
+				classTimeSpentData = processClassTimeData(new ArrayCollection(classDetails.classTimeStats.data));
+				var classAccuracyData = processAccuracyData(new ArrayCollection(classDetails.classAccuracyStats.data), true);
+				classAccuracyConcept = classAccuracyData["Concept"]; 
+				classAccuracyConfidence = classAccuracyData["Confidence"]; 
+				classAccuracyMastery = classAccuracyData["Mastery"]; 
+				classAccuracyEinstein = classAccuracyData["Einstein"];
+				classLODifficultyData = new ArrayCollection(classDetails.mostDifficultLOs.data);				
+				classPerformanceStats = new ArrayCollection(classDetails.classPerformanceStats.data);
+				gradePerformanceStats = new ArrayCollection(classDetails.gradePerformanceStats.data);				
+				classLoPerMonth = (classDetails.classDashboardGaugeData.loPerMonth.data[0]["lo_per_month"].toString().split("."))[0];
+				classTimePerDay = (classDetails.classDashboardGaugeData.timePerDay.data[0]["time_per_day"].toString().split("."))[0];
+				classPointsPerDay = (classDetails.classDashboardGaugeData.pointsPerDay.data[0]["points_per_day"].toString().split("."))[0];				
+				maxLOPerMonth = (classDetails.maxDashboardGaugeData.maxLoPerMonth.data[0]["max_lo_per_month"].toString().split("."))[0];
+				maxTimePerDay = (classDetails.maxDashboardGaugeData.maxTimePerDay.data[0]["max_time_per_day"].toString().split("."))[0];
+				maxPointsPerDay = (classDetails.maxDashboardGaugeData.maxPointsPerDay.data[0]["max_points_per_day"].toString().split("."))[0];				
+				cursorManager.removeBusyCursor();
+			}
+			
+			protected function processLOData(data:ArrayCollection)
+			{
+				var LOData:ArrayCollection = new ArrayCollection();
+				var subTopics:ArrayCollection;
+				var los:ArrayCollection;
+				var topicName:String = "";
+				var subTopicName:String = "";
+				
+				for each(var row:Object in data)
+				{
+					if(row["topicName"]!=topicName)
+					{
+						subTopics = new ArrayCollection();						
+						topicName = row["topicName"];
+						LOData.addItem({topicName:topicName, subtopics:subTopics});
+					}
+					if(row["subTopicName"]!=subTopicName)
+					{
+						los = new ArrayCollection();
+						subTopicName = row["subTopicName"];
+						subTopics.addItem({subtopicName:subTopicName, los:los});
+					}
+					los.addItem({name:row["lo_name"], correct: row["correct"], wrong:row["incorrect"], 
+							skipped:row["skipped"], incomplete:row["incomplete"]});	
+				}				
+				return LOData;
+			}
+					
+			
+			protected function processAccuracyData(data:ArrayCollection, classMode:Boolean)
+			{
+				var answerTypes = ["Concept", "Confidence", "Mastery", "Einstein"];				
+				var dataCollection:Dictionary = new Dictionary();
+				
+				for each(var type:String in answerTypes)
+				{
+					dataCollection[type] = new ArrayCollection();
+				}				
+				
+				for each(var row in data)
+				{
+					if(classMode)
+						(dataCollection[row["type"]] as ArrayCollection).
+							addItem({name: row["month"], count:0, accuracy:0, 
+								classCount: row["count"], classAccuracy: row["accuracy"], monthNum:row["monthNum"],
+								schoolCount: 0, schoolAccuracy: 0
+							});	
+					else
+						(dataCollection[row["type"]] as ArrayCollection).
+							addItem({name: row["month"], classCount:0, classAccuracy:0, 
+								count: row["count"], accuracy: row["accuracy"], monthNum:row["monthNum"],
+								schoolCount: 0, schoolAccuracy: 0
+							});
+				}
+				return dataCollection;
+			}
+			
+			protected function processClassTimeData(data:ArrayCollection)
+			{
+				var returnData:ArrayCollection = new ArrayCollection();
+				var timeData:ArrayCollection = new ArrayCollection();				
+				var studentName:String = "";
+				var studentId:String = "";
+				
+				for (var i:int=0; i< data.length; i++)
+				{									
+					if(i==0)
+					{
+						studentName = data[i]["studentName"];
+						studentId = data[i]["studentId"].toString();
+					} else if (studentId != data[i]["studentId"].toString())
+					{
+						//student id changes - this assumes that the list is sorted by student ids
+						returnData.addItem({name: studentName, data: timeData});
+						//refresh timeData and the student variables
+						studentName = data[i]["studentName"];
+						studentId = data[i]["studentId"].toString();
+						timeData = new ArrayCollection();
+					}
+					timeData.addItem({month: data[i]["month"], time: data[i]["time"]});
+				}
+				
+				//add the last student too
+				returnData.addItem({name: studentName, data: timeData});
+				
+				return returnData;
+			}
+			
+			
+			
+			protected function grid_gridDoubleClickHandler(event:GridEvent):void
+			{
+				currentStudentId = event.item["student_id"];
+				currentStudentName = event.item["student_name"];
+				refreshStudentDetails();				
+			}
+			
+			protected function refreshStudentDetails()
+			{		
+				cursorManager.setBusyCursor();
+				GetStudentDetailsResult.token = teacher.getStudentDetails(currentStudentId,classDropdown.selectedItem['CLASS_ID'],
+					classDropdown.selectedItem['GL_ID'], '01-01-2001', '11-11-2011', 
+					subjectTabBar.selectedItem['SUBJECT_ID']); 
+			}
+			
+			protected function GetStudentDetailsResult_resultHandler(event)
+			{
+				//change to student view if in class view. Otherwise keep in current state
+				if(this.currentState.search('Student') == -1)
+					this.currentState = 'StudentStats';
+				
+				currentlyShowing.text = currentStudentName;				
+				
+				var studentDetails:Object = GetStudentDetailsResult.lastResult.source;
+				studentDifficultyStats = processDifficultyStats(new ArrayCollection(studentDetails['difficultyStats'].data));				
+				remarks = new ArrayCollection( studentDetails['remarks'].data);				
+				var studentAccuracyStats = processAccuracyData(new ArrayCollection(studentDetails['accuracyStats'].data), false);
+				studentAccuracyConcept = studentAccuracyStats["Concept"];
+				studentAccuracyConfidence = studentAccuracyStats["Confidence"];
+				studentAccuracyMastery = studentAccuracyStats["Mastery"];
+				studentAccuracyEinstein = studentAccuracyStats["Einstein"];				
+				studentLoStats = processLOStats(new ArrayCollection(studentDetails['loStats'].data));	
+				studentTimeStatistics = processStudentTimeStats(new ArrayCollection(studentDetails['studentTimeStatistics'].data));				
+				studentPerformanceStats = new ArrayCollection(studentDetails['performanceStats'].single.data);
+				studentPointsStats = new ArrayCollection(studentDetails['performanceStats'].points.data);
+				
+				//student stats are still to be updated
+				
+				loPerMonth = (studentDetails.studentDashboardGaugeData.loPerMonth[0]["lo_per_month"].toString().split("."))[0];
+				timePerDay = (studentDetails.studentDashboardGaugeData.timePerDay[0]["time_per_day"].toString().split("."))[0];
+				pointsPerDay = (studentDetails.studentDashboardGaugeData.pointsPerDay[0]["points_per_day"].toString().split("."))[0];				
+				maxLOPerMonth = (studentDetails.maxDashboardGaugeData.maxLoPerMonth.data[0]["max_lo_per_month"].toString().split("."))[0];
+				maxTimePerDay = (studentDetails.maxDashboardGaugeData.maxTimePerDay.data[0]["max_time_per_day"].toString().split("."))[0];
+				maxPointsPerDay = (studentDetails.maxDashboardGaugeData.maxPointsPerDay.data[0]["max_points_per_day"].toString().split("."))[0];	
+				
+				cursorManager.removeBusyCursor();
+			}
+			
+			
+			protected function processDifficultyStats(data:ArrayCollection)
+			{				
+				var correctCollection:ArrayCollection = new ArrayCollection();
+				var incorrectCollection:ArrayCollection = new ArrayCollection();
+				var skippedCollection:ArrayCollection = new ArrayCollection();
+				
+				var correctCount:int = 0;
+				var incorrectCount:int = 0;
+				var skippedCount:int = 0;
+				
+				for each(var row in data)
+				{
+					switch(row["result"])
+					{
+						case "Correct": 
+							correctCollection.addItem({type:row["type"], count:row["count"]});
+							correctCount = correctCount + row["count"];
+							break;
+						
+						case "Incorrect": 
+							incorrectCollection.addItem({type:row["type"], count:row["count"]});
+							incorrectCount = incorrectCount + row["count"];
+							break;
+						
+						case "Skipped": 
+							skippedCollection.addItem({type:row["type"], count:row["count"]});
+							skippedCount = skippedCount + row["count"];
+							break;
+					}
+				}
+				
+				var chartData = new ArrayCollection([
+					{result:"Correct", count: correctCount, Types:correctCollection},
+					{result:"Incorrect", count: incorrectCount, Types:incorrectCollection},
+					{result:"Skipped", count: skippedCount, Types:skippedCollection}
+				]);
+				
+				return chartData;
+			}
+			
+			protected function processLOStats(data:ArrayCollection)
+			{
+				var LOData:ArrayCollection = new ArrayCollection();
+				var subTopics:ArrayCollection;
+				var los:ArrayCollection;
+				
+				var topicName:String = "";
+				var subTopicName:String = "";
+				
+				for each(var row:Object in data)
+				{
+					if(row["topicName"]!=topicName)
+					{
+						subTopics = new ArrayCollection();						
+						topicName = row["topicName"];
+						LOData.addItem({topicName:topicName, subtopics:subTopics});
+					}
+					if(row["subTopicName"]!=subTopicName)
+					{
+						los = new ArrayCollection();
+						subTopicName = row["subTopicName"];
+						subTopics.addItem({subtopicName:subTopicName, los:los});
+					}		
+					los.addItem({name:row["lo_name"], correct: row["correct"], wrong:row["incorrect"], 
+						skipped:row["skipped"], incomplete:row["incomplete"]});					
+				}				
+				return LOData;
+			}
+			
+			
+			protected function processStudentTimeStats(data:ArrayCollection)
+			{
+				var timespentStatsArray:ArrayCollection = new ArrayCollection();
+				
+				for each(var row:Object in data)
+				{
+					timespentStatsArray.addItem({month:row["month"], time:row["time"]});
+				}	
+				return timespentStatsArray;
+			}
+			
+			protected function classGridLabelFunction(item:Object, column:GridColumn)
+			{
+				var dataField = column.dataField;
+				return item[dataField] + " (" + item[dataField + "_percentage"] + ")";
+			}
+			
 		]]>
 	</fx:Script>
+	<fx:Declarations>
+		<teacherinterface:TeacherInterface id="teacher" fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)" showBusyCursor="true"/>
+		<s:CallResponder id="GetBasicDetailsResult" result="GetBasicDetailsResult_resultHandler(event)" />
+		<s:CallResponder id="GetClassDetailsResult" result="GetClassDetailsResult_resultHandler(event)" />
+		<s:CallResponder id="GetStudentDetailsResult" result="GetStudentDetailsResult_resultHandler(event)" />
+	</fx:Declarations>
 	<s:states>
 		<s:State name="Class" />
 		<s:State name="ClassStats" />
@@ -121,6 +550,18 @@
 			<UI:DateRangePick width="25%"/>	
 			<UI:statsSummary id="statsSummary" height="100%" width="48%" />
 		</s:HGroup>
+		<s:HGroup width="100%" id="tabContainer"
+				  verticalAlign="middle" horizontalAlign="right" color="0x000000">
+			<s:HGroup width="30%" horizontalAlign="left" verticalAlign="middle">
+				<s:Label id="currentlyShowing" color="0xFFFFFF" fontSize="24" fontWeight="bold"
+						 right="{0.4*tabContainer.width}"/>	
+			</s:HGroup>			 
+			<s:TabBar dataProvider="{subjectsList}" id="subjectTabBar" labelField="SUBJECT_NAME"
+					  change="refreshClassData()"/>
+			<s:Label text="Pick Class" id="lblClass" color="0xFFFFFF"/>
+			<s:DropDownList dataProvider="{classes}" id="classDropdown" selectedIndex="0"
+							change="refreshClassData()" labelField="CLASS_NAME"/>
+		</s:HGroup>
 		<s:BorderContainer  height="75%" width="100%" color="0x000000">
 			<s:Rect  width="100%" height="100%">
 				<s:fill>
@@ -128,79 +569,131 @@
 				</s:fill>
 			</s:Rect>		
 			<s:HGroup id="middleContainer" height="100%" width="100%">
-				<s:DataGrid id="classGrid" includeIn="Class" height="100%" width="100%" >
+				<s:DataGrid id="classGrid" includeIn="Class" height="100%" width="100%" dataProvider="{classData}"
+							doubleClickEnabled="true" gridDoubleClick="grid_gridDoubleClickHandler(event)">
+					<s:columns>
+						<s:ArrayCollection>
+							<s:GridColumn headerText="Student" dataField="student_name" />
+							<s:GridColumn headerText="+ Pts. (bonus)" dataField="points_with_bonus"/>
+							<s:GridColumn headerText="- Pts." dataField="deducted_points" />
+							<s:GridColumn headerText="Time" dataField="time" />
+							<s:GridColumn headerText="# of Questions" dataField="no_of_questions" />
+							<s:GridColumn headerText="Accuracy" dataField="accuracy" />
+							<s:GridColumn headerText="# Einstein" dataField="Einstein" labelFunction="classGridLabelFunction"/>
+							<s:GridColumn headerText="# Mastery" dataField="Mastery" labelFunction="classGridLabelFunction"/>
+							<s:GridColumn headerText="# Confidence" dataField="Confidence" labelFunction="classGridLabelFunction"/>
+							<s:GridColumn headerText="# Concept" dataField="Concept" labelFunction="classGridLabelFunction"/>
+							<s:GridColumn headerText="# Video"  />
+							<s:GridColumn headerText="# Help"  />
+						</s:ArrayCollection>
+					</s:columns>
 				</s:DataGrid>
-				<s:DataGrid id="studentGrid" excludeFrom="Class" width="25%" height="100%">
+				<s:DataGrid id="studentGrid" excludeFrom="Class" width="25%" height="100%" dataProvider="{classData}"
+							doubleClickEnabled="true" gridDoubleClick="grid_gridDoubleClickHandler(event)">
+					<s:columns>
+						<s:ArrayCollection>
+							<s:GridColumn headerText="Student" dataField="student_name" />
+						</s:ArrayCollection>
+					</s:columns>
 				</s:DataGrid>
 				<s:VGroup width="75%" height="100%" id="statsContainer" includeIn="StudentStats" verticalAlign="middle"
 						  gap="0">
 					<s:HGroup width="100%" height="70%" gap="0" horizontalCenter="0">
-						<UI:vitalStats id="studentVitalStats" width="50%"  height="100%"/>						
+						<UI:vitalStats id="studentVitalStats" width="50%"  height="100%"
+									   pointsPerDay="{pointsPerDay}"
+									   loPerMonth="{loPerMonth}"
+									   timePerDay="{timePerDay}"
+									   maxLOPerMonth="{maxLOPerMonth}"
+									   maxTimePerDay="{maxTimePerDay}"
+									   maxPointsPerDay="{maxPointsPerDay}"/>						
 						<s:BorderContainer width="50%" height="100%" id="statsChartContainer" top="0">
 							<charts:StatsChart id="statsChart"
+											   data="{studentDifficultyStats}"
 											   scaleX="{getChartsScale(statsChart)}"
 											   scaleY="{getChartsScale(statsChart)}"
 											   verticalCenter="0" horizontalCenter="0"/>							
 						</s:BorderContainer>
 					</s:HGroup>	
-					<UI:remarksBox id="remarksBox" width="100%" height="30%"/>
+					<UI:remarksBox id="remarksBox" width="100%" height="30%" remarks="{this.remarks}"/>
 				</s:VGroup>
 				<s:VGroup width="75%" height="100%" id="classStatsContainer" includeIn="ClassStats" verticalAlign="middle"
 						  gap="0">
 					<s:HGroup width="100%" height="100%" gap="0" horizontalCenter="0">
 						<s:VGroup width="50%" height="100%" gap="0">
-							<UI:vitalStats id="classVitalStats" classMode="true" width="100%" height="70%"/>	
-<!--							<UI:performersAndLaggards width="100%" height="25%"/>-->
-							<UI:classSchedule width="100%" height="30%"/>
+							<UI:vitalStats id="classVitalStats" classMode="true" width="100%" height="100%"
+										   pointsPerDay="{classPointsPerDay}"
+										   loPerMonth="{classLoPerMonth}"
+										   timePerDay="{classTimePerDay}"
+										   maxLOPerMonth="{maxLOPerMonth}"
+										   maxTimePerDay="{maxTimePerDay}"
+										   maxPointsPerDay="{maxPointsPerDay}"/>
+							<!--<UI:classSchedule width="100%" height="30%"/>-->
 						</s:VGroup>						
 						<s:BorderContainer width="50%" height="100%" id="classStatsChartContainer" top="0">
 							<charts:classLODifficulty id="classLODifficulty" width="100%" height="100%" 
-													  verticalCenter="0" horizontalCenter="0" />
+													  verticalCenter="0" horizontalCenter="0"
+													  loDifficulty="{classLODifficultyData}"/>
 						</s:BorderContainer>
 					</s:HGroup>
-
 				</s:VGroup>
 				<s:Group width="75%" height="100%" excludeFrom="Class, StudentStats, ClassStats" >
 					<s:Group id="chartContainer" height="95%" width="100%" verticalCenter="0">
 						<charts:accuracyBubblesChart id="accuracyChart"
 													 includeIn="StudentAccuracy" 
+													 conceptData="{studentAccuracyConcept}"
+													 confidenceData="{studentAccuracyConfidence}"
+													 masteryData="{studentAccuracyMastery}"
+													 einsteinData="{studentAccuracyEinstein}"
 													 scaleX="{getChartsScale(accuracyChart)}"
 													 scaleY="{getChartsScale(accuracyChart)}"
 													 verticalCenter="0" horizontalCenter="0"/>
 						<charts:LOChart id="loChart" 
 										includeIn="StudentLO" 
+										ProgressData="{studentLoStats}"
 										scaleX="{getChartsScale(loChart)}"
 										scaleY="{getChartsScale(loChart)}"
 										verticalCenter="0" horizontalCenter="0"/>
 						<charts:LOChart id="classLoChart" 
 										includeIn="ClassLO" 
+										ProgressData="{classLOProgressData}"
 										scaleX="{getChartsScale(classLoChart)}"
 										scaleY="{getChartsScale(classLoChart)}"
 										verticalCenter="0" classMode="true" 
 										horizontalCenter="0"/>
 						<charts:PerformanceChart id="performanceChart" 
 												 includeIn="StudentPerformance" 
+												 performanceData="{studentPerformanceStats}"
+												 classAvgPerformanceData="{classPerformanceStats}"
+												 schoolAvgPerformanceData="{gradePerformanceStats}"
 												 scaleX="{getChartsScale(performanceChart)}"
 												 scaleY="{getChartsScale(performanceChart)}"
 												 verticalCenter="0" horizontalCenter="0"/>
 						<charts:PerformanceChart id="performanceClassAverageChart" 
 												 includeIn="ClassPerformance" 
+												 classAvgPerformanceData="{classPerformanceStats}"
+												 schoolAvgPerformanceData="{gradePerformanceStats}"
 												 scaleX="{getChartsScale(performanceClassAverageChart)}"
 												 scaleY="{getChartsScale(performanceClassAverageChart)}"
 												 verticalCenter="0" horizontalCenter="0"
 												 studentStats="false"/>
 						<charts:TimeSpentChart id="timeSpentChart"
-											   includeIn="StudentTimeSpent" 
+											   includeIn="StudentTimeSpent"
+											   timeSpentData="{studentTimeStatistics}"
 											   scaleX="{getChartsScale(timeSpentChart)}"
 											   scaleY="{getChartsScale(timeSpentChart)}"
 											   verticalCenter="0" horizontalCenter="0"/>
 						<charts:TimeSpentChart id="classTimeSpentChart"
-											   includeIn="ClassTimeSpent" 
+											   includeIn="ClassTimeSpent"
+											   classTimeSpentData="{classTimeSpentData}"
 											   scaleX="{getChartsScale(classTimeSpentChart)}"
 											   scaleY="{getChartsScale(classTimeSpentChart)}"
 											   verticalCenter="0" horizontalCenter="0" showClass="true"/>
 						<charts:accuracyBubblesChart id="classAccuracyChart"
 													 includeIn="ClassAccuracy" 
+													 conceptData="{classAccuracyConcept}"
+													 confidenceData="{classAccuracyConfidence}"
+													 masteryData="{classAccuracyMastery}"
+													 einsteinData ="{classAccuracyEinstein}"
 													 scaleX="{getChartsScale(classAccuracyChart)}"
 													 scaleY="{getChartsScale(classAccuracyChart)}"
 													 verticalCenter="0" horizontalCenter="0"

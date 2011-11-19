@@ -25,9 +25,19 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>[source path] src</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/Student/src</locationURI>
+		</link>
+		<link>
 			<name>bin-debug</name>
 			<type>2</type>
 			<location>C:/wamp/www/Teacher</location>
+		</link>
+		<link>
+			<name>services/TeacherInterface.php</name>
+			<type>1</type>
+			<location>C:/wamp/www/golibaje_php/TeacherInterface.php</location>
 		</link>
 	</linkedResources>
 </projectDescription>

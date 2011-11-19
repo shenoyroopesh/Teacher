@@ -3,6 +3,7 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*">
 	<fx:Declarations>
+		<fx:String id="TeacherId" />
 	</fx:Declarations>
 	<UI:Performance id="performance" />
 </s:Window>

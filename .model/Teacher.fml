@@ -1,0 +1,110 @@
+
+<model xmlns="http://ns.adobe.com/Fiber/1.0">
+  <annotation name="ActionScriptGeneration">
+    <item name="FullyQualifyReferences">true</item>
+  </annotation>
+  <service name="TeacherInterface">
+    <annotation name="ActionScriptGeneration">
+      <item name="Source">TeacherInterface</item>
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services.teacherinterface</item>
+      <item name="Endpoint">http://localhost/Teacher/gateway.php</item>
+      <item name="Destination">TeacherInterface</item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">PHP</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="PHP_RELATIVE_LOCATION">golibaje_php/TeacherInterface.php</item>
+      <item name="PHP_SERVER_ROOT">C:/wamp/www/</item>
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/Teacher/services</item>
+      <item name="PHP_LOCATION">C:/wamp/www/golibaje_php/TeacherInterface.php</item>
+      <item name="LINKED_FILE">TeacherInterface.php</item>
+      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
+      <item name="ABSOLUTE_ENDPOINT">http://localhost/Teacher/gateway.php</item>
+      <item name="PHP_CLASS_NAME">TeacherInterface</item>
+    </annotation>
+    <function name="ProcessTeacherLogin" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque,opaque,opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="username" type="opaque"/>
+      <parameter name="password" type="opaque"/>
+      <parameter name="schoolId" type="opaque"/>
+    </function>
+    <function name="TeacherLogout" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="CheckTeacherLoginStatus" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="returntype" type="opaque"/>
+    </function>
+    <function name="RecoverTeacherPassword" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque,opaque,opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="email" type="opaque"/>
+      <parameter name="type" type="opaque"/>
+      <parameter name="schoolId" type="opaque"/>
+    </function>
+    <function name="getInitialDetails" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="teacherId" type="opaque"/>
+    </function>
+    <function name="getClassDetails" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque,opaque,opaque,opaque,opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="classId" type="opaque"/>
+      <parameter name="gl_id" type="opaque"/>
+      <parameter name="fromDate" type="opaque"/>
+      <parameter name="toDate" type="opaque"/>
+      <parameter name="subjectId" type="opaque"/>
+    </function>
+    <function name="getStudentDetails" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque,opaque,opaque,opaque,opaque,opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="studentId" type="opaque"/>
+      <parameter name="classId" type="opaque"/>
+      <parameter name="gl_id" type="opaque"/>
+      <parameter name="fromDate" type="opaque"/>
+      <parameter name="toDate" type="opaque"/>
+      <parameter name="subjectId" type="opaque"/>
+    </function>
+  </service>
+</model>

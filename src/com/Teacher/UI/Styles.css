@@ -4,12 +4,12 @@
 
 .homePageSetupButton
 {
-	icon: Embed("../Icons/Setting-icon.png");	
+	icon: Embed("../Icons/Setup.png");	
 }
 
 .homePageClassMonitoring
 {
-	icon: Embed("../Icons/Class-monitoring-icon.png");	
+	icon: Embed("../Icons/classmonitor.png");	
 }
 
 .homePageSchoolAdmin
@@ -19,47 +19,47 @@
 
 .homePagePerformance
 {
-	icon: Embed("../Icons/Performance-icon.png");
+	icon: Embed("../Icons/performance-main.png");
 }
 
 .performanceClass
 {
-	icon: Embed("../Icons/Class-icon.gif");
+	icon: Embed("../Icons/class.png");
 }
 
 .performanceStudent
 {
-	icon: Embed("../Icons/student_icon.png");
+	icon: Embed("../Icons/student.png");
 }
 
 .btnTimeSpent
 {
-	icon: Embed("../Icons/TimeSpent_icon.png");
+	icon: Embed("../Icons/timespent.png");
 }
 
 .btnAccuracy
 {
-	icon: Embed("../Icons/Accuracy_icon.png");
+	icon: Embed("../Icons/accuracy.png");
 }
 
 .btnPerformance
 {
-	icon: Embed("../Icons/performance_icon.png");
+	icon: Embed("../Icons/performance.png");
 }
 
 .btnStats
 {
-	icon: Embed("../Icons/stats_icon.png");
+	icon: Embed("../Icons/dashboard.png");
 }
 
 .btnLO
 {
-	icon: Embed("../Icons/Setting-icon.png");
+	icon: Embed("../Icons/LO.png");
 }
 
 .btnChat
 {
-	icon: Embed("../Icons/chat_icon.png");
+	icon: Embed("../Icons/chathelp.png");
 }
 
 .btnQuestionsAnswers
@@ -69,7 +69,7 @@
 
 .btnSpecialAssignment
 {
-	icon: Embed("../Icons/assignment-icon.png");
+	icon: Embed("../Icons/assign.png");
 }
 
 .btnChart

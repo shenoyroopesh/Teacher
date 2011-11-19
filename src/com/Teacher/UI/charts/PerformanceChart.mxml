@@ -6,40 +6,40 @@
 		 xmlns:Examples="Examples.*"
 		 creationComplete="start();" xmlns:collections="com.degrafa.core.collections.*" 
 		 fontSize="18" xmlns:reflector="com.common.reflector.*">
-	<!--<fx:Style source="styles/Golibaje.css"/>-->
 	<s:states>
-		<s:State name="chart" />
+		<s:State name="chart1" />
+		<s:State name="chart2" />
 		<s:State name="dataGrid" />
 	</s:states>
 	<fx:Script>
 		<![CDATA[
-			import CustomEvents.ChartLoadedEvent;
-			
-			import com.Teacher.UI.Utilities;
-			
+			import CustomEvents.ChartLoadedEvent;			
+			//import com.Teacher.UI.Utilities;			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.rpc.events.ResultEvent;
-			import mx.utils.object_proxy;
-			
+			import mx.utils.object_proxy;			
 			import org.axiis.core.AxiisSprite;
 			import org.axiis.data.DataSet;			
 			private var ds:DataSet = new DataSet();			
 			public var loaded:Boolean = false;			
 			
 			/**
+			 * @public
 			 * Make this false, if you don't need student details
 			 * */
 			[Bindable]
 			public var studentStats:Boolean = true;
 			
 			/**
+			 * @public
 			 * Make this false, if you don't need class average
 			 * */
 			[Bindable]
 			public var classAverage:Boolean = true;
 			
 			/**
+			 * @public
 			 * Make this false, if you don't need school average, true if you need it
 			 * */
 			[Bindable]
@@ -47,80 +47,102 @@
 			
 			
 			/** 
+			 * @public
 			 * Set this variable to the appropriate time gap used by the data. month, week, day
 			 * */ 
 			[Bindable]
 			public var timeIncrement:String = "month";
 			
+			/**
+			 * @public
+			 * Performance data for the student, needs to be an array collection with 7 columns - 
+			 * 
+			 * month, correct, correctOutsideBase, totalCorrect, incorrect, skipped and total
+			 * */
 			[Bindable]
-			public var performanceData:ArrayCollection = new ArrayCollection([
-				{month:"January", correct:100, correctOutsideBase:50,
+			public var performanceData:ArrayCollection = new ArrayCollection(); /*[
+				{month:"January", correct:100, correctOutsideBase:50, totalCorrect: 150,
 					incorrect:50, skipped:25, total:225},
-				{month:"February", correct:110, correctOutsideBase:40,
+				{month:"February", correct:110, correctOutsideBase:40,totalCorrect: 150,
 					incorrect:50, skipped:30, total:230},
-				{month:"March", correct:120, correctOutsideBase:40,
+				{month:"March", correct:120, correctOutsideBase:40,totalCorrect: 160,
 					incorrect:25, skipped:30, total:215},
-				{month:"April",correct:110, correctOutsideBase:45,
+				{month:"April",correct:110, correctOutsideBase:45,totalCorrect: 155,
 					incorrect:20, skipped:20, total:195},
-				{month:"May", correct:135, correctOutsideBase:25,
+				{month:"May", correct:135, correctOutsideBase:25,totalCorrect: 160,
 					incorrect:25, skipped:15, total:200},
-				{month:"June", correct:150, correctOutsideBase:15,
+				{month:"June", correct:150, correctOutsideBase:15,totalCorrect: 165,
 					incorrect:15, skipped:5, total:185},
-				{month:"July", correct:155, correctOutsideBase:10,
+				{month:"July", correct:155, correctOutsideBase:10,totalCorrect: 165,
 					incorrect:10, total:175},
-				{month:"August", correct:160, correctOutsideBase:5,
+				{month:"August", correct:160, correctOutsideBase:5,totalCorrect: 165,
 					incorrect:15, total:180},
-				{month:"September",correct:170, correctOutsideBase:5,
+				{month:"September",correct:170, correctOutsideBase:5,totalCorrect: 175,
 					incorrect:10, total:185}
-			]);
+			]);*/
 			
+			/**
+			 * @public
+			 * Avg Performance data for the class, needs to be an array collection with 7 columns - 
+			 * 
+			 * month, correct, correctOutsideBase, totalCorrect, incorrect, skipped and total
+			 * */
 			[Bindable]
-			public var classAvgPerformanceData:ArrayCollection = new ArrayCollection([
-				{month:"January", correct:110, correctOutsideBase:60,
+			public var classAvgPerformanceData:ArrayCollection = new ArrayCollection(); /*new ArrayCollection([
+				{month:"January", correct:110, correctOutsideBase:60, totalCorrect: 170,
 					incorrect:50, skipped:25, total:245},
-				{month:"February", correct:120, correctOutsideBase:50,
+				{month:"February", correct:120, correctOutsideBase:50,totalCorrect: 170,
 					incorrect:50, skipped:30, total:250},
-				{month:"March", correct:125, correctOutsideBase:45,
+				{month:"March", correct:125, correctOutsideBase:45,totalCorrect: 170,
 					incorrect:25, skipped:30, total:225},
-				{month:"April",correct:120, correctOutsideBase:55,
+				{month:"April",correct:120, correctOutsideBase:55,totalCorrect: 175,
 					incorrect:20, skipped:20, total:215},
-				{month:"May", correct:120, correctOutsideBase:50,
+				{month:"May", correct:120, correctOutsideBase:50,totalCorrect: 170,
 					incorrect:20, skipped:17, total:207},
-				{month:"June", correct:130, correctOutsideBase:40,
+				{month:"June", correct:130, correctOutsideBase:40,totalCorrect: 170,
 					incorrect:15, skipped:5, total:190},
-				{month:"July", correct:140, correctOutsideBase:15,
+				{month:"July", correct:140, correctOutsideBase:15,totalCorrect: 155,
 					incorrect:5, skipped:10, total:170},
-				{month:"August", correct:150, correctOutsideBase:15,
+				{month:"August", correct:150, correctOutsideBase:15,totalCorrect: 165,
 					incorrect:15, skipped:10, total:190},
-				{month:"September",correct:170, correctOutsideBase:5,
+				{month:"September",correct:170, correctOutsideBase:5,totalCorrect: 175,
 					incorrect:10, skipped:5, total:190}
-			]);
+			]);*/
 			
+			/**
+			 * @public
+			 * Avg Performance data for the student, needs to be an array collection with 7 columns - 
+			 * 
+			 * month, correct, correctOutsideBase, totalCorrect, incorrect, skipped and total
+			 * */
 			[Bindable]
-			public var schoolAvgPerformanceData:ArrayCollection = new ArrayCollection([
-				{month:"January", correct:100, correctOutsideBase:60,
+			public var schoolAvgPerformanceData:ArrayCollection = new ArrayCollection(); /*new ArrayCollection([
+				{month:"January", correct:100, correctOutsideBase:60,totalCorrect: 160,
 					incorrect:50, skipped:22, total:245},
-				{month:"February", correct:90, correctOutsideBase:50,
+				{month:"February", correct:90, correctOutsideBase:50,totalCorrect: 140,
 					incorrect:50, skipped:30, total:250},
-				{month:"March", correct:120, correctOutsideBase:45,
+				{month:"March", correct:120, correctOutsideBase:45,totalCorrect: 165,
 					incorrect:25, skipped:30, total:225},
-				{month:"April",correct:115, correctOutsideBase:55,
+				{month:"April",correct:115, correctOutsideBase:55,totalCorrect: 170,
 					incorrect:20, skipped:20, total:215},
-				{month:"May", correct:150, correctOutsideBase:50,
+				{month:"May", correct:150, correctOutsideBase:50,totalCorrect: 200,
 					incorrect:20, skipped:17, total:207},
-				{month:"June", correct:120, correctOutsideBase:40,
+				{month:"June", correct:120, correctOutsideBase:40,totalCorrect: 160,
 					incorrect:15, skipped:5, total:190},
-				{month:"July", correct:130, correctOutsideBase:15,
+				{month:"July", correct:130, correctOutsideBase:15,totalCorrect: 145,
 					incorrect:5, skipped:10, total:170},
-				{month:"August", correct:115, correctOutsideBase:15,
+				{month:"August", correct:115, correctOutsideBase:15,totalCorrect: 130,
 					incorrect:15, skipped:5, total:190},
-				{month:"September",correct:126, correctOutsideBase:5,
+				{month:"September",correct:126, correctOutsideBase:5,totalCorrect: 131,
 					incorrect:10, skipped:5, total:190}
-			]);
+			]);*/
 			
-			
+			/**
+			 * @public
+			 * Points data for the student needs to contain two columns - month, points
+			 * */
 			[Bindable]
-			public var pointsData:ArrayCollection = new ArrayCollection([
+			public var pointsData:ArrayCollection = new ArrayCollection(); /*new ArrayCollection([
 				{month:"January", points:1000},
 				{month:"February", points:1200},
 				{month:"March", points:1400},
@@ -130,17 +152,26 @@
 				{month:"July", points: 1800},
 				{month:"August", points: 2000},
 				{month:"September", points: 2500}
-			]);
+			]);*/
 			
-			public function start():void
+			/**
+			 * @private
+			 * This is used to tell external listeners that the chart has rendered, after giving sufficient gap
+			 * for the rendering to complete
+			 * */
+			private function start():void
 			{
 				var t:Timer = new Timer(2000, 1);				
 				t.addEventListener(TimerEvent.TIMER_COMPLETE, fireChartLoaded);
 				t.start();
 			}
 			
+			/**
+			 * @private
+			 * Calculates the percentages for all the columns in the chart grid view
+			 * */
 			[Bindable]
-			public function chartGridPercentage(item:Object, column:GridColumn):String
+			private function chartGridPercentage(item:Object, column:GridColumn):String
 			{
 				if(isNaN(item[column.dataField]) || item[column.dataField] == "")
 					return "";
@@ -154,37 +185,61 @@
 					(Math.round(item[column.dataField] * 10000 / total) / 100).toString() + "%)";				
 			}
 			
+			/**
+			 * @private
+			 * Fires the actual event that informs listeners that this chart is loaded
+			 * */
 			private function fireChartLoaded(event){				
 				loaded = true;
 				dispatchEvent(new Event("chartLoaded"));
 			}
+			
+			//allow dragging for the menu			
+			/**
+			 * @private
+			 * Starts the menu drag, when the mouse button goes down on the menu
+			 * */
+			private function startMenuDrag(event:MouseEvent):void 
+			{
+				chartMenu.startDrag(); 
+			}
+			
+			/**
+			 * @private
+			 * Stops the menu drag, when the mouse button goes down on the menu
+			 * */
+			private function stopMenuDrag(event:MouseEvent):void 
+			{ 
+				chartMenu.stopDrag();
+			}
+			
+			/**
+			 * @private
+			 * Returns the maximum possible answers plus a small buffer to calculate the max reading needed 
+			 * on the y axis 
+			 * */
+			[Bindable]
+			private function get maximumAnswers():Number
+			{
+				return Math.max(studentStats ? (Utilities.getMax(performanceData, 'correct') + 
+									Utilities.getMax(performanceData, 'correctOutsideBase')):0,
+							studentStats?Utilities.getMax(performanceData, 'incorrect'):0,
+							studentStats?Utilities.getMax(performanceData, 'skipped'):0,
+							Utilities.getMax(classAvgPerformanceData, 'correct') + Utilities.getMax(classAvgPerformanceData, 'correctOutsideBase'),
+							Utilities.getMax(classAvgPerformanceData, 'incorrect'),
+							Utilities.getMax(classAvgPerformanceData, 'skipped'),
+							Utilities.getMax(schoolAvgPerformanceData, 'correct') + Utilities.getMax(schoolAvgPerformanceData, 'correctOutsideBase'),
+							Utilities.getMax(schoolAvgPerformanceData, 'incorrect'),
+							Utilities.getMax(schoolAvgPerformanceData, 'skipped')) + 10;
+			}
+			
 		]]>
-	</fx:Script>
-	
+	</fx:Script>	
 	<fx:Declarations>	
 		<s:Stroke color="0x660066" weight="5" id="pointsStroke" />
 	</fx:Declarations>
-	<s:VGroup width="100%" height="95%">
-		<s:HGroup horizontalCenter="0" horizontalAlign="center">
-			<s:Button toolTip="Chart" click="{this.currentState = 'chart'}" 
-					  styleName="btnChart" scaleX="0.75" scaleY="0.75"/>
-			<s:Button toolTip="Raw Data" click="{this.currentState = 'dataGrid'}" 
-					  styleName="btnRawData" scaleX="0.6" scaleY="0.6"/>
-			<s:VGroup>
-				<s:HGroup>
-					<s:CheckBox id="correct" label="Correct" selected="true"/>
-					<s:CheckBox id="correctOutsideBase" label="Correct Outside Base" selected="true"/>
-					<s:CheckBox id="incorrect" label="Incorrect" selected="true"/>
-					<s:CheckBox id="skipped" label="Skipped" selected="true"/>
-				</s:HGroup>
-				<s:HGroup>
-					<s:CheckBox id="student" label="Student" selected="true" visible="{studentStats}"/>
-					<s:CheckBox id="classAvg" label="Class Avg" selected="true"/>
-					<s:CheckBox id="schoolAvg" label="School Avg" selected="true"/>
-				</s:HGroup>
-			</s:VGroup>
-		</s:HGroup>
-		<s:DataGrid dataProvider="{performanceData}" width="90%" includeIn="dataGrid">
+	<s:VGroup width="100%" height="95%" horizontalCenter="0" verticalCenter="0">		
+		<s:DataGrid dataProvider="{studentStats?performanceData:classAvgPerformanceData}" width="90%" includeIn="dataGrid">
 			<s:columns>
 				<s:ArrayList>
 					<s:GridColumn dataField="month" headerText="Month"/>
@@ -196,10 +251,10 @@
 			</s:columns>
 		</s:DataGrid>
 	</s:VGroup>
-	<mx:CartesianChart id="PerformanceTimeChart" dataProvider="{performanceData}"
+	<mx:CartesianChart id="PerformanceTimeChart" dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
 					   showDataTips="true" width="100%" height="85%" 
 					   verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial"
-					   includeIn="chart">
+					   includeIn="chart1, chart2" depth="0">
 		<mx:verticalAxisRenderers>
 			<mx:AxisRenderer placement="left" axis="{columnAxis}"/>
 			<mx:AxisRenderer placement="right" axis="{pointsAxis}" visible="{studentStats}"/>
@@ -208,21 +263,16 @@
 			<mx:CategoryAxis categoryField="{timeIncrement}"/>
 		</mx:horizontalAxis>
 		<mx:verticalAxis>
-			<mx:LinearAxis id="columnAxis" title="Answers" 
-						   maximum="{Math.max(studentStats?Utilities.getMax(performanceData, 'total'):0, 
-						   classAverage?Utilities.getMax(classAvgPerformanceData, 'total'):0,
-						   schoolAverage?Utilities.getMax(schoolAvgPerformanceData, 'total'):0)
-						   +50}"/>
+			<mx:LinearAxis id="columnAxis" title="Answers"/>
 		</mx:verticalAxis>
 		<mx:series>
-			<mx:ColumnSet type="clustered">
+			<mx:ColumnSet type="clustered" visible="{this.currentState == 'chart1'}">
 				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{studentStats?student.selected:false}">
 					<mx:ColumnSeries
-						yField="{correct.selected?'correct':null}"
+						yField="{correct.selected?(baseTime.selected?'correct':'totalCorrect'):null}"
 						displayName="Correct"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{correct.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient1">
 								<mx:entries>
@@ -239,11 +289,10 @@
 						</mx:fill>
 					</mx:ColumnSeries>
 					<mx:ColumnSeries
-						yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
+						yField="{correctOutsideBase.selected?(baseTime.selected?'correctOutsideBase':null):null}"
 						displayName="Correct Outside Base"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{correctOutsideBase.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient2">
 								<mx:entries>
@@ -263,8 +312,7 @@
 						yField="{incorrect.selected?'incorrect':null}"
 						displayName="Wrong Answer"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{incorrect.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient3">
 								<mx:entries>
@@ -284,8 +332,7 @@
 						yField="{skipped.selected?'skipped':null}"
 						displayName="Skipped Question"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{skipped.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient4">
 								<mx:entries>
@@ -305,11 +352,10 @@
 				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{classAverage?classAvg.selected:false}" 
 							  dataProvider="{classAvgPerformanceData}">
 					<mx:ColumnSeries
-						yField="{correct.selected?'correct':null}"
+						yField="{correct.selected?(baseTime.selected?'correct':'totalCorrect'):null}"
 						displayName="Class Average: Correct"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{correct.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient5">
 								<mx:entries>
@@ -326,11 +372,10 @@
 						</mx:fill>
 					</mx:ColumnSeries>
 					<mx:ColumnSeries
-						yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
+						yField="{correctOutsideBase.selected?(baseTime.selected?'correctOutsideBase':null):null}"
 						displayName="Class Average: Correct Outside Base"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{correctOutsideBase.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient6">
 								<mx:entries>
@@ -350,8 +395,7 @@
 						yField="{incorrect.selected?'incorrect':null}"
 						displayName="Class Average: Wrong Answers"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{incorrect.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient7">
 								<mx:entries>
@@ -371,8 +415,7 @@
 						yField="{skipped.selected?'skipped':null}"
 						displayName="Class Average: Skipped Questions"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{skipped.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient8">
 								<mx:entries>
@@ -393,11 +436,10 @@
 							  visible="{schoolAverage?schoolAvg.selected:false}" 
 							  dataProvider="{schoolAvgPerformanceData}">
 					<mx:ColumnSeries
-						yField="{correct.selected?'correct':null}"
+						yField="{correct.selected?(baseTime.selected?'correct':'totalCorrect'):null}"
 						displayName="School Average: Correct"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{correct.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient9">
 								<mx:entries>
@@ -414,11 +456,10 @@
 						</mx:fill>
 					</mx:ColumnSeries>
 					<mx:ColumnSeries
-						yField="{correctOutsideBase.selected?'correctOutsideBase':null}"
+						yField="{correctOutsideBase.selected?(baseTime.selected?'correctOutsideBase':null):null}"
 						displayName="School Average: Correct Outside Base"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{correctOutsideBase.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient10">
 								<mx:entries>
@@ -438,8 +479,7 @@
 						yField="{incorrect.selected?'incorrect':null}"
 						displayName="School Average: Wrong Answers"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{incorrect.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient11">
 								<mx:entries>
@@ -459,8 +499,7 @@
 						yField="{skipped.selected?'skipped':null}"
 						displayName="School Average: Skipped Questions"
 						verticalAxis="{columnAxis}" 
-						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer"
-						visible="{skipped.selected}">
+						itemRenderer="mx.charts.renderers.ShadowBoxItemRenderer">
 						<mx:fill>
 							<mx:LinearGradient id="linearGradient12">
 								<mx:entries>
@@ -479,7 +518,8 @@
 				</mx:ColumnSet>
 			</mx:ColumnSet>
 			<mx:LineSeries
-				dataProvider="{pointsData}"
+				dataProvider="{performanceData}"
+				includeIn="chart1"
 				yField="points"
 				lineStroke="{pointsStroke}"
 				displayName="My Points"
@@ -489,9 +529,65 @@
 								   maximum="{Utilities.getMax(pointsData, 'points')}"/>
 				</mx:verticalAxis>
 			</mx:LineSeries>
+			<mx:LineSeries
+				dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
+				yField="{baseTime.selected?'correct':'totalCorrect'}"
+				displayName="Correct"
+				visible="{correct.selected?(this.currentState=='chart2'):false}"
+				verticalAxis="{columnAxis}">
+			</mx:LineSeries>
+			<mx:LineSeries
+				dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
+				yField="correctOutsideBase"
+				displayName="Correct Outside Base"
+				verticalAxis="{columnAxis}"
+				visible="{correctOutsideBase.selected?(baseTime.selected?(this.currentState=='chart2'):false):false}"
+				includeIn="chart2">
+			</mx:LineSeries>
+			<mx:LineSeries
+				dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
+				yField="incorrect"
+				displayName="Incorrect"
+				verticalAxis="{columnAxis}"
+				visible="{incorrect.selected?(this.currentState=='chart2'):false}">
+			</mx:LineSeries>
+			<mx:LineSeries
+				dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
+				yField="skipped"
+				displayName="Skipped"
+				verticalAxis="{columnAxis}"
+				visible="{skipped.selected?(this.currentState=='chart2'):false}">
+			</mx:LineSeries>
 		</mx:series>
 	</mx:CartesianChart>
 	<s:Label id="lblChart" text="{studentStats?'Student Performance Stats':'Class Performance Stats'}" 
 			 fontSize="20" fontWeight="bold" bottom="{height*.025}"
 			 horizontalCenter="-20%"/>
+	<s:BorderContainer id="chartMenu" dropShadowVisible="true"
+					   mouseDown="startMenuDrag(event)"
+					   mouseUp="stopMenuDrag(event)"
+					   height="{menuGroup.height}"
+					   width="{menuGroup.width * 1.1}"
+					   depth="100"
+					   x="{this.width}"
+					   y="{this.height - chartMenu.height}">
+		<s:VGroup horizontalCenter="0" horizontalAlign="left"  id="menuGroup">			
+			<s:Button toolTip="Chart1" click="{this.currentState = 'chart1'}" 
+					  styleName="btnChart" scaleX="0.75" scaleY="0.75"/>
+			<s:Button toolTip="Chart2" click="{this.currentState = 'chart2'}" 
+					  styleName="btnChart" scaleX="0.75" scaleY="0.75"/>
+			<s:Button toolTip="Raw Data" click="{this.currentState = 'dataGrid'}" 
+					  styleName="btnRawData" scaleX="0.6" scaleY="0.6"/>
+			<s:VGroup>
+				<s:CheckBox id="correct" label="Correct" selected="true"/>
+				<s:CheckBox id="correctOutsideBase" label="Correct Outside Base" selected="true"/>
+				<s:CheckBox id="incorrect" label="Incorrect" selected="true"/>
+				<s:CheckBox id="skipped" label="Skipped" selected="true"/>
+				<s:CheckBox id="student" label="Student" selected="true" enabled="{studentStats?(this.currentState == 'chart1'):false}"/>
+				<s:CheckBox id="classAvg" label="Class Avg" selected="true"  enabled="{this.currentState == 'chart1'}"/>
+				<s:CheckBox id="schoolAvg" label="School Avg" selected="true"  enabled="{this.currentState == 'chart1'}"/>
+				<s:CheckBox id="baseTime" label="Consider Base Time" selected="true"/>
+			</s:VGroup>
+		</s:VGroup>
+	</s:BorderContainer>
 </s:Group>

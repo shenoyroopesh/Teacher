@@ -8,6 +8,12 @@
 		<![CDATA[	
 			import mx.collections.ArrayCollection;			
 			
+			/**
+			 * @public
+			 * Remarks to be shown in the remarks box - this needs to have three columns - 
+			 * 
+			 * name, date, remark
+			 * */
 			[Bindable]
 			public var remarks:ArrayCollection = new ArrayCollection([				
 				{name:"Roopesh", date:"18-Feb-2011", remark:"Excellent responses today in class"},

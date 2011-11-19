@@ -6,7 +6,7 @@
 				   xmlns:mx="library://ns.adobe.com/flex/mx" initialize="init()"
 				   toolTipCreate="bordercontainer1_toolTipCreateHandler(event)"
 				   toolTipShow="bordercontainer1_toolTipShowHandler(event)"
-				   toolTip=" " xmlns:filters="org.flexunit.runner.manipulation.filters.*"
+				   toolTip="{classMode?'':' '}" xmlns:filters="org.flexunit.runner.manipulation.filters.*"
 				   click="{var window:DifficultQuestionsWindow = new DifficultQuestionsWindow(); 
 				   		window.open(true); window.maximize();}"
 				   buttonMode="{classMode}">

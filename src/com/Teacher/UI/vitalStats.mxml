@@ -8,25 +8,29 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<mx:NumberFormatter id="formatter" />
+		<fx:String id="totalTimeSpent" />
+		<fx:String id="totalPointsEarned" />
+		<fx:String id="learningObjectsCovered" />
+		<fx:String id="noOfQuestionsAnswered" />
+		<fx:String id="pointsPerDay" />
+		<fx:String id="maxPointsPerDay" />
+		<fx:String id="timePerDay" />
+		<fx:String id="maxTimePerDay" />
+		<fx:String id="loPerMonth" />
+		<fx:String id="maxLOPerMonth" />
 		<fx:Boolean id="classMode">false</fx:Boolean>
 	</fx:Declarations>
 	<s:VGroup gap="20" width="100%">
-		<s:BorderContainer width="100%" backgroundColor="0xC2CFA3" 
-						   height="{header.height + 10}">
-			<s:Label id="header" text="{classMode?'3rd Grade Maths':'Joshua Lenon'}" 
-					 fontSize="24" fontWeight="bold"
-					 left="10" top="10"/>
-		</s:BorderContainer>
 		<s:VGroup paddingLeft="10" horizontalCenter="0" visible="{!classMode}"
 				  height="{classMode?0:
 				  				timeSpent.height +
 				  				pointsEarned.height + 
 				  				loCovered.height + 
-				  				noOfQuestions.height + 10}">
-			<s:Label id="timeSpent" text="Total Time Spent: 670 minutes"/>
-			<s:Label id="pointsEarned" text="Total Points Earned: 580" />
-			<s:Label id="loCovered" text="Number of Learning Objects covered: 10" />
-			<s:Label id="noOfQuestions" text="Number of Questions Answered: 1160" />
+				  				noOfQuestions.height + 50}"  paddingTop="20">
+			<s:Label id="timeSpent" text="{'Total Time Spent: '+totalTimeSpent+' minutes'}"/>
+			<s:Label id="pointsEarned" text="{'Total Points Earned: '+totalPointsEarned}" />
+			<s:Label id="loCovered" text="{'Number of Learning Objects covered: '+learningObjectsCovered}" />
+			<s:Label id="noOfQuestions" text="{'Number of Questions Answered: '+noOfQuestionsAnswered}" />
 		</s:VGroup>
 		<s:HGroup horizontalCenter="0" gap="10" paddingLeft="10" horizontalAlign="center">
 			<s:VGroup horizontalAlign="center">
@@ -34,8 +38,8 @@
 										liveDragging="false" 
 										horizontalCenter="0" verticalCenter="0" 
 										styleName="pointsGaugeSkin"
-										startAngle="45"  minimum="10" maximum="100"
-										value="60"
+										startAngle="45"  minimum="0" maximum="{maxPointsPerDay}"
+										value="{pointsPerDay}"
 										endAngle="315" 
 										labelStyleName="gaugeLabel" 
 										labelFormatter="{formatter}"/>
@@ -53,8 +57,8 @@
 										liveDragging="false" 
 										horizontalCenter="0" verticalCenter="0" 
 										styleName="timeGaugeSkin"
-										startAngle="45"  minimum="100" maximum="500"
-										value="200"
+										startAngle="45"  minimum="0" maximum="{maxTimePerDay}"
+										value="{timePerDay}"
 										endAngle="315"
 										labelStyleName="gaugeLabel" 
 										labelFormatter="{formatter}"/>
@@ -72,8 +76,8 @@
 										liveDragging="false" 
 										horizontalCenter="0" verticalCenter="0" 
 										styleName="loGaugeSkin"
-										startAngle="45"  minimum="1" maximum="10"
-										value="5" 
+										startAngle="45"  minimum="0" maximum="{maxLOPerMonth}"
+										value="{loPerMonth}" 
 										endAngle="315" 
 										labelStyleName="gaugeLabel" 
 										labelFormatter="{formatter}"/>
