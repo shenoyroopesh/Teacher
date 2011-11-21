@@ -256,7 +256,7 @@
 					   verticalCenter="0" horizontalCenter="0" fontSize="20" fontFamily="Arial"
 					   includeIn="chart1, chart2" depth="0">
 		<mx:verticalAxisRenderers>
-			<mx:AxisRenderer placement="left" axis="{columnAxis}"/>
+			<mx:AxisRenderer placement="left" axis="{this.currentState=='chart1'?columnAxis:lineAxis}"/>
 			<mx:AxisRenderer placement="right" axis="{pointsAxis}" visible="{studentStats}"/>
 		</mx:verticalAxisRenderers>
 		<mx:horizontalAxis>
@@ -264,7 +264,7 @@
 		</mx:horizontalAxis>
 		<mx:verticalAxis>
 			<mx:LinearAxis id="columnAxis" title="Answers"/>
-		</mx:verticalAxis>
+		</mx:verticalAxis>			
 		<mx:series>
 			<mx:ColumnSet type="clustered" visible="{this.currentState == 'chart1'}">
 				<mx:ColumnSet type="stacked" verticalAxis="{columnAxis}" visible="{studentStats?student.selected:false}">
@@ -533,14 +533,16 @@
 				dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
 				yField="{baseTime.selected?'correct':'totalCorrect'}"
 				displayName="Correct"
-				visible="{correct.selected?(this.currentState=='chart2'):false}"
-				verticalAxis="{columnAxis}">
+				visible="{correct.selected?(this.currentState=='chart2'):false}">
+				<mx:verticalAxis>					
+					<mx:LinearAxis id="lineAxis" title="Answers"/>
+				</mx:verticalAxis>
 			</mx:LineSeries>
 			<mx:LineSeries
 				dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
 				yField="correctOutsideBase"
 				displayName="Correct Outside Base"
-				verticalAxis="{columnAxis}"
+				verticalAxis="{lineAxis}"
 				visible="{correctOutsideBase.selected?(baseTime.selected?(this.currentState=='chart2'):false):false}"
 				includeIn="chart2">
 			</mx:LineSeries>
@@ -548,14 +550,14 @@
 				dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
 				yField="incorrect"
 				displayName="Incorrect"
-				verticalAxis="{columnAxis}"
+				verticalAxis="{lineAxis}"
 				visible="{incorrect.selected?(this.currentState=='chart2'):false}">
 			</mx:LineSeries>
 			<mx:LineSeries
 				dataProvider="{studentStats?performanceData:classAvgPerformanceData}"
 				yField="skipped"
 				displayName="Skipped"
-				verticalAxis="{columnAxis}"
+				verticalAxis="{lineAxis}"
 				visible="{skipped.selected?(this.currentState=='chart2'):false}">
 			</mx:LineSeries>
 		</mx:series>

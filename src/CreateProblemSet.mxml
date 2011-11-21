@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600">
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600" xmlns:teacherinterface="services.teacherinterface.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+		]]>
+	</fx:Script>
 	<fx:Declarations>
+		<fx:String id="studentId" />
+		<fx:String id="studentName" />
+		<teacherinterface:TeacherInterface id="teacher" fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)" showBusyCursor="true"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:HGroup id="mainContainer" width="100%" height="100%">
@@ -13,10 +21,10 @@
 						 dragEnabled="true" dragMoveEnabled="true"/>
 		</s:VGroup>
 		<s:VGroup id="rightContainer" width="50%" height="100%">
-			<s:Label id="lblStudentName" text="John Lenon" height="10%" 
+			<s:Label id="lblStudentName" text="{studentName}" height="10%" 
 					 fontSize="{rightContainer.height*0.05}" verticalAlign="middle" textAlign="center"/>
 			<s:HGroup id="radioButtonContainer" height="7%">
-				<s:RadioButton id="rbNewProblemSet" groupName="mode" label="Create New ProblemSet"/>
+				<s:RadioButton id="rbNewProblemSet" groupName="mode" label="Create New ProblemSet" selected="true"/>
 				<s:RadioButton id="rbAddToCurrentProblemSet" groupName="mode" label="Add To Current ProblemSet" />
 			</s:HGroup>
 			<mx:DataGrid id="selectedQuestions" height="75%" width="100%" 

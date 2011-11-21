@@ -51,6 +51,15 @@ internal class _Super_TeacherInterface extends com.adobe.fiber.services.wrapper.
         operation = new mx.rpc.remoting.Operation(null, "getStudentDetails");
          operation.resultType = Object;
         operations["getStudentDetails"] = operation;
+        operation = new mx.rpc.remoting.Operation(null, "getTopicByGradeLevel");
+         operation.resultType = Object;
+        operations["getTopicByGradeLevel"] = operation;
+        operation = new mx.rpc.remoting.Operation(null, "getLOsByTopicId");
+         operation.resultType = Object;
+        operations["getLOsByTopicId"] = operation;
+        operation = new mx.rpc.remoting.Operation(null, "getQuestionsByLOId");
+         operation.resultType = Object;
+        operations["getQuestionsByLOId"] = operation;
 
         _serviceControl.operations = operations;
         _serviceControl.convertResultHandler = com.adobe.serializers.utility.TypeUtility.convertResultHandler;
@@ -193,6 +202,60 @@ internal class _Super_TeacherInterface extends com.adobe.fiber.services.wrapper.
     {
         var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("getStudentDetails");
 		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(studentId,classId,gl_id,fromDate,toDate,subjectId) ;
+        return _internal_token;
+    }
+     
+    /**
+      * This method is a generated wrapper used to call the 'getTopicByGradeLevel' operation. It returns an mx.rpc.AsyncToken whose 
+      * result property will be populated with the result of the operation when the server response is received. 
+      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
+      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
+      *
+      * @see mx.rpc.AsyncToken
+      * @see mx.rpc.CallResponder 
+      *
+      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
+      */
+    public function getTopicByGradeLevel(gradeLevel:Object) : mx.rpc.AsyncToken
+    {
+        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("getTopicByGradeLevel");
+		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(gradeLevel) ;
+        return _internal_token;
+    }
+     
+    /**
+      * This method is a generated wrapper used to call the 'getLOsByTopicId' operation. It returns an mx.rpc.AsyncToken whose 
+      * result property will be populated with the result of the operation when the server response is received. 
+      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
+      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
+      *
+      * @see mx.rpc.AsyncToken
+      * @see mx.rpc.CallResponder 
+      *
+      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
+      */
+    public function getLOsByTopicId(topicId:Object) : mx.rpc.AsyncToken
+    {
+        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("getLOsByTopicId");
+		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(topicId) ;
+        return _internal_token;
+    }
+     
+    /**
+      * This method is a generated wrapper used to call the 'getQuestionsByLOId' operation. It returns an mx.rpc.AsyncToken whose 
+      * result property will be populated with the result of the operation when the server response is received. 
+      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
+      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
+      *
+      * @see mx.rpc.AsyncToken
+      * @see mx.rpc.CallResponder 
+      *
+      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
+      */
+    public function getQuestionsByLOId(LOId:Object) : mx.rpc.AsyncToken
+    {
+        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("getQuestionsByLOId");
+		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(LOId) ;
         return _internal_token;
     }
      

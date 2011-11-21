@@ -27,10 +27,10 @@
 				  				pointsEarned.height + 
 				  				loCovered.height + 
 				  				noOfQuestions.height + 50}"  paddingTop="20">
-			<s:Label id="timeSpent" text="{'Total Time Spent: '+totalTimeSpent+' minutes'}"/>
-			<s:Label id="pointsEarned" text="{'Total Points Earned: '+totalPointsEarned}" />
-			<s:Label id="loCovered" text="{'Number of Learning Objects covered: '+learningObjectsCovered}" />
-			<s:Label id="noOfQuestions" text="{'Number of Questions Answered: '+noOfQuestionsAnswered}" />
+			<s:Label id="timeSpent" text="{('Total Time Spent: ').concat(totalTimeSpent, ' minutes')}"/>
+			<s:Label id="pointsEarned" text="{('Total Points Earned: ').concat(totalPointsEarned)}" />
+			<s:Label id="loCovered" text="{('Number of Learning Objects covered: ').concat(learningObjectsCovered)}" />
+			<s:Label id="noOfQuestions" text="{('Number of Questions Answered: ').concat(noOfQuestionsAnswered)}" />
 		</s:VGroup>
 		<s:HGroup horizontalCenter="0" gap="10" paddingLeft="10" horizontalAlign="center">
 			<s:VGroup horizontalAlign="center">

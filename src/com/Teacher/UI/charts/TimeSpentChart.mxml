@@ -263,21 +263,30 @@
 				
 			[Bindable]
 			protected function get yFieldsList()
-			{					
+			{
 				var yFieldList:ArrayList = new ArrayList();
-				var unique:Object = {};
-				
-				for each (var row in classTimeSpentData)
-				{
-					for each (var column in row.data)
+				if(showClass)
+				{					
+					var unique:Object = {};
+					
+					for each (var row in classTimeSpentData)
 					{
-						if(!unique[column[timeIncrement]])
+						for each (var column in row.data)
 						{
-							unique[column[timeIncrement]] = true;
-							yFieldList.addItem(column[timeIncrement]);
+							if(!unique[column[timeIncrement]])
+							{
+								unique[column[timeIncrement]] = true;
+								yFieldList.addItem(column[timeIncrement]);
+							}
 						}
 					}
+				} else {
+					for each (var row in timeSpentData)
+					{
+						yFieldList.addItem(row[timeIncrement]);
+					}
 				}
+				
 				return yFieldList.toArray();
 			}			
 			
@@ -294,7 +303,7 @@
 			<s:Button toolTip="Raw Data" click="{this.currentState = 'dataGrid'}" 
 					  styleName="btnRawData" scaleX="0.6" scaleY="0.6"/>
 		</s:HGroup>	
-		<s:DataGrid dataProvider="{rawData}" includeIn="dataGrid" width="90%" columns="{dataColumnsList}">
+		<s:DataGrid dataProvider="{showClass?rawData:timeSpentData}" includeIn="dataGrid" width="90%" columns="{dataColumnsList}">
 		</s:DataGrid>
 	</s:VGroup>
 	<mx:CartesianChart id="TimeSpentStatistics"

@@ -171,7 +171,7 @@
 		<s:Panel includeIn="LoginCheck" verticalCenter="0" horizontalCenter="0" width="420" height="275" title="Loading..." borderVisible="false" cornerRadius="20" borderAlpha="0.21" skinClass="skins.GBPanelSkin" creationComplete="panel1_elementAddHandler(event)">
 			<!-- <mx:Image horizontalCenter="0" verticalCenter="0" source="images/loading.gif"/> -->			
 		</s:Panel>
-		<s:Panel includeIn="Login" verticalCenter="0" horizontalCenter="0" width="420" height="275" title="Student Login" borderVisible="false" cornerRadius="20" borderAlpha="0.21" skinClass="skins.GBPanelSkin">
+		<s:Panel includeIn="Login" verticalCenter="0" horizontalCenter="0" width="420" height="275" title="Teacher Login" borderVisible="false" cornerRadius="20" borderAlpha="0.21" skinClass="skins.GBPanelSkin">
 			<s:TextInput x="183" y="42" id="Login_Username" text="Sang" skinClass="skins.TextInputSkin" borderColor="#B7B7B7" width="110"/>
 			<s:TextInput x="183" y="83" id="Login_Password" text="automatic" displayAsPassword="true" borderVisible="true" skinClass="skins.TextInputSkin" width="110"/>
 			<s:Button x="184" y="125" label="Login" id="Login_BtnLogin"  click="Login_BtnLogin_clickHandler(event);" skinClass="skins.BlueButton"/>

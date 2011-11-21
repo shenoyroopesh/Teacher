@@ -5,7 +5,8 @@
 		 width="100%" height="100%" xmlns:UI="com.Teacher.UI.*"
 		 currentState="Class" xmlns:charts="com.Teacher.UI.charts.*"
 		 color="0xFFFFFF" xmlns:controls="com.brightPoint.controls.*" 
-		 xmlns:reflector="com.common.reflector.*" initialize="performance_initializeHandler(event)" xmlns:teacherinterface="services.teacherinterface.*">
+		 xmlns:reflector="com.common.reflector.*" initialize="performance_initializeHandler(event)" 
+		 xmlns:teacherinterface="services.teacherinterface.*" stateChangeComplete="performance_stateChangeCompleteHandler(event)">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<mx:NumberFormatter id="formatter" />
@@ -48,6 +49,7 @@
 		<![CDATA[			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.controls.DateField;
 			import mx.core.Application;
 			import mx.core.IFlexDisplayObject;
 			import mx.events.FlexEvent;
@@ -202,6 +204,8 @@
 			protected function openProblemSetWindow(event:Event):void
 			{
 				var problemSetWindow:CreateProblemSet = new CreateProblemSet();
+				problemSetWindow.studentId = currentStudentId;
+				problemSetWindow.studentName = currentStudentName;
 				problemSetWindow.open(true);
 			}
 			
@@ -245,10 +249,11 @@
 				cursorManager.setBusyCursor();
 				//TODO: Remove the hard codings
 				GetClassDetailsResult.token = teacher.getClassDetails(classDropdown.selectedItem['CLASS_ID'],
-					classDropdown.selectedItem['GL_ID'], '01-01-2001', '11-11-2011', 
+					classDropdown.selectedItem['GL_ID'], 
+					DateField.dateToString(dateRangePicker.selectedFromDate, "MM-DD-YYYY"), 
+					DateField.dateToString(dateRangePicker.selectedToDate, "MM-DD-YYYY"),
 					subjectTabBar.selectedItem['SUBJECT_ID']);
-				currentClass = classDropdown.selectedItem['CLASS_NAME'];
-				
+				currentClass = classDropdown.selectedItem['CLASS_NAME'];				
 			}
 			
 			protected function GetClassDetailsResult_resultHandler(event:ResultEvent):void
@@ -256,9 +261,7 @@
 				//change to student view if in class view. Otherwise keep in current state
 				if(this.currentState.search('Class') == -1)
 					this.currentState = 'Class';
-				
-				currentlyShowing.text = currentClass;
-				
+							
 				var classDetails:Object = GetClassDetailsResult.lastResult.source;				
 				classData = new ArrayCollection(classDetails.classCompleteStats.data);
 				classData = new ArrayCollection(classDetails.classCompleteStats.data);
@@ -375,6 +378,7 @@
 			{
 				currentStudentId = event.item["student_id"];
 				currentStudentName = event.item["student_name"];
+				noOfQuestionsAnswered = event.item["no_of_questions"]; //no need to fetch this again
 				refreshStudentDetails();				
 			}
 			
@@ -382,7 +386,9 @@
 			{		
 				cursorManager.setBusyCursor();
 				GetStudentDetailsResult.token = teacher.getStudentDetails(currentStudentId,classDropdown.selectedItem['CLASS_ID'],
-					classDropdown.selectedItem['GL_ID'], '01-01-2001', '11-11-2011', 
+					classDropdown.selectedItem['GL_ID'], 
+					DateField.dateToString(dateRangePicker.selectedFromDate, "MM-DD-YYYY"), 
+					DateField.dateToString(dateRangePicker.selectedToDate, "MM-DD-YYYY"), 
 					subjectTabBar.selectedItem['SUBJECT_ID']); 
 			}
 			
@@ -390,9 +396,7 @@
 			{
 				//change to student view if in class view. Otherwise keep in current state
 				if(this.currentState.search('Student') == -1)
-					this.currentState = 'StudentStats';
-				
-				currentlyShowing.text = currentStudentName;				
+					this.currentState = 'StudentStats';		
 				
 				var studentDetails:Object = GetStudentDetailsResult.lastResult.source;
 				studentDifficultyStats = processDifficultyStats(new ArrayCollection(studentDetails['difficultyStats'].data));				
@@ -409,9 +413,13 @@
 				
 				//student stats are still to be updated
 				
-				loPerMonth = (studentDetails.studentDashboardGaugeData.loPerMonth[0]["lo_per_month"].toString().split("."))[0];
-				timePerDay = (studentDetails.studentDashboardGaugeData.timePerDay[0]["time_per_day"].toString().split("."))[0];
-				pointsPerDay = (studentDetails.studentDashboardGaugeData.pointsPerDay[0]["points_per_day"].toString().split("."))[0];				
+				loPerMonth = (studentDetails.studentDashboardGaugeData.lo[0]["lo_per_month"].toString().split("."))[0];
+				timePerDay = (studentDetails.studentDashboardGaugeData.time[0]["time_per_day"].toString().split("."))[0];
+				pointsPerDay = (studentDetails.studentDashboardGaugeData.points[0]["points_per_day"].toString().split("."))[0];				
+				totalPointsEarned = (studentDetails.studentDashboardGaugeData.points[0]["total_points"].toString().split("."))[0];
+				totalTimeSpent = (studentDetails.studentDashboardGaugeData.time[0]["total_time"].toString().split("."))[0];
+				learningObjectsCovered = (studentDetails.studentDashboardGaugeData.lo[0]["total_lo"].toString().split("."))[0];
+				
 				maxLOPerMonth = (studentDetails.maxDashboardGaugeData.maxLoPerMonth.data[0]["max_lo_per_month"].toString().split("."))[0];
 				maxTimePerDay = (studentDetails.maxDashboardGaugeData.maxTimePerDay.data[0]["max_time_per_day"].toString().split("."))[0];
 				maxPointsPerDay = (studentDetails.maxDashboardGaugeData.maxPointsPerDay.data[0]["max_points_per_day"].toString().split("."))[0];	
@@ -507,6 +515,11 @@
 				return item[dataField] + " (" + item[dataField + "_percentage"] + ")";
 			}
 			
+			protected function performance_stateChangeCompleteHandler(event:FlexEvent):void
+			{
+				dateRangePicker.OnChange = this.currentState.search("Student") == -1 ? refreshClassData : refreshStudentDetails;
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -547,15 +560,20 @@
 							 style="performanceStudent"
 							 selected="{this.currentState.search('Student')>-1}">
 			</UI:CustomButton>
-			<UI:DateRangePick width="25%"/>	
-			<UI:statsSummary id="statsSummary" height="100%" width="48%" />
+			<UI:DateRangePick id="dateRangePicker" width="25%"/>	
+			<s:HGroup width="48%" height="100%" horizontalAlign="right" verticalAlign="middle">
+				<s:Label id="currentlyShowing" color="0xFFFFFF" fontSize="40" fontWeight="bold"						 
+						 text="{this.currentState.search('Student') == -1?currentClass:currentStudentName}"/>	
+			</s:HGroup>	
+			<!--<UI:statsSummary id="statsSummary" height="100%" width="48%" visible="false" />-->
 		</s:HGroup>
 		<s:HGroup width="100%" id="tabContainer"
 				  verticalAlign="middle" horizontalAlign="right" color="0x000000">
-			<s:HGroup width="30%" horizontalAlign="left" verticalAlign="middle">
+			<!--<s:HGroup width="30%" horizontalAlign="left" verticalAlign="middle">
 				<s:Label id="currentlyShowing" color="0xFFFFFF" fontSize="24" fontWeight="bold"
-						 right="{0.4*tabContainer.width}"/>	
-			</s:HGroup>			 
+						 right="{0.4*tabContainer.width}" 
+						 text="{this.currentState.search('Student') == -1?currentClass:currentStudentName}"/>	
+			</s:HGroup>	-->		 
 			<s:TabBar dataProvider="{subjectsList}" id="subjectTabBar" labelField="SUBJECT_NAME"
 					  change="refreshClassData()"/>
 			<s:Label text="Pick Class" id="lblClass" color="0xFFFFFF"/>
@@ -576,7 +594,7 @@
 							<s:GridColumn headerText="Student" dataField="student_name" />
 							<s:GridColumn headerText="+ Pts. (bonus)" dataField="points_with_bonus"/>
 							<s:GridColumn headerText="- Pts." dataField="deducted_points" />
-							<s:GridColumn headerText="Time" dataField="time" />
+							<s:GridColumn headerText="Time (min)" dataField="time_minutes" />
 							<s:GridColumn headerText="# of Questions" dataField="no_of_questions" />
 							<s:GridColumn headerText="Accuracy" dataField="accuracy" />
 							<s:GridColumn headerText="# Einstein" dataField="Einstein" labelFunction="classGridLabelFunction"/>
@@ -600,6 +618,10 @@
 						  gap="0">
 					<s:HGroup width="100%" height="70%" gap="0" horizontalCenter="0">
 						<UI:vitalStats id="studentVitalStats" width="50%"  height="100%"
+									   totalPointsEarned="{totalPointsEarned}"
+									   totalTimeSpent="{totalTimeSpent}"
+									   learningObjectsCovered="{learningObjectsCovered}"
+									   noOfQuestionsAnswered="{noOfQuestionsAnswered}"
 									   pointsPerDay="{pointsPerDay}"
 									   loPerMonth="{loPerMonth}"
 									   timePerDay="{timePerDay}"
