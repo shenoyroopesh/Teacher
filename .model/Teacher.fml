@@ -106,27 +106,29 @@
       <parameter name="toDate" type="opaque"/>
       <parameter name="subjectId" type="opaque"/>
     </function>
-    <function name="getTopicByGradeLevel" return-type="opaque">
+    <function name="GetAllTopics" return-type="opaque">
       <annotation name="analyze group">
         <item name="analyzed">false</item>
       </annotation>
       <annotation name="original signature">
-        <item name="inputParams">opaque</item>
         <item name="returnType">opaque</item>
+        <item name="inputParams">opaque</item>
+        <item name="inputParamNames">subjectId</item>
       </annotation>
-      <parameter name="gradeLevel" type="opaque"/>
+      <parameter name="subjectId" type="opaque"/>
     </function>
-    <function name="getLOsByTopicId" return-type="opaque">
+    <function name="GetLOsByTopicId" return-type="opaque">
       <annotation name="analyze group">
         <item name="analyzed">false</item>
       </annotation>
       <annotation name="original signature">
-        <item name="inputParams">opaque</item>
+        <item name="inputParams">opaque,opaque</item>
         <item name="returnType">opaque</item>
       </annotation>
       <parameter name="topicId" type="opaque"/>
+      <parameter name="gradeLevel" type="opaque"/>
     </function>
-    <function name="getQuestionsByLOId" return-type="opaque">
+    <function name="GetQuestionsByLOId" return-type="opaque">
       <annotation name="analyze group">
         <item name="analyzed">false</item>
       </annotation>
@@ -135,6 +137,29 @@
         <item name="returnType">opaque</item>
       </annotation>
       <parameter name="LOId" type="opaque"/>
+    </function>
+    <function name="SaveQuestionsToPS" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque,opaque,opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="studentId" type="opaque"/>
+      <parameter name="qsArray" type="opaque"/>
+      <parameter name="current" type="opaque"/>
+    </function>
+    <function name="GetQuestionFailuresByLO" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">opaque,opaque</item>
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="lobjectId" type="opaque"/>
+      <parameter name="classId" type="opaque"/>
     </function>
   </service>
 </model>

@@ -4,6 +4,7 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*">
 	<fx:Declarations>
 		<fx:String id="TeacherId" />
+		<fx:Object id="currentUserInfo" />
 	</fx:Declarations>
 	<UI:Performance id="performance" />
 </s:Window>

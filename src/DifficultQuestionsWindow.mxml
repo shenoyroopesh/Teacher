@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*">
+		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*"
+		  initialize="window1_initializeHandler(event)" xmlns:teacherinterface="services.teacherinterface.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			var failureRate:ArrayCollection = new ArrayCollection();
+			
+			protected function window1_initializeHandler(event:FlexEvent):void
+			{
+				failureRateResult.token = teacher.GetQuestionFailuresByLO( lobjectId, classId );
+			}
+			
+			protected function failureRateResult_resultHandler(event:ResultEvent):void
+			{
+				failureRate = new ArrayCollection(failureRateResult.lastResult.source.data);			
+			}
+			
+		]]>
+	</fx:Script>
 	<fx:Declarations>
+		<fx:String id="lobjectId" />
+		<fx:String id="classId" />
+		<teacherinterface:TeacherInterface id="teacher" 
+			fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)" showBusyCursor="true"/>
+		<s:CallResponder id="failureRateResult" result="failureRateResult_resultHandler(event)" />
 	</fx:Declarations>
-	<s:DataGrid id="topics" height="100%" width="100%" >
+	<s:DataGrid id="topics" height="100%" width="100%" 
+				dataProvider="{failureRate}">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn headerText="Question" />
-				<s:GridColumn headerText="Failure Rate (%)" />
+				<s:GridColumn headerText="Question" dataField="question" />
+				<s:GridColumn headerText="Failure Rate (%)" dataField="failure_rate"/>
 			</s:ArrayList>
 		</s:columns>
 	</s:DataGrid>

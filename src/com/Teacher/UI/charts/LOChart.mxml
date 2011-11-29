@@ -281,6 +281,7 @@
 							var loblock:LOBlock = new LOBlock();
 							loblock.classMode = this.classMode;
 							loblock.progress = lo;
+							loblock.classId = this.classId;
 							subtopicBox.addChild(loblock);
 						}
 					}					
@@ -299,7 +300,8 @@
 			}			
 		]]>
 	</fx:Script>		
-	<fx:Declarations>			
+	<fx:Declarations>	
+		<fx:String id="classId" />
 		<s:SolidColor id="subtopicFill" color="{this._config.LO_CHART_SUPTOPIC_FILLCOLOR}">
 		</s:SolidColor>
 		<s:Stroke color="0xFFFFFF" id="whiteStroke" />

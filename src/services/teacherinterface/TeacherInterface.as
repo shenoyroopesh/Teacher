@@ -7,6 +7,10 @@
  
 package services.teacherinterface
 {
+	import flash.filesystem.File;
+	import flash.filesystem.FileStream;
+	
+	import mx.core.FlexGlobals;
 
 public class TeacherInterface extends _Super_TeacherInterface
 {
@@ -18,6 +22,52 @@ public class TeacherInterface extends _Super_TeacherInterface
         super.preInitializeService();
         // Initialization customization goes here
     }
+	
+	
+	public function TeacherInterface()
+	{
+		super();
+		this._serviceControl.endpoint =  FindAirConfig().gateway_path;
+	}
+	
+	
+	/******************************************8
+	 * function added by sameer shelavale
+	 * for finding Configuration stored in server.ini
+	 * This is only for AIR version of the application
+	 * 
+	 * *****************************************/
+	
+	private function FindAirConfig():Object{
+		
+		import flash.filesystem.FileMode;
+		
+		var conf:Object = FlexGlobals.topLevelApplication.GetAirConfig();
+		
+		var tFile:File = File.applicationDirectory.resolvePath( "server.ini" );
+		if( tFile.exists ){
+			var fStream:FileStream = new FileStream()
+			
+			fStream.open( tFile, FileMode.READ );
+			
+			var content:String = fStream.readUTFBytes( fStream.bytesAvailable );
+			
+			fStream.close();
+			
+			var lines:Array = content.split( /[\r\n]hi+/  );
+			
+			for( var i:Number = 0; i < lines.length; i++ ){
+				var values:Array = lines[i].split('=');
+				if( values.length == 2 ){
+					if( conf.hasOwnProperty( values[0] ) ){
+						conf[ values[0] ] = values[1];
+					}
+				}
+			}
+		}
+		FlexGlobals.topLevelApplication.SetAirConfig( conf );
+		return conf;
+	}
                
 }
 

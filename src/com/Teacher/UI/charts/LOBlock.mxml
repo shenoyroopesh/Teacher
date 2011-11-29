@@ -7,8 +7,12 @@
 				   toolTipCreate="bordercontainer1_toolTipCreateHandler(event)"
 				   toolTipShow="bordercontainer1_toolTipShowHandler(event)"
 				   toolTip="{classMode?'':' '}" xmlns:filters="org.flexunit.runner.manipulation.filters.*"
-				   click="{var window:DifficultQuestionsWindow = new DifficultQuestionsWindow(); 
-				   		window.open(true); window.maximize();}"
+				   click="{if(!classMode)return; 
+				   		var window:DifficultQuestionsWindow = new DifficultQuestionsWindow(); 
+				   		window.lobjectId = progress.lobjectId;
+				   		window.classId = this.classId;
+				   		window.open(true); 
+				   		window.maximize();}"
 				   buttonMode="{classMode}">
 		
 	<fx:Script>
@@ -29,7 +33,7 @@
 			}
 			
 			[Bindable]
-			public var progress = {name:"test", correct: 50, wrong:25, skipped:10, incomplete:15};
+			public var progress = {lobjectId:"", name:"test", correct: 50, wrong:25, skipped:10, incomplete:15};
 			
 			public function total():Number{
 				return progress.correct + progress.wrong + progress.skipped 
@@ -121,6 +125,7 @@
 		</s:SolidColor>	
 		<s:SolidColor id="colorFailed" color="0xFF0000">		
 		</s:SolidColor>	
+		<fx:String id="classId" />
 	</fx:Declarations>
 	<mx:Text  id="loName" text="{progress.name as String}" width="90%" verticalCenter="-5" horizontalCenter="0" 
 			  fontSize="{Math.floor(Math.sqrt(((this.height-10)*this.width)/((progress.name as String).length + 10)))}"

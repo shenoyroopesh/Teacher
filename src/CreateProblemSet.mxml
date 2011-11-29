@@ -4,21 +4,143 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600" xmlns:teacherinterface="services.teacherinterface.*">
 	<fx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			
+			import spark.events.GridEvent;
+			
+			[Bindable]
+			var topics:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			var los:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			var questions:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			var selectedQuestions:ArrayCollection = new ArrayCollection();
+						
+			protected function topics_initializeHandler(event:FlexEvent):void
+			{
+				//get Topics data
+				GetTopicsResult.token = teacher.GetAllTopics(subjectId);
+			}
+			
+			protected function GetTopicsResult_resultHandler(event):void
+			{				
+				topics = new ArrayCollection(GetTopicsResult.lastResult.source.data);
+			}
+			
+			protected function topicsGrid_gridClickHandler(event:GridEvent):void
+			{
+				if(event.item == null) return;
+				GetLOResult.token = teacher.GetLOsByTopicId(event.item["TOPIC_ID"], studentGradeLevel);
+			}
+			
+			protected function GetLOResult_resultHandler(event):void
+			{
+				los = new ArrayCollection(GetLOResult.lastResult.source.data);
+			}
+			
+			protected function loGrid_gridClickHandler(event:GridEvent):void
+			{
+				if(event.item == null) return;
+				GetQuestionsResult.token = teacher.GetQuestionsByLOId(event.item["LOBJECT_ID"]);
+			}
+			
+			
+			protected function GetQuestionsResult_resultHandler(event):void
+			{
+				questions = new ArrayCollection(GetQuestionsResult.lastResult.source.data);
+				for (var i:int=0; i<questions.length; i++)
+				{					
+					if(selectedQuestions.toArray().some(function(object){
+															return object.q_id == questions[i].q_id;
+														}, null ))
+					{
+						questions.removeItemAt(i);
+						i--;
+					}
+				}
+			}
+			
+			protected function btnDone_clickHandler(event:MouseEvent):void
+			{
+				if(selectedQuestions.length == 0) return;
+				SaveProblemSetResult.token = teacher.SaveQuestionsToPS(studentId, 
+					selectedQuestions, rbAddToCurrentProblemSet.selected);
+			}
+			
+			protected function SaveProblemSetResult_resultHandler(event):void
+			{
+				if(SaveProblemSetResult.lastResult.log.result == "Success")
+				{
+					this.close();
+				} 
+					
+				Alert.show("Following DB Error occurred: " 
+						+ SaveProblemSetResult.lastResult.source.log.sqlError);
+				
+				
+			}
+			
+			protected function questionsGrid_itemDoubleClickHandler(event:ListEvent):void
+			{
+				selectedQuestions.addItem(questions[event.rowIndex]);
+				questions.removeItemAt(event.rowIndex);
+			}
+			
+			protected function selectedQuestionsGrid_itemDoubleClickHandler(event:ListEvent):void
+			{
+				questions.addItem(selectedQuestions[event.rowIndex]);
+				selectedQuestions.removeItemAt(event.rowIndex);
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
+		<fx:String id="subjectId" />
 		<fx:String id="studentId" />
 		<fx:String id="studentName" />
+		<fx:String id="studentGradeLevel" />
 		<teacherinterface:TeacherInterface id="teacher" fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)" showBusyCursor="true"/>
+		<s:CallResponder id="GetTopicsResult" result="GetTopicsResult_resultHandler(event)" />
+		<s:CallResponder id="GetLOResult" result="GetLOResult_resultHandler(event)" />
+		<s:CallResponder id="GetQuestionsResult" result="GetQuestionsResult_resultHandler(event)" />
+		<s:CallResponder id="SaveProblemSetResult" result="SaveProblemSetResult_resultHandler(event)" />
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:HGroup id="mainContainer" width="100%" height="100%">
 		<s:VGroup id="leftContainer" width="50%" height="100%">
-			<s:DataGrid id="topics" height="20%" width="100%" />
-			<s:DataGrid id="subTopics" height="40%" width="100%"/>
-			<mx:DataGrid id="questions" height="40%" width="100%"
-						 dragEnabled="true" dragMoveEnabled="true"/>
+			<s:DataGrid id="topicsGrid" height="20%" width="100%" initialize="topics_initializeHandler(event)"
+						dataProvider="{topics}" gridClick="topicsGrid_gridClickHandler(event)">
+				<s:columns>
+					<s:ArrayCollection>
+						<s:GridColumn dataField="TOPIC" headerText="Topics" />
+					</s:ArrayCollection>
+				</s:columns>	
+			</s:DataGrid>
+			<s:DataGrid id="losGrid" height="40%" width="100%"
+						dataProvider="{los}" gridClick="loGrid_gridClickHandler(event)">
+				<s:columns>
+					<s:ArrayCollection>
+						<s:GridColumn dataField="SUB_TOPIC" headerText="Sub Topic" />
+						<s:GridColumn dataField="LOBJECT" headerText="Learning Object" />
+					</s:ArrayCollection>
+				</s:columns>	
+			</s:DataGrid>
+			<mx:DataGrid id="questionsGrid" height="40%" width="100%"
+						 dragEnabled="true" dragMoveEnabled="true"
+						 dropEnabled="true" doubleClickEnabled="true" 
+						 dataProvider="{questions}"
+						 itemDoubleClick="questionsGrid_itemDoubleClickHandler(event)">
+				<mx:columns>
+					<mx:DataGridColumn dataField="q_title" headerText="Question" />
+				</mx:columns>
+			</mx:DataGrid>
 		</s:VGroup>
 		<s:VGroup id="rightContainer" width="50%" height="100%">
 			<s:Label id="lblStudentName" text="{studentName}" height="10%" 
@@ -27,11 +149,17 @@
 				<s:RadioButton id="rbNewProblemSet" groupName="mode" label="Create New ProblemSet" selected="true"/>
 				<s:RadioButton id="rbAddToCurrentProblemSet" groupName="mode" label="Add To Current ProblemSet" />
 			</s:HGroup>
-			<mx:DataGrid id="selectedQuestions" height="75%" width="100%" 
-						 dragEnabled="true" dragMoveEnabled="true"/>
+			<mx:DataGrid id="selectedQuestionsGrid" height="75%" width="100%" 
+						 dragEnabled="true" dragMoveEnabled="true" dataProvider="{selectedQuestions}"
+						 dropEnabled="true" doubleClickEnabled="true" 
+						 itemDoubleClick="selectedQuestionsGrid_itemDoubleClickHandler(event)">
+				<mx:columns>
+					<mx:DataGridColumn dataField="q_title" headerText="Question" />
+				</mx:columns>
+			</mx:DataGrid>
 			<s:Group id="btnGroup" height="8%" width="100%">
 				<s:Button id="btnDone" label="Done" horizontalCenter="0" verticalCenter="0"
-						  click="{this.close()}"/>	
+						  click="btnDone_clickHandler(event)"/>	
 			</s:Group>			
 		</s:VGroup>			
 	</s:HGroup>

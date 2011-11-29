@@ -59,13 +59,13 @@
 		]]>
 	</fx:Script>
 	<s:VGroup top="10" bottom="10" left="10" right="10" fontWeight="bold">
-		<s:Label id="lblTimeSpent" text="{'Time Spent (minutes): '+timeSpentMinutes + ' (Avg '+avgTimeSpentMinutes + ')'}" 
-				 color="{(timeSpentMinutes > avgTimeSpentMinutes)? goodColor: badColor}"/>
-		<s:Label id="lblCorrectAnswerPercent" text="{'Correct %: '+correctAnswerPercent + '% (Avg '+avgCorrectAnswerPercent + '%)' }" 
+		<!--<s:Label id="lblTimeSpent" text="{'Time Spent (minutes): '+timeSpentMinutes }" 
+				 color="{(timeSpentMinutes > avgTimeSpentMinutes)? goodColor: badColor}"/>-->
+		<s:Label id="lblCorrectAnswerPercent" text="{'Correct %: '+correctAnswerPercent }" 
 				 color="{(correctAnswerPercent > avgCorrectAnswerPercent)? goodColor: badColor}"/>
-		<s:Label id="lblWrongAnswerPercent" text="{'Wrong %: '+wrongAnswerPercent + '% (Avg '+avgWrongAnswerPercent + '%)' }" 
+		<s:Label id="lblWrongAnswerPercent" text="{'Wrong %: '+wrongAnswerPercent}" 
 				 color="{(wrongAnswerPercent > avgWrongAnswerPercent)? badColor : goodColor}"/>
-		<s:Label id="lblSkippedPercent" text="{'Skipped %: '+skippedPercent + '% (Avg '+avgSkippedPercent + '%)'}" 
+		<s:Label id="lblSkippedPercent" text="{'Skipped %: '+skippedPercent}" 
 				 color="{(skippedPercent > avgSkippedPercent)? badColor : goodColor}"/>
 	</s:VGroup>	 
 </s:BorderContainer>

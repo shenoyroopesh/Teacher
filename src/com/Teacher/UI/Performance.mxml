@@ -6,7 +6,8 @@
 		 currentState="Class" xmlns:charts="com.Teacher.UI.charts.*"
 		 color="0xFFFFFF" xmlns:controls="com.brightPoint.controls.*" 
 		 xmlns:reflector="com.common.reflector.*" initialize="performance_initializeHandler(event)" 
-		 xmlns:teacherinterface="services.teacherinterface.*" stateChangeComplete="performance_stateChangeCompleteHandler(event)">
+		 xmlns:teacherinterface="services.teacherinterface.*" 
+		 stateChangeComplete="performance_stateChangeCompleteHandler(event)" xmlns:rtc="http://ns.adobe.com/rtc">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<mx:NumberFormatter id="formatter" />
@@ -47,6 +48,11 @@
 	</fx:Style>
 	<fx:Script>
 		<![CDATA[			
+			import com.adobe.rtc.collaboration.ScreenShareSubscriberComplex;
+			import com.adobe.rtc.events.ScreenShareEvent;
+			import com.adobe.rtc.events.StreamEvent;
+			import com.chat.HelpChat;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.DateField;
@@ -110,6 +116,10 @@
 			
 			[Bindable]
 			public var currentStudentName;
+			
+			[Bindable]
+			public var currentClassId;
+			
 			
 			[Bindable]
 			public var currentClass;
@@ -182,8 +192,11 @@
 			public var classTimePerDay:String = "";
 			
 			[Bindable]
-			public var classLoPerMonth:String = "";			
+			public var classLoPerMonth:String = "";		
 			
+			
+			public var chat:HelpChat;
+						
 			
 			/**
 			 * This sets the scale of the chart to fit it into the parent containers' dimensions. This is preferred to
@@ -206,22 +219,25 @@
 				var problemSetWindow:CreateProblemSet = new CreateProblemSet();
 				problemSetWindow.studentId = currentStudentId;
 				problemSetWindow.studentName = currentStudentName;
+				problemSetWindow.studentGradeLevel = classDropdown.selectedItem['GRADE_LEVEL'];
+				problemSetWindow.subjectId = subjectTabBar.selectedItem['SUBJECT_ID'];
 				problemSetWindow.open(true);
 			}
 			
 			/**
 			 * Used for the chat popup.
 			 * */
-			private function openWindow(event:Event):void
+/* 			private function openWindow(event:Event):void
 			{
 				var chat:chatWindow = PopUpManager.createPopUp(this, chatWindow, false) as chatWindow; 
 				chat.otherUser = new User("Roopesh");
 				chat.user = new User("Sang");
-			}
+			} */
 			
 			protected function performance_initializeHandler(event:FlexEvent):void
 			{
-				var teacherId:String = this.parentApplication.TeacherId;
+				var teacherId:String = this.parentApplication.TeacherId;				
+				
 				//get the initial details - subjects and classes to be filled into the options
 				GetBasicDetailsResult.token = teacher.getInitialDetails(teacherId);
 			}
@@ -253,11 +269,22 @@
 					DateField.dateToString(dateRangePicker.selectedFromDate, "MM-DD-YYYY"), 
 					DateField.dateToString(dateRangePicker.selectedToDate, "MM-DD-YYYY"),
 					subjectTabBar.selectedItem['SUBJECT_ID']);
-				currentClass = classDropdown.selectedItem['CLASS_NAME'];				
+				currentClass = classDropdown.selectedItem['CLASS_NAME'];
+				currentClassId = classDropdown.selectedItem['CLASS_ID'];
 			}
 			
 			protected function GetClassDetailsResult_resultHandler(event:ResultEvent):void
 			{
+				//add chat popup window but invisible
+				if(chat == null)
+				{
+					chat = PopUpManager.createPopUp(this.parent, HelpChat, false) as HelpChat;
+					chat.visible = false;
+				}
+				
+				//initialize screenshare app
+				//initializeScreenshare();
+				
 				//change to student view if in class view. Otherwise keep in current state
 				if(this.currentState.search('Class') == -1)
 					this.currentState = 'Class';
@@ -306,7 +333,7 @@
 						subTopicName = row["subTopicName"];
 						subTopics.addItem({subtopicName:subTopicName, los:los});
 					}
-					los.addItem({name:row["lo_name"], correct: row["correct"], wrong:row["incorrect"], 
+					los.addItem({lobjectId:row["lobject_id"], name:row["lo_name"], correct: row["correct"], wrong:row["incorrect"], 
 							skipped:row["skipped"], incomplete:row["incomplete"]});	
 				}				
 				return LOData;
@@ -491,7 +518,8 @@
 						subTopicName = row["subTopicName"];
 						subTopics.addItem({subtopicName:subTopicName, los:los});
 					}		
-					los.addItem({name:row["lo_name"], correct: row["correct"], wrong:row["incorrect"], 
+					los.addItem({lobjectId:row["lobject_id"], name:row["lo_name"], 
+						correct: row["correct"], wrong:row["incorrect"], 
 						skipped:row["skipped"], incomplete:row["incomplete"]});					
 				}				
 				return LOData;
@@ -520,13 +548,33 @@
 				dateRangePicker.OnChange = this.currentState.search("Student") == -1 ? refreshClassData : refreshStudentDetails;
 			}
 			
+			private function helpPopUp(e:Event):void
+			{
+				//help chat is initialized when the student logs in
+				//chat = PopUpManager.createPopUp(this.parent, HelpChat, false) as HelpChat;
+				chat.visible = true;
+				chat.onClose = onHelpPopUpClosed;
+			}
+			
+			
+			/**
+			 * Reopens the popup and sets it to invisible
+			 * */
+			private function onHelpPopUpClosed():void
+			{
+				PopUpManager.addPopUp(chat, this);
+				chat.visible = false;
+			}
+			
+		
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<teacherinterface:TeacherInterface id="teacher" fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)" showBusyCursor="true"/>
 		<s:CallResponder id="GetBasicDetailsResult" result="GetBasicDetailsResult_resultHandler(event)" />
 		<s:CallResponder id="GetClassDetailsResult" result="GetClassDetailsResult_resultHandler(event)" />
-		<s:CallResponder id="GetStudentDetailsResult" result="GetStudentDetailsResult_resultHandler(event)" />
+		<s:CallResponder id="GetStudentDetailsResult" result="GetStudentDetailsResult_resultHandler(event)" />		
 	</fx:Declarations>
 	<s:states>
 		<s:State name="Class" />
@@ -674,9 +722,11 @@
 										ProgressData="{studentLoStats}"
 										scaleX="{getChartsScale(loChart)}"
 										scaleY="{getChartsScale(loChart)}"
+										classId="{currentClassId}"
 										verticalCenter="0" horizontalCenter="0"/>
 						<charts:LOChart id="classLoChart" 
 										includeIn="ClassLO" 
+										classId="{currentClassId}"
 										ProgressData="{classLOProgressData}"
 										scaleX="{getChartsScale(classLoChart)}"
 										scaleY="{getChartsScale(classLoChart)}"
@@ -725,16 +775,18 @@
 			</s:HGroup>
 		</s:BorderContainer>
 		<s:HGroup width="100%" height="15%">
-			<s:HGroup width="40%" height="100%" visible="{this.currentState.search('Student') > -1}"
+			<s:HGroup width="40%" height="100%" 
 					  horizontalAlign="right">
 				<UI:CustomButton id="btnQuestionsAnswers" 
-								 style="btnQuestionsAnswers" height="100%" width="15%"/>
+								 style="btnQuestionsAnswers" height="100%" width="15%" 
+								 visible="{this.currentState.search('Student') > -1}"/>
 				<UI:CustomButton id="btnChat" 
 								 style="btnChat" height="100%" width="15%"
-								 click="openWindow(event)"/>
+								 click="helpPopUp(event)"/>
 				<UI:CustomButton id="btnSpecialAssignment" 
 								 style="btnSpecialAssignment" height="100%" width="15%"
-								 click="openProblemSetWindow(event)"/>
+								 click="openProblemSetWindow(event)"
+								 visible="{this.currentState.search('Student') > -1}"/>
 			</s:HGroup>
 			<s:HGroup width="60%" height="100%" horizontalAlign="right">
 				<UI:CustomButton id="btnStats"
@@ -770,5 +822,5 @@
 								 toolTip="Time-Spent Stats"/>
 			</s:HGroup>
 		</s:HGroup>
-	</s:VGroup>
+	</s:VGroup>	
 </s:Group>

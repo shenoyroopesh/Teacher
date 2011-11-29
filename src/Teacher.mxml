@@ -20,16 +20,28 @@
 			
 			import spark.components.Window;
 			
-			var currentUserInfo:Array ;
-			var config:Array;
+			public var currentUserInfo:Array ;
+			public var config:Array;
 			
-			public var TeacherId:String;
+			public var TeacherId:String;	
 			
 			
 			[Embed(source="Icons/hourglass.swf")]
 			private const customLoadingCursor:Class;
 						
-			private var performanceWindow:PerformanceWindow;			
+			private var performanceWindow:PerformanceWindow;
+			private var screenShareWindow:ScreenShareWindow;
+			
+			private var AirConfig:Object = { gateway_path:"http://127.0.0.1/busan/gateway.php" };
+			
+			public function GetAirConfig():Object{
+				return AirConfig;
+			}
+			
+			public function SetAirConfig( conf:Object ):void{
+				AirConfig = conf;
+			}
+			
 			
 			/**
 			 * Handles the click sent from the home page - as long as the selected state is valid, 
@@ -41,9 +53,16 @@
 				{
 					case "Setup":
 						break;
-					case "ClassMonitoring":
+					case "Class Monitoring":
+						if(screenShareWindow == null || screenShareWindow.closed)
+						{
+							screenShareWindow = new ScreenShareWindow();
+							initializeWindow(screenShareWindow);
+							screenShareWindow.currentUserInfo = this.currentUserInfo;
+						}
+						openWindow(screenShareWindow);
 						break;
-					case "SchoolAdmin":
+					case "School Admin":
 						break;
 					case "Performance":
 						if(performanceWindow == null || performanceWindow.closed)
@@ -51,6 +70,7 @@
 							performanceWindow = new PerformanceWindow();
 							initializeWindow(performanceWindow);
 							performanceWindow.TeacherId = this.TeacherId;
+							performanceWindow.currentUserInfo = this.currentUserInfo;
 						}
 						openWindow(performanceWindow);
 
@@ -85,11 +105,11 @@
 				if( loginResult.result != "Success" ){
 					return traceWithMessage(loginResult, "Login failed.");
 				}				
-				currentUserInfo = loginResult.login_status;				
+				currentUserInfo = loginResult.data;				
 				if( loginResult.hasOwnProperty( 'config') ){
 					this.config = ParseConfig( loginResult.config );
 				}
-				TeacherId = loginResult.data.ID;
+				TeacherId = currentUserInfo.ID;
 				currentState = "LoggedIn";
 			}
 			
