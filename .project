@@ -4,7 +4,6 @@
 	<comment></comment>
 	<projects>
 		<project>axiis</project>
-		<project>Student</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -25,9 +24,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>[source path] src</name>
+			<name>[source path] AirBusan-src</name>
 			<type>2</type>
 			<locationURI>DOCUMENTS/AirBusan/src</locationURI>
+		</link>
+		<link>
+			<name>[source path] Goa-src</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/Goa/src</locationURI>
 		</link>
 		<link>
 			<name>bin-debug</name>

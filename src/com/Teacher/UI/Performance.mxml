@@ -595,7 +595,7 @@
 		</s:fill>
 	</s:Rect>
 	<s:VGroup id="mainContainer" width="100%" height="100%">
-		<s:HGroup width="100%" height="15%" id="topContainer">
+		<s:HGroup width="100%" height="10%" id="topContainer" verticalAlign="middle">
 			<UI:CustomButton id="classButton"  
 							 click="{this.currentState = 'Class'}" 
 							 label="Class" height="100%" width="12%"
@@ -608,7 +608,7 @@
 							 style="performanceStudent"
 							 selected="{this.currentState.search('Student')>-1}">
 			</UI:CustomButton>
-			<UI:DateRangePick id="dateRangePicker" width="25%"/>	
+			<UI:DateRangePick id="dateRangePicker" width="25%" verticalCenter="0"/>	
 			<s:HGroup width="48%" height="100%" horizontalAlign="right" verticalAlign="middle">
 				<s:Label id="currentlyShowing" color="0xFFFFFF" fontSize="40" fontWeight="bold"						 
 						 text="{this.currentState.search('Student') == -1?currentClass:currentStudentName}"/>	
@@ -774,7 +774,7 @@
 				</s:Group>
 			</s:HGroup>
 		</s:BorderContainer>
-		<s:HGroup width="100%" height="15%">
+		<s:HGroup width="100%" height="10%">
 			<s:HGroup width="40%" height="100%" 
 					  horizontalAlign="right">
 				<UI:CustomButton id="btnQuestionsAnswers" 

@@ -11,6 +11,8 @@
 			
 			private var sss:ScreenShareSubscriberComplex;
 			
+			private var whiteboard:WhiteBoardWindow;
+			
 			private function initializeScreenshare():void{
 				sss = new ScreenShareSubscriberComplex();
 				sss.addEventListener(ScreenShareEvent.SCREEN_SHARE_STARTED, onScreenShareStarted);
@@ -34,15 +36,28 @@
 			private function onStreamDelete(p_evt:StreamEvent):void {
 				sss.stopControlling();
 			}
+			
+			private function openWhiteBoard()
+			{
+				if(whiteboard == null || whiteboard.closed)
+				{
+					whiteboard = new WhiteBoardWindow();
+					whiteboard.currentUserInfo = this.currentUserInfo;
+				}
+				whiteboard.open();
+				whiteboard.maximize();
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<fx:Object id="currentUserInfo" />
 		<rtc:AdobeHSAuthenticator id="auth"  userName="{currentUserInfo.FIRST_NAME}"/>
 	</fx:Declarations>
+	<s:Button label="WhiteBoard" right="0" top="0" click="{openWhiteBoard()}" depth="10"/>
 	<rtc:ConnectSessionContainer id="cSession" authenticator="{auth}" width="100%" height="100%" 
 								 roomURL="https://collaboration.adobelivecycle.com/roopeshshenoy/myfirstroom"  
 								 backgroundAlpha="0">
 		<mx:HBox width="100%" height="100%" id="displayArea" creationComplete="initializeScreenshare()"/>
-	</rtc:ConnectSessionContainer>  
+	</rtc:ConnectSessionContainer> 
 </s:Window>

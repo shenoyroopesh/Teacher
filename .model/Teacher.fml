@@ -111,9 +111,8 @@
         <item name="analyzed">false</item>
       </annotation>
       <annotation name="original signature">
-        <item name="returnType">opaque</item>
         <item name="inputParams">opaque</item>
-        <item name="inputParamNames">subjectId</item>
+        <item name="returnType">opaque</item>
       </annotation>
       <parameter name="subjectId" type="opaque"/>
     </function>

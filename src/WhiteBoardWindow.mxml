@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*"
+		  width="100%" height="100%" xmlns:rtc="http://ns.adobe.com/rtc">
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.rtc.collaboration.ScreenShareSubscriberComplex;
+			import com.adobe.rtc.events.ScreenShareEvent;
+			import com.adobe.rtc.events.StreamEvent;
+			
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<fx:Object id="currentUserInfo" />
+		<!--<rtc:AdobeHSAuthenticator id="auth"  userName="{currentUserInfo.FIRST_NAME}"/>-->
+		<rtc:AdobeHSAuthenticator id="auth"  
+								  userName="shenoy.roopesh@gmail.com"
+								  password="TorNadoG"/>
+	</fx:Declarations>
+	<rtc:ConnectSessionContainer id="cSession" authenticator="{auth}" width="100%" height="100%" 
+								 roomURL="https://collaboration.adobelivecycle.com/roopeshshenoy/myfirstroom"  
+								 backgroundAlpha="0">
+		<rtc:SharedWhiteBoard width="100%" height="100%" />
+	</rtc:ConnectSessionContainer>  
+</s:Window>

@@ -2,7 +2,7 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:UI="com.Teacher.UI.*"
-		 width="20%" height="20%" currentState="up" xmlns:reflector="com.common.reflector.*">
+		 width="75" height="75" currentState="up" xmlns:reflector="com.common.reflector.*">
 	<fx:Style source="Styles.css"/>
 	<s:states>
 		<s:State name="disabled" />
@@ -16,7 +16,7 @@
 		<fx:String id="toolTip" />
 		<fx:Boolean id="selected" />
 	</fx:Declarations>
-	<s:Button id="button" chromeColor="#FEFDFD" fontSize="{this.height*0.12}" 
+	<s:Button id="button" chromeColor="#FEFDFD" fontSize="{this.height*0.18}" 
 			   label="{this.label}"
 			   width="{this.width}" height="{this.height}" 
 			   styleName="{this.style}" skinClass="skins.CustomButtonSkin"
